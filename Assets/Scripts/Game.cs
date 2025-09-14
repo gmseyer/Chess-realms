@@ -31,7 +31,7 @@ public class Game : MonoBehaviour
     public int whiteSkillPoints = 4;
     public int blackSkillPoints = 4;
     public GameObject movePlatePrefabReference; // drag prefab in Inspector
-
+  
 
     //Unity calls this right when the game starts, there are a few built in functions
     //that Unity can call for you
@@ -59,7 +59,7 @@ public class Game : MonoBehaviour
             };
 
         playerNeutral = new GameObject[] {
-            Create("tile_lava", 4,4)
+            
         };
 
         //Set all piece positions on the positions board
@@ -172,6 +172,10 @@ public class Game : MonoBehaviour
 
         // clear expired statuses after we advanced the turn
         ClearExpiredStatuses();
+
+
+
+
     }
 
 

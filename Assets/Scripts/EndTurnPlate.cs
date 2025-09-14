@@ -17,7 +17,7 @@ public class EndTurnPlate : MonoBehaviour
         Debug.Log($"[DivineOffering] Tile clicked — ending turn at ({x},{y})");
 
         game.Create("white_elemental_bishop", x, y);
-        game.NextTurn();
+        //game.NextTurn();
 
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
