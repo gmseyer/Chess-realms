@@ -171,7 +171,7 @@ public class Chessman : MonoBehaviour
         {
             statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
             statusManager.AddStatus(StatusType.Invulnerable,99); // immovable tile status
-            Debug.Log($"{name} is a special tile.");
+            Debug.Log($"{name} is a special tileeee.");
 
         }
        
