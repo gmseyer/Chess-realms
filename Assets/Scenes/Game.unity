@@ -3977,7 +3977,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 289098264}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1422114241}
+        m_TargetAssemblyTypeName: ElementalBishop, Assembly-CSharp
+        m_MethodName: InfernalBrand
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &289098264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4306,7 +4318,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 295602935}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1422114241}
+        m_TargetAssemblyTypeName: ElementalBishop, Assembly-CSharp
+        m_MethodName: GlacialPath
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &295602935
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4355,7 +4379,7 @@ GameObject:
   m_Component:
   - component: {fileID: 296676789}
   m_Layer: 5
-  m_Name: ELEMENTAL BISHOP
+  m_Name: whiteElementalBishopPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11481,6 +11505,10 @@ MonoBehaviour:
   white_king: {fileID: 0}
   white_rook: {fileID: 0}
   white_pawn: {fileID: 0}
+  white_elemental_bishop: {fileID: 0}
+  tile_lava: {fileID: 0}
+  tile_ice: {fileID: 0}
+  tile_earth: {fileID: 0}
   fortifyActive: 0
   isInvulnerable: 0
   invulnerableUntilTurn: -1
@@ -14271,7 +14299,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1000761316}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1422114241}
+        m_TargetAssemblyTypeName: ElementalBishop, Assembly-CSharp
+        m_MethodName: StoneSentinel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1000761316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14776,6 +14816,41 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1016413075
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1016413076}
+  m_Layer: 5
+  m_Name: bishopCHOOSE
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1016413076
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1016413075}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1261838823}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1036105570
 GameObject:
   m_ObjectHideFlags: 0
@@ -17666,19 +17741,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1231010503}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 232825480}
-        m_TargetAssemblyTypeName: Bishop, Assembly-CSharp
-        m_MethodName: OnBishopButtonClick
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1231010503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18266,6 +18329,7 @@ RectTransform:
   - {fileID: 1704887039}
   - {fileID: 1768255667}
   - {fileID: 1405899321}
+  - {fileID: 1016413076}
   m_Father: {fileID: 728448602}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -21719,6 +21783,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1421218617}
   m_CullTransparentMesh: 1
+--- !u!1 &1422114240
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1422114242}
+  - component: {fileID: 1422114241}
+  m_Layer: 0
+  m_Name: elementalBishopScript
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1422114241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422114240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa3b041f67c7af84fa1d4c15f6f1e596, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movePlatePrefab: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
+    type: 3}
+--- !u!4 &1422114242
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422114240}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.56060517, y: -1.916039, z: -0.0164919}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1426813698
 GameObject:
   m_ObjectHideFlags: 0
@@ -22770,6 +22880,7 @@ MonoBehaviour:
   rookPanel: {fileID: 1798311332}
   queenPanel: {fileID: 630779429}
   kingPanel: {fileID: 1704887038}
+  whiteElementalBishopPanel: {fileID: 296676788}
   rookSPText: {fileID: 1327749088}
   fortifyButton: {fileID: 0}
   selectedPiece: {fileID: 0}
@@ -30010,6 +30121,11 @@ MonoBehaviour:
   white_king: {fileID: 21300000, guid: 2648b481cac0d574fb94e5c49b2b2130, type: 3}
   white_rook: {fileID: 21300000, guid: fa0a2ff3626721748bf657c7c6022e11, type: 3}
   white_pawn: {fileID: 21300000, guid: da81633aa03645145ae1b41587366583, type: 3}
+  white_elemental_bishop: {fileID: 21300000, guid: 61d2c75d5d05f3f4bb1b2750fca98e6f,
+    type: 3}
+  tile_lava: {fileID: 21300000, guid: f0c2abfac604f1345864039cd1e5dd5c, type: 3}
+  tile_ice: {fileID: 21300000, guid: 263aa9c96d379b14c9805d6aa62510e2, type: 3}
+  tile_earth: {fileID: 21300000, guid: bbfd5c64bda093e4a839e1433b8b1b71, type: 3}
   fortifyActive: 0
   isInvulnerable: 0
   invulnerableUntilTurn: -1
@@ -30998,6 +31114,7 @@ SceneRoots:
   - {fileID: 1484006863}
   - {fileID: 844623528}
   - {fileID: 232825481}
+  - {fileID: 1422114242}
   - {fileID: 519420032}
   - {fileID: 728448602}
   - {fileID: 1008362721}
