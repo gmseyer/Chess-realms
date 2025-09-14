@@ -47,4 +47,7 @@ public class ElementalBishop : MonoBehaviour
     // Optional helper methods for buttons
     public void InfernalBrand() => CastSkill("tile_lava");
     public void GlacialPath() => CastSkill("tile_ice");
+
+    public void StoneSentinel() => CastSkill("tile_earth");
+    
 }
