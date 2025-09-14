@@ -1,5 +1,10 @@
 Chess Realms
 
+My 2nd Game development project using the knowledge i learned from "Etredal" From youtube and his tutorials. 
+
+
+UNDER DEVELOPMENT
+
 Chess Realms is a turn-based RPG chess game that combines classic chess mechanics with unique RPG elements.
 
 Features
@@ -17,3 +22,5 @@ Tile Terrains: Board tiles can affect movement and combat strategies.
 Bounty System: Capture and defeat opponents’ pieces for rewards and bonuses.
 
 And more unique mechanics that enhance the classic chess experience.
+
+
