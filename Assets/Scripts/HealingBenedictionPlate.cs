@@ -13,34 +13,48 @@ public class HealingBenedictionPlate : MonoBehaviour
     }
 
     private void OnMouseUp()
+{
+    Debug.Log($"[HealingBenedictionPlate] Clicked at ({x},{y})");
+
+    Bishop bishop = FindObjectOfType<Bishop>();
+    if (bishop == null)
     {
-        Debug.Log($"[HealingBenediction] Tile clicked — ({x},{y})");
-
-        // 1️⃣ Figure out which piece belongs here
-        string pieceToRevive = GetWhitePieceForSpawn(x, y);
-        if (pieceToRevive != null && game.GetPosition(x, y) == null)
-        {
-            // 2️⃣ Revive the piece
-            game.Create(pieceToRevive, x, y);
-            Debug.Log($"Revived {pieceToRevive} at ({x},{y})");
-
-            // 3️⃣ End turn after revival
-            game.NextTurn();
-        }
-        else
-        {
-            Debug.Log("No piece revived — either tile is not a spawn or already occupied.");
-        }
-
-        // 4️⃣ Destroy all move plates
-        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
-            Destroy(plate);
+        Debug.LogError("[HealingBenedictionPlate] No Bishop found in scene!");
+        return;
     }
 
+    Debug.Log($"[HealingBenedictionPlate] Bishop state BEFORE revive: hasUsed={bishop.hasUsedHealingBenediction}");
 
-     private string GetWhitePieceForSpawn(int x, int y)
+    if (bishop.hasUsedHealingBenediction)
     {
-        // White back rank
+        Debug.LogWarning("[HealingBenedictionPlate] Skill already used — click ignored.");
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+        return;
+    }
+
+    string pieceToRevive = GetWhitePieceForSpawn(x, y);
+    if (pieceToRevive != null && game.GetPosition(x, y) == null)
+    {
+        game.Create(pieceToRevive, x, y);
+        Debug.Log($"[HealingBenedictionPlate] Revived {pieceToRevive} at ({x},{y})");
+
+        bishop.hasUsedHealingBenediction = true;
+        Debug.Log($"[HealingBenedictionPlate] Bishop state AFTER revive: hasUsed={bishop.hasUsedHealingBenediction}");
+
+        game.NextTurn();
+    }
+    else
+    {
+        Debug.Log("[HealingBenedictionPlate] Tile occupied or invalid — no piece revived.");
+    }
+
+    foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+        Destroy(plate);
+}
+
+    private string GetWhitePieceForSpawn(int x, int y)
+    {
         if (y == 0)
         {
             switch (x)
@@ -55,7 +69,6 @@ public class HealingBenedictionPlate : MonoBehaviour
                 case 7: return "white_rook";
             }
         }
-        // White pawns
         if (y == 1)
         {
             switch (x)
@@ -70,6 +83,6 @@ public class HealingBenedictionPlate : MonoBehaviour
                 case 7: return "white_pawn7";
             }
         }
-        return null; // not a white spawn tile
+        return null;
     }
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class SkillEndTurnPlate : MonoBehaviour
 {
+    // FOR ELEMENTAL BISHOP SKILL TILES
     private Game game;
     private int x, y;
     private string tileName;

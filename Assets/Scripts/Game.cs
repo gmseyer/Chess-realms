@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
-    //Reference from Unity IDE
+
+     public static Game Instance; //added for easy access to Game instance, mostly for SkillManager
     public GameObject chesspiece;
     //public GameObject pawnPrefab;
 
