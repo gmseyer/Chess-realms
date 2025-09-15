@@ -38,49 +38,49 @@ public class MovePlate : MonoBehaviour
         {
             Chessman targetCm = cp.GetComponent<Chessman>();
 
-            // ✅ Special check for bishop capture
-          if (cp.name == "white_bishop")
-{
-    Debug.Log("white_bishop was captured! Checking for Bishop component...");
-    Bishop bishop = cp.GetComponent<Bishop>();
+                // ✅ Special check for bishop capture
+                if (cp.name == "white_bishop")
+                {
+                    Debug.Log("white_bishop was captured! Checking for Bishop component...");
+                    Bishop bishop = cp.GetComponent<Bishop>();
 
-    if (bishop != null && !targetCm.isInvulnerable)
-    {
-        Debug.Log("✅ Bishop component found — triggering DivineOffering()");
+                    if (bishop != null && !targetCm.isInvulnerable)
+                    {
+                        Debug.Log("✅ Bishop component found — triggering DivineOffering()");
 
-        // ✅ First: remove bishop from board properly
-        controller.GetComponent<Game>().SetPositionEmpty(matrixX, matrixY); 
-        Destroy(cp); // <-- actually remove the bishop GameObject
+                        // ✅ First: remove bishop from board properly
+                        controller.GetComponent<Game>().SetPositionEmpty(matrixX, matrixY);
+                        Destroy(cp); // <-- actually remove the bishop GameObject
 
-        // ✅ Then: trigger the divine offering tiles
-        bishop.OnBishopButtonClick();
+                        // ✅ Then: trigger the divine offering tiles
+                        bishop.OnBishopButtonClick();
 
-        // ✅ Stop further processing so we don't also call NextTurn here
-        return;
-    }
-    else
-    {
-        Debug.LogError("❌ Bishop component NOT found on captured piece!");
-    }
-}
-
+                        // ✅ Stop further processing so we don't also call NextTurn here
+                        return;
+                    }
+                    else { Debug.LogError("❌ Bishop component NOT found on captured piece!"); }
+            }
+            
 
             // Existing invulnerability check
-            if (targetCm != null && targetCm.isInvulnerable)
-            {
-                Debug.Log($"{targetCm.name} is invulnerable — attack cancelled.");
-                return;
-            }
+                if (targetCm != null && targetCm.isInvulnerable)
+                {
+                    Debug.Log($"{targetCm.name} is invulnerable — attack cancelled.");
+                    return;
+                }
 
+                
             if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
             if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
-
             Destroy(cp);
         }
     }
+    
+
+
 
     // ✅ Normal move logic (runs ONLY if no bishop special ability triggered)
-    controller.GetComponent<Game>().SetPositionEmpty(
+        controller.GetComponent<Game>().SetPositionEmpty(
         reference.GetComponent<Chessman>().GetXBoard(),
         reference.GetComponent<Chessman>().GetYBoard()
     );

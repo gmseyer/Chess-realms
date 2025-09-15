@@ -163,11 +163,20 @@ public class Game : MonoBehaviour
         {
             currentPlayer = "black";
             turns++;
+            ElementalBishop eb = FindObjectOfType<ElementalBishop>();
+            if (eb != null)
+                eb.CheckAndDestroyExpiredTiles();
+
         }
         else
         {
             currentPlayer = "white";
             turns++;
+            ElementalBishop eb = FindObjectOfType<ElementalBishop>();
+            
+        if (eb != null)
+                eb.CheckAndDestroyExpiredTiles();
+
         }
         turnText.text = "Turns: " + turns;
 
@@ -178,7 +187,11 @@ public class Game : MonoBehaviour
 
 
     }
-
+    //for Skill Manager
+    public int GetTurnCount()
+{
+    return turns;
+}
 
     public void Update()
     {

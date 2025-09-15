@@ -18,7 +18,7 @@ public class Bishop : MonoBehaviour
         // ✅ Loop all tiles and spawn plates on empty ones
         for (int x = 0; x < 8; x++)
         {
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < 4; y++)
             {
                 if (game.GetPosition(x, y) == null)
                 {

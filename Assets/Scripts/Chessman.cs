@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//cd /c/Users/acer/Downloads/Chess_App-master/Chess_App-master
+
 public class Chessman : MonoBehaviour
 {
     //References to objects in our Unity Scene
@@ -24,10 +26,10 @@ public class Chessman : MonoBehaviour
     public Sprite white_queen, white_knight, white_bishop, white_king, white_rook, white_pawn;
 
     //summoned units
-     public Sprite white_elemental_bishop;
+    public Sprite white_elemental_bishop;
 
     //Elemental Tiles
-     public Sprite tile_lava;
+    public Sprite tile_lava;
     public Sprite tile_ice;
     public Sprite tile_earth;
 
@@ -65,7 +67,7 @@ public class Chessman : MonoBehaviour
 
     private int lastX;
     private int lastY;
-    
+
 
     public void CheckMoveTiles_Start()
     {
@@ -74,7 +76,7 @@ public class Chessman : MonoBehaviour
         Debug.Log($"{name} START position: ({lastX}, {lastY})");
     }
 
-     public void CheckMoveTiles_End()
+    public void CheckMoveTiles_End()
     {
         int newX = GetXBoard();
         int newY = GetYBoard();
@@ -170,11 +172,11 @@ public class Chessman : MonoBehaviour
         else if (this.name == "tile_earth")
         {
             statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
-            statusManager.AddStatus(StatusType.Invulnerable,99); // immovable tile status
+            statusManager.AddStatus(StatusType.Invulnerable, 99); // immovable tile status
             Debug.Log($"{name} is a special tileeee.");
 
         }
-       
+
         Debug.Log($"{name} activated at ({GetXBoard()}, {GetYBoard()})");
 
     }
@@ -281,8 +283,8 @@ public class Chessman : MonoBehaviour
                 panelForThisPiece = UIManager.Instance.queenPanel;
             else if (name.Contains("king"))
                 panelForThisPiece = UIManager.Instance.kingPanel;
-        
-            
+
+
         }
         // store selected piece for UI buttons
         if (UIManager.Instance != null) UIManager.Instance.selectedPiece = this.gameObject;
@@ -380,71 +382,71 @@ public class Chessman : MonoBehaviour
 
     }
 
-  public void LineMovePlate(int xIncrement, int yIncrement)
-{
-    Game sc = controller.GetComponent<Game>();
-
-    int x = xBoard + xIncrement;
-    int y = yBoard + yIncrement;
-
-    while (sc.PositionOnBoard(x, y))
+    public void LineMovePlate(int xIncrement, int yIncrement)
     {
-        GameObject target = sc.GetPosition(x, y);
+        Game sc = controller.GetComponent<Game>();
 
-        if (target != null)
+        int x = xBoard + xIncrement;
+        int y = yBoard + yIncrement;
+
+        while (sc.PositionOnBoard(x, y))
         {
-            Chessman targetCm = target.GetComponent<Chessman>();
-            if (targetCm != null)
+            GameObject target = sc.GetPosition(x, y);
+
+            if (target != null)
             {
-                // Treat tile_earth as solid/invulnerable
-                if (targetCm.name == "tile_earth")
+                Chessman targetCm = target.GetComponent<Chessman>();
+                if (targetCm != null)
                 {
-                    Debug.Log($"{targetCm.name} is a solid block. Cannot pass or land.");
-                    break; // stop movement
-                }
+                    // Treat tile_earth as solid/invulnerable
+                    if (targetCm.name == "tile_earth")
+                    {
+                        Debug.Log($"{targetCm.name} is a solid block. Cannot pass or land.");
+                        break; // stop movement
+                    }
 
-                // Special tile like lava/ice: can land and pass
-                if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
-                {
-                    Debug.Log($"{targetCm.name} is a special tile. Landing allowed, passing through.");
-                    MovePlateSpawn(x, y); // can land
-                    x += xIncrement;
-                    y += yIncrement;
-                    continue;
-                }
+                    // Special tile like lava/ice: can land and pass
+                    if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
+                    {
+                        Debug.Log($"{targetCm.name} is a special tile. Landing allowed, passing through.");
+                        MovePlateSpawn(x, y); // can land
+                        x += xIncrement;
+                        y += yIncrement;
+                        continue;
+                    }
 
-                // Regular invulnerable piece
-                if (targetCm.statusManager.HasStatus(StatusType.Invulnerable, sc.turns))
-                {
-                    Debug.Log($"{targetCm.name} is invulnerable. Skipping attack.");
-                    break;
-                }
+                    // Regular invulnerable piece
+                    if (targetCm.statusManager.HasStatus(StatusType.Invulnerable, sc.turns))
+                    {
+                        Debug.Log($"{targetCm.name} is invulnerable. Skipping attack.");
+                        break;
+                    }
 
-                // Enemy piece
-                if (targetCm.player != player && !targetCm.isInvulnerable)
-                {
-                    Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated.");
-                    MovePlateAttackSpawn(x, y);
-                }
-                else
-                {
-                    Debug.Log($"{targetCm.name} is friendly. Cannot move there.");
-                }
+                    // Enemy piece
+                    if (targetCm.player != player && !targetCm.isInvulnerable)
+                    {
+                        Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated.");
+                        MovePlateAttackSpawn(x, y);
+                    }
+                    else
+                    {
+                        Debug.Log($"{targetCm.name} is friendly. Cannot move there.");
+                    }
 
-                break; // stop after hitting any piece
+                    break; // stop after hitting any piece
+                }
             }
-        }
-        else
-        {
-            // Empty tile
-            Debug.Log($"Empty tile at ({x},{y}). MovePlateSpawn activated.");
-            MovePlateSpawn(x, y);
-        }
+            else
+            {
+                // Empty tile
+                Debug.Log($"Empty tile at ({x},{y}). MovePlateSpawn activated.");
+                MovePlateSpawn(x, y);
+            }
 
-        x += xIncrement;
-        y += yIncrement;
+            x += xIncrement;
+            y += yIncrement;
+        }
     }
-}
 
 
 
@@ -474,155 +476,155 @@ public class Chessman : MonoBehaviour
         PointMovePlate(xBoard + 1, yBoard + 1);
     }
 
-   public void PointMovePlate(int x, int y)
-{
-    Game sc = controller.GetComponent<Game>();
-    if (!sc.PositionOnBoard(x, y)) return;
-
-    GameObject cp = sc.GetPosition(x, y);
-
-    if (cp != null)
+    public void PointMovePlate(int x, int y)
     {
-        Chessman targetCm = cp.GetComponent<Chessman>();
-        if (targetCm != null)
-        {
-            // Check for tile_earth → solid block
-            if (targetCm.name == "tile_earth")
-            {
-                Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
-                return; // cannot land or pass
-            }
+        Game sc = controller.GetComponent<Game>();
+        if (!sc.PositionOnBoard(x, y)) return;
 
-            // Special tile like lava/ice → can land
-            if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
-            {
-                Debug.Log($"{targetCm.name} is a special tile. Landing allowed.");
-                MovePlateSpawn(x, y);
-                return;
-            }
-
-            if (targetCm.statusManager.HasStatus(StatusType.Invulnerable, sc.turns))
-            {
-                Debug.Log($"{targetCm.name} is invulnerable. Skipping attack.");
-                return;
-            }
-
-            if (targetCm.player != player && !targetCm.isInvulnerable)
-            {
-                Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated.");
-                MovePlateAttackSpawn(x, y);
-            }
-            else
-            {
-                Debug.Log($"{targetCm.name} is friendly. Cannot move there.");
-            }
-
-            return;
-        }
-    }
-
-    // Empty tile
-    Debug.Log($"Empty tile at ({x},{y}). MovePlateSpawn activated.");
-    MovePlateSpawn(x, y);
-}
-
-
-
-
-   public void PawnMovePlate(int x, int y)
-{
-    Game sc = controller.GetComponent<Game>();
-    if (!sc.PositionOnBoard(x, y)) return;
-
-    // ---- Forward Move ----
-    int forwardTiles = (yBoard == 1 && player == "white") || (yBoard == 6 && player == "black") ? 2 : 1;
-    int stepY = player == "white" ? 1 : -1;
-    int currentY = yBoard;
-
-    for (int i = 1; i <= forwardTiles; i++)
-    {
-        currentY += stepY;
-        if (!sc.PositionOnBoard(xBoard, currentY)) break;
-
-        GameObject cp = sc.GetPosition(xBoard, currentY);
+        GameObject cp = sc.GetPosition(x, y);
 
         if (cp != null)
         {
             Chessman targetCm = cp.GetComponent<Chessman>();
             if (targetCm != null)
             {
-                // tile_earth → block movement
+                // Check for tile_earth → solid block
                 if (targetCm.name == "tile_earth")
                 {
-                    Debug.Log($"{targetCm.name} is a solid block. Pawn cannot move forward.");
-                    break; // stop movement
+                    Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
+                    return; // cannot land or pass
                 }
 
-                // Special tile → can land and continue checking
+                // Special tile like lava/ice → can land
                 if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
                 {
-                    Debug.Log($"{targetCm.name} is a special tile. Pawn can land here.");
-                    MovePlateSpawn(xBoard, currentY);
-                    continue;
-                }
-
-                // Other pieces
-                Debug.Log($"{targetCm.name} is blocking pawn forward movement. Stop.");
-                break;
-            }
-        }
-        else
-        {
-            Debug.Log($"Empty tile at ({xBoard},{currentY}). MovePlateSpawn activated for pawn forward.");
-            MovePlateSpawn(xBoard, currentY);
-        }
-    }
-
-    // ---- Diagonal Attacks ----
-    int[] dx = { 1, -1 };
-    foreach (int offset in dx)
-    {
-        int tx = xBoard + offset;
-        int ty = yBoard + stepY;
-
-        if (!sc.PositionOnBoard(tx, ty)) continue;
-
-        GameObject target = sc.GetPosition(tx, ty);
-
-        if (target != null)
-        {
-            Chessman targetCm = target.GetComponent<Chessman>();
-            if (targetCm != null)
-            {
-                // tile_earth → cannot attack
-                if (targetCm.name == "tile_earth")
-                {
-                    Debug.Log($"{targetCm.name} is a solid block. Pawn cannot attack.");
-                    continue;
-                }
-
-                // Special tile → skip attack
-                if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
-                {
-                    Debug.Log($"{targetCm.name} is a special tile on diagonal. Pawn cannot attack, skip.");
-                    continue;
+                    Debug.Log($"{targetCm.name} is a special tile. Landing allowed.");
+                    MovePlateSpawn(x, y);
+                    return;
                 }
 
                 if (targetCm.statusManager.HasStatus(StatusType.Invulnerable, sc.turns))
                 {
-                    Debug.Log($"{targetCm.name} is invulnerable. Skipping pawn attack.");
-                    continue;
+                    Debug.Log($"{targetCm.name} is invulnerable. Skipping attack.");
+                    return;
                 }
 
-                if (targetCm.player != player)
+                if (targetCm.player != player && !targetCm.isInvulnerable)
                 {
-                    Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated for pawn diagonal.");
-                    MovePlateAttackSpawn(tx, ty);
+                    Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated.");
+                    MovePlateAttackSpawn(x, y);
+                }
+                else
+                {
+                    Debug.Log($"{targetCm.name} is friendly. Cannot move there.");
+                }
+
+                return;
+            }
+        }
+
+        // Empty tile
+        Debug.Log($"Empty tile at ({x},{y}). MovePlateSpawn activated.");
+        MovePlateSpawn(x, y);
+    }
+
+
+
+
+    public void PawnMovePlate(int x, int y)
+    {
+        Game sc = controller.GetComponent<Game>();
+        if (!sc.PositionOnBoard(x, y)) return;
+
+        // ---- Forward Move ----
+        int forwardTiles = (yBoard == 1 && player == "white") || (yBoard == 6 && player == "black") ? 2 : 1;
+        int stepY = player == "white" ? 1 : -1;
+        int currentY = yBoard;
+
+        for (int i = 1; i <= forwardTiles; i++)
+        {
+            currentY += stepY;
+            if (!sc.PositionOnBoard(xBoard, currentY)) break;
+
+            GameObject cp = sc.GetPosition(xBoard, currentY);
+
+            if (cp != null)
+            {
+                Chessman targetCm = cp.GetComponent<Chessman>();
+                if (targetCm != null)
+                {
+                    // tile_earth → block movement
+                    if (targetCm.name == "tile_earth")
+                    {
+                        Debug.Log($"{targetCm.name} is a solid block. Pawn cannot move forward.");
+                        break; // stop movement
+                    }
+
+                    // Special tile → can land and continue checking
+                    if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
+                    {
+                        Debug.Log($"{targetCm.name} is a special tile. Pawn can land here.");
+                        MovePlateSpawn(xBoard, currentY);
+                        continue;
+                    }
+
+                    // Other pieces
+                    Debug.Log($"{targetCm.name} is blocking pawn forward movement. Stop.");
+                    break;
+                }
+            }
+            else
+            {
+                Debug.Log($"Empty tile at ({xBoard},{currentY}). MovePlateSpawn activated for pawn forward.");
+                MovePlateSpawn(xBoard, currentY);
+            }
+        }
+
+        // ---- Diagonal Attacks ----
+        int[] dx = { 1, -1 };
+        foreach (int offset in dx)
+        {
+            int tx = xBoard + offset;
+            int ty = yBoard + stepY;
+
+            if (!sc.PositionOnBoard(tx, ty)) continue;
+
+            GameObject target = sc.GetPosition(tx, ty);
+
+            if (target != null)
+            {
+                Chessman targetCm = target.GetComponent<Chessman>();
+                if (targetCm != null)
+                {
+                    // tile_earth → cannot attack
+                    if (targetCm.name == "tile_earth")
+                    {
+                        Debug.Log($"{targetCm.name} is a solid block. Pawn cannot attack.");
+                        continue;
+                    }
+
+                    // Special tile → skip attack
+                    if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
+                    {
+                        Debug.Log($"{targetCm.name} is a special tile on diagonal. Pawn cannot attack, skip.");
+                        continue;
+                    }
+
+                    if (targetCm.statusManager.HasStatus(StatusType.Invulnerable, sc.turns))
+                    {
+                        Debug.Log($"{targetCm.name} is invulnerable. Skipping pawn attack.");
+                        continue;
+                    }
+
+                    if (targetCm.player != player)
+                    {
+                        Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated for pawn diagonal.");
+                        MovePlateAttackSpawn(tx, ty);
+                    }
                 }
             }
         }
     }
-}
 
 
 
@@ -672,17 +674,17 @@ public class Chessman : MonoBehaviour
         mpScript.SetReference(gameObject);
         mpScript.SetCoords(matrixX, matrixY);
     }
-    
-    
+
+
     public void SetPlayer(string p)
-{
-    player = p;
-}
+    {
+        player = p;
+    }
 
 
 
-    
 
 
-    
+
+
 }

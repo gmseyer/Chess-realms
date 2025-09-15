@@ -19,8 +19,15 @@ public class SkillEndTurnPlate : MonoBehaviour
     {
         Debug.Log($"[Skill] Tile clicked at ({x},{y}) to spawn {tileName}");
 
-        if (!string.IsNullOrEmpty(tileName))
-            game.Create(tileName, x, y);
+       if (!string.IsNullOrEmpty(tileName))
+{
+    GameObject newTile = game.Create(tileName, x, y);
+    ElementalBishop eb = FindObjectOfType<ElementalBishop>();
+    if (eb != null)
+        eb.RegisterTile(newTile);
+}
+
+
         if (UIManager.Instance != null)
         {
 
@@ -32,3 +39,8 @@ public class SkillEndTurnPlate : MonoBehaviour
             Destroy(plate);
     }
 }
+
+
+//WORK IN PROGRESS - DO NOT DELETE
+// ADDING DURATION FOR ELEMENTAL TILES
+// HEHE
