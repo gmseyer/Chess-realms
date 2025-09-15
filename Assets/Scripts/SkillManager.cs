@@ -4,8 +4,10 @@ using System.Collections.Generic;
 
 public enum SkillType
 {
-    Fortify,
-    HealingBenediction,
+    Fortify, //Rook 1st skill
+    HealingBenediction, //Bishop 1st skill 
+    LunarLeap // Knight 1st skill
+     
     // Add more skills here
 }
 

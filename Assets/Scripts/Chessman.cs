@@ -239,7 +239,7 @@ public class Chessman : MonoBehaviour
         return player;
     }
 
-    private void OnMouseUp()
+    private void OnMouseUp() //on click panels
     {
         // Hide all panels first (safe check)
         if (UIManager.Instance != null)
@@ -491,6 +491,35 @@ if (this.name.StartsWith("black_pawn"))
         PointMovePlate(xBoard + 1, yBoard - 1);
         PointMovePlate(xBoard + 1, yBoard + 1);
     }
+
+    public void LunarLeapMovePlate()
+{
+    int x = xBoard;
+    int y = yBoard;
+
+    // Top rank
+    PointMovePlate(x - 1, y + 2);
+    PointMovePlate(x,     y + 2);
+    PointMovePlate(x + 1, y + 2);
+
+    // Top middle
+    for (int i = -2; i <= 2; i++)
+        PointMovePlate(x + i, y + 1);
+
+    // Center rank
+    for (int i = -2; i <= 2; i++)
+        PointMovePlate(x + i, y);
+
+    // Lower middle
+    for (int i = -2; i <= 2; i++)
+        PointMovePlate(x + i, y - 1);
+
+    // Lower rank
+    PointMovePlate(x - 1, y - 2);
+    PointMovePlate(x,     y - 2);
+    PointMovePlate(x + 1, y - 2);
+}
+
 
     public void PointMovePlate(int x, int y)
     {

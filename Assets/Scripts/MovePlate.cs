@@ -30,85 +30,96 @@ public class MovePlate : MonoBehaviour
 {
     controller = GameObject.FindGameObjectWithTag("GameController");
 
-    // Destroy the victim Chesspiece if this is an attack
+    Chessman movingPiece = reference.GetComponent<Chessman>();
+    Knight knightComponent = movingPiece.GetComponent<Knight>();
+
+    // ----------------- Handle Attacks -----------------
     if (attack)
     {
         GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
-        if (cp != null)
-        {
-            Chessman targetCm = cp.GetComponent<Chessman>();
+            if (cp != null)
+            {
+                Chessman targetCm = cp.GetComponent<Chessman>();
 
-                // ✅ Special check for bishop capture
+                // Special check for bishop capture
                 if (cp.name == "white_bishop")
                 {
-                    Debug.Log("white_bishop was captured! Checking for Bishop component...");
                     Bishop bishop = cp.GetComponent<Bishop>();
 
                     if (bishop != null && !targetCm.isInvulnerable)
                     {
-                        Debug.Log("✅ Bishop component found — triggering DivineOffering()");
-
-                        // ✅ First: remove bishop from board properly
                         controller.GetComponent<Game>().SetPositionEmpty(matrixX, matrixY);
-                        Destroy(cp); // <-- actually remove the bishop GameObject
+                        Destroy(cp);
 
-                        // ✅ Then: trigger the divine offering tiles
                         bishop.OnBishopButtonClick();
-
-                        // ✅ Stop further processing so we don't also call NextTurn here
-                        return;
+                        return; // Stop processing further
                     }
-                    else { Debug.LogError("❌ Bishop component NOT found on captured piece!"); }
-            }
-            
+                }
 
-            // Existing invulnerability check
                 if (targetCm != null && targetCm.isInvulnerable)
                 {
                     Debug.Log($"{targetCm.name} is invulnerable — attack cancelled.");
                     return;
                 }
 
+                if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
+                if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
 
-            if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
-            if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
-            Destroy(cp);
+                Destroy(cp); // Regular enemy destroyed
+            Knight attackerKnight = reference.GetComponent<Knight>();
+if (attackerKnight != null && attackerKnight.IsMomentumReady())
+{
+    // prevent the usual NextTurn flow: spawn momentum teleport tiles and let player choose
+    Knight.ActiveKnight = attackerKnight; // keep it selected (useful)
+    attackerKnight.TriggerKnightsMomentum();
+    return; // IMPORTANT: stop further processing so the player can click momentum tile
+}
         }
     }
-    
 
-
-
-    // ✅ Normal move logic (runs ONLY if no bishop special ability triggered)
-        controller.GetComponent<Game>().SetPositionEmpty(
-        reference.GetComponent<Chessman>().GetXBoard(),
-        reference.GetComponent<Chessman>().GetYBoard()
+    // ----------------- Move Chessman -----------------
+    controller.GetComponent<Game>().SetPositionEmpty(
+        movingPiece.GetXBoard(),
+        movingPiece.GetYBoard()
     );
 
-    reference.GetComponent<Chessman>().SetXBoard(matrixX);
-    reference.GetComponent<Chessman>().SetYBoard(matrixY);
-    reference.GetComponent<Chessman>().SetCoords();
-
+    movingPiece.SetXBoard(matrixX);
+    movingPiece.SetYBoard(matrixY);
+    movingPiece.SetCoords();
     controller.GetComponent<Game>().SetPosition(reference);
 
-    controller.GetComponent<Game>().NextTurn();
-
-    reference.GetComponent<Chessman>().DestroyMovePlates();
-    reference.GetComponent<Chessman>().ClearFortify();
-
-    Chessman movingPiece = reference.GetComponent<Chessman>();
+    movingPiece.DestroyMovePlates();
+    movingPiece.ClearFortify();
     movingPiece.CheckMoveTiles_End();
 
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.pawnPanel?.SetActive(false);
-            UIManager.Instance.knightPanel?.SetActive(false);
-            UIManager.Instance.bishopPanel?.SetActive(false);
-            UIManager.Instance.rookPanel?.SetActive(false);
-            UIManager.Instance.queenPanel?.SetActive(false);
-            UIManager.Instance.kingPanel?.SetActive(false);
-            UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
-            UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
+    // ----------------- Lunar Leap Check -----------------
+    if (knightComponent != null && knightComponent.CanDoubleMove)
+
+    {
+        // If Lunar Leap was active, disable it after this move
+        knightComponent.CanDoubleMove = false;
+
+
+        Debug.Log("[LunarLeap] Knight finished Lunar Leap — turn ends.");
+        controller.GetComponent<Game>().NextTurn();
+    }
+    else
+    {
+        // Normal turn ending
+        controller.GetComponent<Game>().NextTurn();
+    }
+
+    // ----------------- Hide UI Panels -----------------
+    if (UIManager.Instance != null)
+    {
+        UIManager.Instance.pawnPanel?.SetActive(false);
+        UIManager.Instance.knightPanel?.SetActive(false);
+        UIManager.Instance.bishopPanel?.SetActive(false);
+        UIManager.Instance.rookPanel?.SetActive(false);
+        UIManager.Instance.queenPanel?.SetActive(false);
+        UIManager.Instance.kingPanel?.SetActive(false);
+        UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
+        UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
     }
 }
 
