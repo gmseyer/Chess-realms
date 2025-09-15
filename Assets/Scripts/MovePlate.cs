@@ -99,13 +99,15 @@ public class MovePlate : MonoBehaviour
     Chessman movingPiece = reference.GetComponent<Chessman>();
     movingPiece.CheckMoveTiles_End();
 
-    if (UIManager.Instance != null)
-    {
-        UIManager.Instance.pawnPanel?.SetActive(false);
-        UIManager.Instance.knightPanel?.SetActive(false);
-        UIManager.Instance.bishopPanel?.SetActive(false);
-        UIManager.Instance.rookPanel?.SetActive(false);
-        UIManager.Instance.queenPanel?.SetActive(false);
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.pawnPanel?.SetActive(false);
+            UIManager.Instance.knightPanel?.SetActive(false);
+            UIManager.Instance.bishopPanel?.SetActive(false);
+            UIManager.Instance.rookPanel?.SetActive(false);
+            UIManager.Instance.queenPanel?.SetActive(false);
+            UIManager.Instance.kingPanel?.SetActive(false);
+            UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
     }
 }
 

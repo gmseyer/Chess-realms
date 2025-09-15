@@ -281,6 +281,7 @@ public class Chessman : MonoBehaviour
                 panelForThisPiece = UIManager.Instance.queenPanel;
             else if (name.Contains("king"))
                 panelForThisPiece = UIManager.Instance.kingPanel;
+        
             
         }
         // store selected piece for UI buttons
