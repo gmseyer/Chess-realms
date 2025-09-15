@@ -116,11 +116,14 @@ public class Game : MonoBehaviour
                 Bishop b = obj.AddComponent<Bishop>();
                 // ✅ assign prefab from a central reference
                 b.movePlatePrefab = movePlatePrefabReference;
-
-
-
             }
         }
+
+
+
+
+
+
 
 
 
