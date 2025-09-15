@@ -328,31 +328,40 @@ public class Chessman : MonoBehaviour
     public virtual void InitiateMovePlates()
     {
 
-        if (this.name.StartsWith("black_pawn"))
+         Game game = controller.GetComponent<Game>();
+         
+          if (game.IsPlayerRestrictedToPawns(player))
+    {
+        if (!name.Contains("pawn"))
         {
-            PawnMovePlate(xBoard, yBoard - 1);
-            if (yBoard == 6 && controller.GetComponent<Game>().GetPosition(xBoard, yBoard - 1) == null && controller.GetComponent<Game>().GetPosition(xBoard, yBoard - 2) == null)
+            Debug.Log($"[TemporalShift] {name} cannot move this turn.");
+            return; // no move plates
+        }
+    }
+
+if (this.name.StartsWith("black_pawn"))
+    {
+        PawnMovePlate(xBoard, yBoard - 1);
+        if (yBoard == 6 && game.GetPosition(xBoard, yBoard - 1) == null && game.GetPosition(xBoard, yBoard - 2) == null)
+        {
+            if (game.PositionOnBoard(xBoard, yBoard - 2) && game.GetPosition(xBoard, yBoard - 2) == null)
             {
-                Game sc = controller.GetComponent<Game>();
-                if (sc.PositionOnBoard(xBoard, yBoard - 2) && sc.GetPosition(xBoard, yBoard - 2) == null)
-                {
-                    MovePlateSpawn(xBoard, yBoard - 2);
-                }
+                MovePlateSpawn(xBoard, yBoard - 2);
             }
-        }//black pawn end
+        }
+    }
 
         else if (this.name.StartsWith("white_pawn"))
+    {
+        PawnMovePlate(xBoard, yBoard + 1);
+        if (yBoard == 1 && game.GetPosition(xBoard, yBoard + 1) == null && game.GetPosition(xBoard, yBoard + 2) == null)
         {
-            PawnMovePlate(xBoard, yBoard + 1);
-            if (yBoard == 1 && controller.GetComponent<Game>().GetPosition(xBoard, yBoard + 1) == null && controller.GetComponent<Game>().GetPosition(xBoard, yBoard + 2) == null)
+            if (game.PositionOnBoard(xBoard, yBoard + 2) && game.GetPosition(xBoard, yBoard + 2) == null)
             {
-                Game sc = controller.GetComponent<Game>();
-                if (sc.PositionOnBoard(xBoard, yBoard + 2) && sc.GetPosition(xBoard, yBoard + 2) == null)
-                {
-                    MovePlateSpawn(xBoard, yBoard + 2);
-                }
+                MovePlateSpawn(xBoard, yBoard + 2);
             }
-        }//white pawn end
+        }
+    }
 
         else
         {
@@ -373,7 +382,7 @@ public class Chessman : MonoBehaviour
                 case "black_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_elemental_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
-                case  "white_arch_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case "white_arch_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
 
                 case "black_queen":
                     LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);

@@ -60,11 +60,13 @@ public class ElementalBishop : MonoBehaviour
         }
 
         // ✅ Deduct Skill Point
-        if (!game.SpendPlayerSP("white", 1)) // assuming white is the player
-        {
-            Debug.LogWarning("[ElementalBishop] Not enough Skill Points!");
-            return;
-        }
+        // ✅ Deduct Skill Point using SkillManager (not game)
+if (!SkillManager.Instance.SpendPlayerSP("white", 1)) // assuming white is the player
+{
+    Debug.LogWarning("[ElementalBishop] Not enough Skill Points!");
+    return;
+}
+
 
         // ✅ Put skill on cooldown for 5 turns
         skillCooldowns[tileName] = currentTurn + 5;

@@ -31,11 +31,16 @@ public class Game : MonoBehaviour
     private bool gameOver = false;
     public int whiteSkillPoints = 4;
     public int blackSkillPoints = 4;
-    public GameObject movePlatePrefabReference; // drag prefab in Inspector
+    public GameObject movePlatePrefabReference; 
+    
+    public string restrictedToPawnsPlayer = null;   // "white" / "black" 
+    public int restrictionExpiresOnTurn = -1;       // until (inclusive) this turn
+    
+
+
   
 
-    //Unity calls this right when the game starts, there are a few built in functions
-    //that Unity can call for you
+   
     public void Start()
     {
         playerWhite = new GameObject[] {
@@ -43,7 +48,7 @@ public class Game : MonoBehaviour
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
 
-           
+
 
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -60,7 +65,7 @@ public class Game : MonoBehaviour
             };
 
         playerNeutral = new GameObject[] {
-            
+
         };
 
         //Set all piece positions on the positions board
@@ -101,7 +106,7 @@ public class Game : MonoBehaviour
     cm.SetPlayer("neutral");          // neutral tile
     cm.statusManager.AddStatus(StatusType.Invulnerable, 999); // never expires
     cm.statusManager.AddStatus(StatusType.SolidBlock, 999);   // blocks movement
-}
+}   
 
 
         if (name.Contains("bishop"))
@@ -163,6 +168,9 @@ public class Game : MonoBehaviour
         {
             currentPlayer = "black";
             turns++;
+            // inside NextTurn(), after ClearExpiredStatuses();
+            ClearExpiredRestrictions();
+
             ElementalBishop eb = FindObjectOfType<ElementalBishop>();
             if (eb != null)
                 eb.CheckAndDestroyExpiredTiles();
@@ -172,6 +180,9 @@ public class Game : MonoBehaviour
         {
             currentPlayer = "white";
             turns++;
+            // inside NextTurn(), after ClearExpiredStatuses();
+            ClearExpiredRestrictions();
+
             ElementalBishop eb = FindObjectOfType<ElementalBishop>();
             
         if (eb != null)
@@ -216,6 +227,33 @@ public class Game : MonoBehaviour
     }
 
 
+    public void SetPlayerRestriction(string player, int durationTurns)
+{
+    restrictedToPawnsPlayer = player;
+    restrictionExpiresOnTurn = turns + durationTurns;
+    Debug.Log($"[Game] Player '{player}' restricted to pawns until turn {restrictionExpiresOnTurn} (current turn {turns})");
+}
+
+// Query helper
+public bool IsPlayerRestrictedToPawns(string player)
+{
+    if (restrictedToPawnsPlayer == null) return false;
+    // restriction is active while current turns <= expire turn
+    return restrictedToPawnsPlayer == player && turns <= restrictionExpiresOnTurn;
+}
+
+// Call this periodically (we'll call it in NextTurn) to clear expired restriction
+private void ClearExpiredRestrictions()
+{
+    if (restrictedToPawnsPlayer != null && turns > restrictionExpiresOnTurn)
+    {
+        Debug.Log($"[Game] Temporal Shift expired for {restrictedToPawnsPlayer} at turn {turns}");
+        restrictedToPawnsPlayer = null;
+        restrictionExpiresOnTurn = -1;
+    }
+}
+
+
     private void ClearExpiredStatuses()
     {
         // iterate all positions on the board
@@ -243,27 +281,32 @@ public int GetPlayerSP(string player)
     return (player == "white") ? whiteSkillPoints : blackSkillPoints;
 }
 
-// Try to deduct, return true if successful
-public bool SpendPlayerSP(string player, int amount)
-{
-    if (player == "white")
+    // Try to deduct, return true if successful
+    public bool SpendPlayerSP(string player, int amount)
     {
-        if (whiteSkillPoints >= amount)
+        if (player == "white")
         {
-            whiteSkillPoints -= amount;
-            return true;
+            if (whiteSkillPoints >= amount)
+            {
+                whiteSkillPoints -= amount;
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
-    else
-    {
-        if (blackSkillPoints >= amount)
+        else
         {
-            blackSkillPoints -= amount;
-            return true;
+            if (blackSkillPoints >= amount)
+            {
+                blackSkillPoints -= amount;
+                return true;
+            }
+            return false;
         }
-        return false;
     }
-}
+
+
+
+
+
 
 }
