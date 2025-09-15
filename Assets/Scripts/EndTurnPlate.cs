@@ -4,23 +4,22 @@ public class EndTurnPlate : MonoBehaviour
 {
     private Game game;
     private int x, y;
+    private string pieceName;
 
-    public void Setup(Game g, int tileX, int tileY)
+    public void Setup(Game g, int tileX, int tileY, string piece)
     {
         game = g;
         x = tileX;
         y = tileY;
+        pieceName = piece;
     }
 
     private void OnMouseUp()
     {
-        Debug.Log($"[DivineOffering] Tile clicked — ending turn at ({x},{y})");
+        Debug.Log($"[DivineOffering] Spawning {pieceName} at ({x},{y})");
+        game.Create(pieceName, x, y);
 
-        game.Create("white_elemental_bishop", x, y);
-        //game.NextTurn(); 
-        // if this is activated, even when your spawning white elemental bishop, it is still white's turn
-
-        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate") )
             Destroy(plate);
     }
 }

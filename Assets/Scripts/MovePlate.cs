@@ -69,7 +69,7 @@ public class MovePlate : MonoBehaviour
                     return;
                 }
 
-                
+
             if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
             if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
             Destroy(cp);
@@ -108,6 +108,7 @@ public class MovePlate : MonoBehaviour
             UIManager.Instance.queenPanel?.SetActive(false);
             UIManager.Instance.kingPanel?.SetActive(false);
             UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
     }
 }
 

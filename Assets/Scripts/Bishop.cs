@@ -3,42 +3,88 @@ using UnityEngine;
 public class Bishop : MonoBehaviour
 {
     public GameObject movePlatePrefab; 
-     public bool hasUsedHealingBenediction = false; // ✅ Once-per-battle mark
-    
-    public void OnBishopButtonClick() //divine offering, cant change for some reason hehehhe
+      public GameObject elementalSummonPlatePrefab; 
+    public GameObject archbishopSummonPlatePrefab; 
+    [Header("Prefabs (Auto-Loaded)")]
+     public bool hasUsedHealingBenediction = false; // Once-per-battle mark
+     
+
+     private void Awake()
     {
-        
-        
+        // Auto-load if not assigned in Inspector
+        if (elementalSummonPlatePrefab == null)
+            elementalSummonPlatePrefab = Resources.Load<GameObject>("Prefabs/ElementalSummonPlate");
+
+        if (archbishopSummonPlatePrefab == null)
+            archbishopSummonPlatePrefab = Resources.Load<GameObject>("Prefabs/ArchbishopSummonPlate");
+
+        if (elementalSummonPlatePrefab == null)
+            Debug.LogError("[Bishop] Could not load ElementalSummonPlate from Resources!");
+
+        if (archbishopSummonPlatePrefab == null)
+            Debug.LogError("[Bishop] Could not load ArchbishopSummonPlate from Resources!");
+    }
+    
+    public void OnBishopButtonClick()
+    {
         Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
 
-        // ✅ Destroy old move plates first
+        if (elementalSummonPlatePrefab == null)
+            Debug.LogError("[Bishop] Elemental Summon Plate Prefab is NOT assigned!");
+        if (archbishopSummonPlatePrefab == null)
+            Debug.LogError("[Bishop] Archbishop Summon Plate Prefab is NOT assigned!");
+
+
+
+        // ✅ Destroy existing plates first
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
 
-        // ✅ Loop all tiles and spawn plates on empty ones
+        // ✅ Spawn ELEMENTAL BISHOP plates (bottom 3-4 ranks)
         for (int x = 0; x < 8; x++)
         {
-            for (int y = 0; y < 4; y++)
+            for (int y = 0; y < 2; y++)
             {
                 if (game.GetPosition(x, y) == null)
                 {
-                    SpawnTile(game, x, y);
+                    SpawnTile(game, x, y, elementalSummonPlatePrefab, "white_elemental_bishop");
+                    Debug.Log($"[DivineOffering] Spawning ELEMENTAL bishop plate at ({x},{y})");
+                }
+            }
+        }
+
+        // ✅ Spawn ARCHBISHOP plates (bottom 1-2 ranks)
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 2; y < 4; y++)
+            {
+                if (game.GetPosition(x, y) == null)
+                {
+                    SpawnTile(game, x, y, archbishopSummonPlatePrefab, "white_arch_bishop");
+                    Debug.Log($"[DivineOffering] Spawning ARCHBISHOP plate at ({x},{y})");
                 }
             }
         }
     }
 
-    private void SpawnTile(Game game, int x, int y)
-    {
-        float fx = x * 0.66f + -2.3f;
-        float fy = y * 0.66f + -2.3f;
 
-        GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+     private void SpawnTile(Game game, int x, int y, GameObject prefab, string pieceName)
+    {
+
+            if (prefab == null)
+    {
+        Debug.LogError($"[Bishop] ERROR: Prefab is NULL for {pieceName} at ({x},{y})!");
+        return;
+    }
+        float fx = x * 0.66f - 2.3f;
+        float fy = y * 0.66f - 2.3f;
+
+        GameObject mp = Instantiate(prefab, new Vector3(fx, fy, -3f), Quaternion.identity);
 
         MovePlate oldScript = mp.GetComponent<MovePlate>();
         if (oldScript != null) Destroy(oldScript);
 
-        mp.AddComponent<EndTurnPlate>().Setup(game, x, y); // ✅ pass x,y
+        mp.AddComponent<EndTurnPlate>().Setup(game, x, y, pieceName);
     }
 
      public void HealingBenediction()

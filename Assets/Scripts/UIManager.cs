@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     public GameObject kingPanel;
 
     public GameObject whiteElementalBishopPanel;
+    public GameObject whiteArchBishopPanel;
 
 
 
@@ -37,6 +38,7 @@ public Button fortifyButton;
     public GameObject GetPanelForPieceName(string pieceName)
     {
         if (pieceName.Contains("elemental_bishop")) return whiteElementalBishopPanel; // for Divine Offering
+        if (pieceName.Contains("arch_bishop")) return whiteArchBishopPanel; // for Arch Bishop
         if (pieceName.StartsWith("white_pawn") || pieceName.StartsWith("black_pawn")) return pawnPanel;
         if (pieceName.Contains("knight")) return knightPanel;
         if (pieceName.Contains("white_bishop")) return bishopPanel;

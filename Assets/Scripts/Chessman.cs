@@ -27,6 +27,7 @@ public class Chessman : MonoBehaviour
 
     //summoned units
     public Sprite white_elemental_bishop;
+    public Sprite white_arch_bishop;
 
     //Elemental Tiles
     public Sprite tile_lava;
@@ -135,7 +136,8 @@ public class Chessman : MonoBehaviour
                 case "white_king": this.GetComponent<SpriteRenderer>().sprite = white_king; player = "white"; break;
                 case "white_rook": this.GetComponent<SpriteRenderer>().sprite = white_rook; player = "white"; break;
                 case "white_elemental_bishop": this.GetComponent<SpriteRenderer>().sprite = white_elemental_bishop; player = "white"; break;
-
+                case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
+                
                 case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
                 case "tile_earth": this.GetComponent<SpriteRenderer>().sprite = tile_earth; player = "neutral"; break;
@@ -249,6 +251,7 @@ public class Chessman : MonoBehaviour
             UIManager.Instance.queenPanel?.SetActive(false);
             UIManager.Instance.kingPanel?.SetActive(false);
             UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
         }
 
         // Get reference to Game controller
@@ -273,6 +276,8 @@ public class Chessman : MonoBehaviour
                 panelForThisPiece = UIManager.Instance.pawnPanel;
             else if (name.Contains("elemental_bishop"))
                 panelForThisPiece = UIManager.Instance.whiteElementalBishopPanel;
+            else if (name.Contains("arch_bishop"))
+                panelForThisPiece = UIManager.Instance.whiteArchBishopPanel;
             else if (name.Contains("knight"))
                 panelForThisPiece = UIManager.Instance.knightPanel;
             else if (name.Contains("bishop"))
@@ -368,6 +373,8 @@ public class Chessman : MonoBehaviour
                 case "black_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_elemental_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case  "white_arch_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+
                 case "black_queen":
                     LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);
                     LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
