@@ -34,4 +34,4 @@ public class RookSkillButton : MonoBehaviour
 
         rookScript.AttemptRoyalCastling();
     }
-}
+} 

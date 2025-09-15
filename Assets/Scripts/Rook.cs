@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Rook : MonoBehaviour
+public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehaviour
 {
     private bool hasUsedRoyalCastling = false; // once per battle
     public GameObject movePlatePrefab; // optional, keep if you want later

@@ -179,7 +179,7 @@ public class Chessman : MonoBehaviour
 
         }
 
-        Debug.Log($"{name} activated at ({GetXBoard()}, {GetYBoard()})");
+      //  Debug.Log($"{name} activated at ({GetXBoard()}, {GetYBoard()})");
 
     }
 
@@ -569,7 +569,7 @@ if (this.name.StartsWith("black_pawn"))
         }
 
         // Empty tile
-        Debug.Log($"Empty tile at ({x},{y}). MovePlateSpawn activated.");
+        //  Debug.Log($"Empty tile at ({x},{y}). MovePlateSpawn activated.");
         MovePlateSpawn(x, y);
     }
 
