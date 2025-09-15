@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6143677598943511087}
   - component: {fileID: 7799197074589954345}
   - component: {fileID: 2080887208827666093}
+  - component: {fileID: -617308392810335294}
   m_Layer: 0
   m_Name: white_queen
   m_TagString: Untagged
@@ -113,6 +114,16 @@ MonoBehaviour:
   white_king: {fileID: 21300000, guid: 2648b481cac0d574fb94e5c49b2b2130, type: 3}
   white_rook: {fileID: 21300000, guid: fa0a2ff3626721748bf657c7c6022e11, type: 3}
   white_pawn: {fileID: 21300000, guid: da81633aa03645145ae1b41587366583, type: 3}
+  white_elemental_bishop: {fileID: 0}
+  white_arch_bishop: {fileID: 0}
+  tile_lava: {fileID: 0}
+  tile_ice: {fileID: 0}
+  tile_earth: {fileID: 0}
+  fortifyActive: 0
+  isInvulnerable: 0
+  invulnerableUntilTurn: -1
+  statusManager: {fileID: 0}
+  skillPoints: 4
 --- !u!61 &2080887208827666093
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -158,3 +169,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.2, y: 0.2}
   m_EdgeRadius: 0
+--- !u!114 &-617308392810335294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8088979337518760917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b20cc6c53a4deee4fbb293f59cab53e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  passiveCooldownLength: 20

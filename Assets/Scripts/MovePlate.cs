@@ -26,7 +26,7 @@ public class MovePlate : MonoBehaviour
         }
     }
 
-    public void OnMouseUp()
+  public void OnMouseUp()
 {
     controller = GameObject.FindGameObjectWithTag("GameController");
 
@@ -37,43 +37,79 @@ public class MovePlate : MonoBehaviour
     if (attack)
     {
         GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
-            if (cp != null)
+        if (cp != null)
+        {
+            Chessman targetCm = cp.GetComponent<Chessman>();
+
+            // Special check for bishop capture
+            if (cp.name == "white_bishop")
             {
-                Chessman targetCm = cp.GetComponent<Chessman>();
+                Bishop bishop = cp.GetComponent<Bishop>();
 
-                // Special check for bishop capture
-                if (cp.name == "white_bishop")
+                if (bishop != null && !targetCm.isInvulnerable)
                 {
-                    Bishop bishop = cp.GetComponent<Bishop>();
+                    controller.GetComponent<Game>().SetPositionEmpty(matrixX, matrixY);
+                    Destroy(cp);
 
-                    if (bishop != null && !targetCm.isInvulnerable)
-                    {
-                        controller.GetComponent<Game>().SetPositionEmpty(matrixX, matrixY);
-                        Destroy(cp);
-
-                        bishop.OnBishopButtonClick();
-                        return; // Stop processing further
-                    }
+                    bishop.OnBishopButtonClick();
+                    return; // Stop processing further
                 }
+            }
 
-                if (targetCm != null && targetCm.isInvulnerable)
+            if (targetCm != null && targetCm.isInvulnerable)
+            {
+                Debug.Log($"{targetCm.name} is invulnerable — attack cancelled.");
+                return;
+            }
+// ----------------- QUEEN PASSIVE SECTION -----------------
+// <-- NEW: debug log when queen is about to be taken -->
+if (cp.name.ToLower().Contains("queen"))
+        {
+            Debug.Log($"[MovePlate] Queen is about to be taken: {cp.name} at ({matrixX},{matrixY}) by {movingPiece.name}");
+
+            Queen queen = cp.GetComponent<Queen>();
+            if (queen != null)
+            {
+                bool passiveActivated = queen.TryTriggerGloryForTheQueen();
+
+                if (passiveActivated)
                 {
-                    Debug.Log($"{targetCm.name} is invulnerable — attack cancelled.");
-                    return;
+                    Debug.Log("[MovePlate] Queen survives thanks to Glory for the Queen!");
+                    // Cancel capture flow: queen not destroyed
+                    movingPiece.DestroyMovePlates();
+                    movingPiece.ClearFortify();
+                    movingPiece.CheckMoveTiles_End();
+                    controller.GetComponent<Game>().NextTurn();
+                    return; // stop further processing
                 }
+            }
+        }
 
-                if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
-                if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
 
-                Destroy(cp); // Regular enemy destroyed
+
+            // ---------------------------------------------------------
+
+            if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
+            if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
+
+            
+            Destroy(cp);
+            
+             // ---------- QUEEN DESTROYED LOG ----------
+        if (cp.name.ToLower().Contains("queen"))
+        {
+            Debug.Log($"[MovePlate] Queen destroyed: {cp.name} at ({matrixX},{matrixY})");
+        }
+
+
             Knight attackerKnight = reference.GetComponent<Knight>();
-if (attackerKnight != null && attackerKnight.IsMomentumReady())
-{
-    // prevent the usual NextTurn flow: spawn momentum teleport tiles and let player choose
-    Knight.ActiveKnight = attackerKnight; // keep it selected (useful)
-    attackerKnight.TriggerKnightsMomentum();
-    return; // IMPORTANT: stop further processing so the player can click momentum tile
-}
+            if (attackerKnight != null && attackerKnight.IsMomentumReady())
+            {
+                // prevent the usual NextTurn flow: spawn momentum teleport tiles and let player choose
+                Knight.ActiveKnight = attackerKnight; // keep it selected (useful)
+                attackerKnight.TriggerKnightsMomentum();
+                return; // IMPORTANT: stop further processing so the player can click momentum tile
+            }
         }
     }
 
@@ -94,11 +130,9 @@ if (attackerKnight != null && attackerKnight.IsMomentumReady())
 
     // ----------------- Lunar Leap Check -----------------
     if (knightComponent != null && knightComponent.CanDoubleMove)
-
     {
         // If Lunar Leap was active, disable it after this move
         knightComponent.CanDoubleMove = false;
-
 
         Debug.Log("[LunarLeap] Knight finished Lunar Leap — turn ends.");
         controller.GetComponent<Game>().NextTurn();
@@ -122,6 +156,7 @@ if (attackerKnight != null && attackerKnight.IsMomentumReady())
         UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
     }
 }
+
 
 
 

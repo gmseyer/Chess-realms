@@ -119,22 +119,23 @@ public class Game : MonoBehaviour
             }
         }
         if (name.Contains("knight"))
-{
-    if (obj.GetComponent<Knight>() == null)
-    {
+        {
+            if (obj.GetComponent<Knight>() == null)
+            {
         Knight k = obj.AddComponent<Knight>();
         k.movePlatePrefab = movePlatePrefabReference;
-    }
-}
+            }
+        }
+
+        if (name.Contains("queen"))
+        {
+            if (obj.GetComponent<Queen>() == null)
+            {
+                Queen q = obj.AddComponent<Queen>();
+                q.movePlatePrefab = movePlatePrefabReference;
+            }
+        }
    
-
-
-
-
-
-
-
-
 
         cm.Activate();
         return obj;
@@ -182,6 +183,7 @@ public class Game : MonoBehaviour
             turns++;
             // inside NextTurn(), after ClearExpiredStatuses();
             ClearExpiredRestrictions();
+            ResetAllPieceTurnFlags();
 
             ElementalBishop eb = FindObjectOfType<ElementalBishop>();
             if (eb != null)
@@ -194,6 +196,7 @@ public class Game : MonoBehaviour
             turns++;
             // inside NextTurn(), after ClearExpiredStatuses();
             ClearExpiredRestrictions();
+            ResetAllPieceTurnFlags();
 
             ElementalBishop eb = FindObjectOfType<ElementalBishop>();
             
@@ -293,6 +296,23 @@ private void ClearExpiredRestrictions()
 {
     positions[x, y] = null;
 }
+
+// Call this at the start of each player's turn
+public void ResetAllPieceTurnFlags()
+{
+    Chessman[] allPieces = GameObject.FindObjectsOfType<Chessman>();
+    foreach (Chessman pieceCm in allPieces)
+    {
+        Pieces pieceScript = pieceCm.GetComponent<Pieces>();
+        if (pieceScript != null)
+        {
+            pieceScript.ResetTurnFlags();
+        }
+    }
+}
+
+
+
 
 // Sets a GameObject at a specific position
 public void SetPositionAt(GameObject obj, int x, int y)
