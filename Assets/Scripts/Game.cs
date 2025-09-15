@@ -118,6 +118,15 @@ public class Game : MonoBehaviour
                 b.movePlatePrefab = movePlatePrefabReference;
             }
         }
+        if (name.Contains("knight"))
+{
+    if (obj.GetComponent<Knight>() == null)
+    {
+        Knight k = obj.AddComponent<Knight>();
+        k.movePlatePrefab = movePlatePrefabReference;
+    }
+}
+
 
 
 
@@ -237,13 +246,15 @@ public class Game : MonoBehaviour
     Debug.Log($"[Game] Player '{player}' restricted to pawns until turn {restrictionExpiresOnTurn} (current turn {turns})");
 }
 
-// Query helper
+    // Query helper
+
+
 public bool IsPlayerRestrictedToPawns(string player)
-{
-    if (restrictedToPawnsPlayer == null) return false;
-    // restriction is active while current turns <= expire turn
-    return restrictedToPawnsPlayer == player && turns <= restrictionExpiresOnTurn;
-}
+    {
+        if (restrictedToPawnsPlayer == null) return false;
+        // restriction is active while current turns <= expire turn
+        return restrictedToPawnsPlayer == player && turns <= restrictionExpiresOnTurn;
+    }
 
 // Call this periodically (we'll call it in NextTurn) to clear expired restriction
 private void ClearExpiredRestrictions()
@@ -277,12 +288,23 @@ private void ClearExpiredRestrictions()
             }
         }
     }
+    //still helpers
+    public void ClearPosition(int x, int y)
+{
+    positions[x, y] = null;
+}
+
+// Sets a GameObject at a specific position
+public void SetPositionAt(GameObject obj, int x, int y)
+{
+    positions[x, y] = obj;
+}
 
 // Get remaining SP for a given player string ("white" or "black")
-public int GetPlayerSP(string player)
-{
-    return (player == "white") ? whiteSkillPoints : blackSkillPoints;
-}
+    public int GetPlayerSP(string player)
+    {
+        return (player == "white") ? whiteSkillPoints : blackSkillPoints;
+    }
 
     // Try to deduct, return true if successful
     public bool SpendPlayerSP(string player, int amount)
