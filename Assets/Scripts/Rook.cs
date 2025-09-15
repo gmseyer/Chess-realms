@@ -1,81 +1,106 @@
-using System;  // <-- Add this at the top of your file
+using System;
 using UnityEngine;
 
-public class Rook : Chessman
+public class Rook : MonoBehaviour
 {
-    // Public method to call from a Button
-    public void OnClickRoyalCastling()
+    private bool hasUsedRoyalCastling = false; // once per battle
+    public GameObject movePlatePrefab; // optional, keep if you want later
+
+    // small helper used during testing
+    public void TestSkill()
     {
-        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
-        string currentPlayer = game.GetCurrentPlayer();
-
-        // Debug: see exact player strings
-        Debug.Log($"CurrentPlayer='{currentPlayer}', Rook Player='{GetPlayer()}'");
-
-        // Only allow castling if it's this rook's turn
-        if (!string.Equals(GetPlayer(), currentPlayer, StringComparison.OrdinalIgnoreCase))
-        {
-            Debug.Log($"It's not {GetPlayer()}'s turn!");
-            return;
-        }
-
-        // Call the RoyalCastling function
-        RoyalCastling(game, currentPlayer);
+        Debug.Log($"[Rook] TestSkill() called on {gameObject.name}");
     }
 
-    // RoyalCastling that swaps this rook with its king
-    public void RoyalCastling(Game game, string player)
+    // Call this to attempt the Royal Castling from UI
+    public void AttemptRoyalCastling()
     {
-        // Find the king of the current player
-        Chessman kingCm = FindKing(game, player);
+        // get Chessman data (works if Chessman is on same object or parent)
+        Chessman cm = GetComponentInParent<Chessman>();
+        if (cm == null)
+        {
+            Debug.LogError("[RoyalCastling] No Chessman component found on this object/parents!");
+            return;
+        }
+
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[RoyalCastling] Could not find GameController.");
+            return;
+        }
+
+        string currentPlayer = game.GetCurrentPlayer();
+        string rookPlayer = cm.GetPlayer();
+
+        Debug.Log($"[RoyalCastling] Attempt by '{cm.name}' (player='{rookPlayer}'), turn owner='{currentPlayer}'");
+
+        // turn check
+        if (!string.Equals(rookPlayer, currentPlayer, StringComparison.OrdinalIgnoreCase))
+        {
+            Debug.Log($"[RoyalCastling] It's not {rookPlayer}'s turn!");
+            return;
+        }
+
+        // once-per-battle
+        if (hasUsedRoyalCastling)
+        {
+            Debug.Log("[RoyalCastling] Skill already used this battle.");
+            return;
+        }
+
+        // find the king first (validate preconditions before spending SP)
+        Chessman kingCm = FindKing(game, rookPlayer);
         if (kingCm == null)
         {
-            Debug.LogWarning("RoyalCastling: No king found for " + player);
+            Debug.LogWarning($"[RoyalCastling] No king found for player '{rookPlayer}'. Aborting.");
             return;
         }
 
-        // This rook is the one clicked
-        Chessman rookCm = this;
-
-        // Check SP
-        const int cost = 1;
-        if (!game.SpendPlayerSP(player, cost))
+        // SP cost
+        const int cost = 2;
+        if (!SkillManager.Instance.SpendPlayerSP(rookPlayer, cost))
         {
-            Debug.Log($"{player} does not have enough SP for Royal Castling (cost {cost}).");
+            Debug.LogWarning($"[RoyalCastling] Not enough SP for {rookPlayer} (cost {cost}).");
             return;
         }
 
-        // Save current positions
-        int rookX = rookCm.GetXBoard();
-        int rookY = rookCm.GetYBoard();
+        // Save positions
+        int rookX = cm.GetXBoard();
+        int rookY = cm.GetYBoard();
         int kingX = kingCm.GetXBoard();
         int kingY = kingCm.GetYBoard();
 
-        // Clear old positions in the board array
-        game.SetPositionEmpty(rookX, rookY);
-        game.SetPositionEmpty(kingX, kingY);
+        Debug.Log($"[RoyalCastling] Swapping Rook ({rookX},{rookY}) with King ({kingX},{kingY})");
 
-        // Swap positions
-        rookCm.SetXBoard(kingX);
-        rookCm.SetYBoard(kingY);
-        rookCm.SetCoords();
-        game.SetPosition(rookCm.gameObject);
+        // Clear board positions first
+        game.ClearPosition(rookX, rookY);
+        game.ClearPosition(kingX, kingY);
 
+        // Move rook -> king pos
+        cm.SetXBoard(kingX);
+        cm.SetYBoard(kingY);
+        cm.SetCoords();
+        game.SetPositionAt(cm.gameObject, kingX, kingY);
+
+        // Move king -> rook pos
         kingCm.SetXBoard(rookX);
         kingCm.SetYBoard(rookY);
         kingCm.SetCoords();
-        game.SetPosition(kingCm.gameObject);
+        game.SetPositionAt(kingCm.gameObject, rookX, rookY);
 
-        Debug.Log($"Royal Castling executed: {rookCm.name} swapped with {kingCm.name}");
+        // Clean up any move plates if needed
+        cm.DestroyMovePlates();
+        kingCm.DestroyMovePlates();
 
-        // Destroy move plates if needed
-        rookCm.DestroyMovePlates();
+        hasUsedRoyalCastling = true;
+        Debug.Log($"[RoyalCastling] Swap complete! Rook at ({kingX},{kingY}), King at ({rookX},{rookY})");
 
-        // End turn
+        // end turn
         game.NextTurn();
     }
 
-    // Helper: find king for current player
+    // helper to locate the king of a player
     private Chessman FindKing(Game game, string player)
     {
         for (int x = 0; x < 8; x++)
@@ -84,8 +109,11 @@ public class Rook : Chessman
             {
                 GameObject piece = game.GetPosition(x, y);
                 if (piece == null) continue;
+
                 Chessman cm = piece.GetComponent<Chessman>();
-                if (cm != null && piece.name.ToLower().Contains("king") && cm.GetPlayer() == player)
+                if (cm == null) continue;
+
+                if (piece.name.ToLower().Contains("king") && cm.GetPlayer() == player)
                     return cm;
             }
         }

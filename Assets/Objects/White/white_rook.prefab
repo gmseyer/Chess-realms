@@ -158,4 +158,15 @@ MonoBehaviour:
   white_king: {fileID: 21300000, guid: 2648b481cac0d574fb94e5c49b2b2130, type: 3}
   white_rook: {fileID: 21300000, guid: fa0a2ff3626721748bf657c7c6022e11, type: 3}
   white_pawn: {fileID: 21300000, guid: da81633aa03645145ae1b41587366583, type: 3}
+  white_elemental_bishop: {fileID: 0}
+  white_arch_bishop: {fileID: 0}
+  tile_lava: {fileID: 0}
+  tile_ice: {fileID: 0}
+  tile_earth: {fileID: 0}
   fortifyActive: 0
+  isInvulnerable: 0
+  invulnerableUntilTurn: -1
+  statusManager: {fileID: 0}
+  skillPoints: 4
+  movePlatePrefab: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
+    type: 3}

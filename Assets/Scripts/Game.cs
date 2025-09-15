@@ -126,7 +126,7 @@ public class Game : MonoBehaviour
         k.movePlatePrefab = movePlatePrefabReference;
     }
 }
-
+   
 
 
 
