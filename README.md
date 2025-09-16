@@ -3,24 +3,53 @@ Chess Realms
 My 2nd Game development project using the knowledge i learned from "Etredal" From youtube and his tutorials. 
 
 
-UNDER DEVELOPMENT
+************UNDER DEVELOPMENT***********
 
-Chess Realms is a turn-based RPG chess game that combines classic chess mechanics with unique RPG elements.
-
-Features
-
-Balanced Turn-Based Gameplay: Plays like traditional chess but with added strategic depth.
-
-Passive and Active Skills: Each piece has unique abilities that can change the flow of the game.
-
-Cooldowns and Skill Points: Manage your pieces’ skills wisely for maximum effect.
-
-Piece Transformations: Certain pieces can transform, gaining new powers and abilities.
-
-Tile Terrains: Board tiles can affect movement and combat strategies.
-
-Bounty System: Capture and defeat opponents’ pieces for rewards and bonuses.
-
-And more unique mechanics that enhance the classic chess experience.
-
+Chess: Realms Unleashed – Quickstart Guide
+"A classic battlefield reborn—where strategy meets arcane power, and every move can turn the tide of war."
+________________________________________
+Board & Pieces
+•	Board: Standard 8×8 chessboard
+•	Pieces: Pawn, Knight, Bishop, Rook, Queen, King
+•	Movement: Traditional chess rules with added abilities
+________________________________________
+Skill Points (SP)
+•	Royal & Non-Pawn Pieces: 5 SP shared among Rook, Knight, Bishop, Queen, King
+•	Pawn Pieces: 5 SP shared among all pawns
+•	Usage: SP is spent to activate Active Skills; replenished each turn based on pool.
+•	Additional Gains: Some abilities grant extra SP during gameplay
+________________________________________
+Passive Skills
+•	Always active; no SP cost
+•	Example: Pawn’s "Divided We Fall, United We Stand" → 3 adjacent pawns gain immunity to each other
+________________________________________
+Active Skills
+•	Require SP to activate
+•	Examples:
+o	Knight – Lunar Leap: 2 moves in 1 turn
+o	Bishop – Celestial Summon: Summon pawns to the board
+o	Queen – Temporal Undo: Revert last turn
+________________________________________
+Royal Promotion
+Definition: Special evolution allowing pieces to ascend into powerful forms with enhanced abilities.
+•	Requirements:
+o	Turn-based conditions
+o	Piece-specific objectives
+o	SP expenditure
+•	Benefits:
+o	New passive skills
+o	New active skills
+o	Enhanced movement
+o	Sometimes summons allied units
+•	Adds strategic depth and long-term planning
+________________________________________
+Special Scenarios
+•	Pawn Transformations: Sacrifice a pawn → temporarily become Rook or Bishop (Pawn’s Gambit)
+•	Archbishop’s Summons: Bring captured enemy pieces to your side (Soulbinding Conquest)
+•	Temporal Manipulation: Alter game flow (Temporal Undo, Temporal Shift)
+________________________________________
+Objective: King’s Capture
+•	Goal: Capture the opponent’s king to win
+•	Strategy: Use SP, abilities, and tactical positioning to dominate the board
+•	Tip: Every skill, movement, and promotion can shift the tide of battle
 
