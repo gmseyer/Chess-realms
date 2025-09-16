@@ -14,6 +14,7 @@ public class Game : MonoBehaviour
     //public Pawn selectedPawn;
 
     public int turns = 0;
+    public TurnUI turnUI;
     [SerializeField] Text turnText;
     //Matrices needed, positions of each of the GameObjects
     //Also separate arrays for the players in order to easily keep track of them all
@@ -175,44 +176,27 @@ public class Game : MonoBehaviour
         return gameOver;
     }
 
-    public void NextTurn()
-    {
-        if (currentPlayer == "white")
-        {
-            currentPlayer = "black";
-            turns++;
-            // inside NextTurn(), after ClearExpiredStatuses();
-            ClearExpiredRestrictions();
-            ResetAllPieceTurnFlags();
+   public void NextTurn()
+{
+    // Switch player
+    currentPlayer = (currentPlayer == "white") ? "black" : "white";
+    turns++;
 
-            ElementalBishop eb = FindObjectOfType<ElementalBishop>();
-            if (eb != null)
-                eb.CheckAndDestroyExpiredTiles();
+    ClearExpiredRestrictions();
+    ResetAllPieceTurnFlags();
+    ClearExpiredStatuses();
 
-        }
-        else
-        {
-            currentPlayer = "white";
-            turns++;
-            // inside NextTurn(), after ClearExpiredStatuses();
-            ClearExpiredRestrictions();
-            ResetAllPieceTurnFlags();
+    // Update the Turn UI with player
+    if(TurnUI.Instance != null)
+        TurnUI.Instance.UpdateTurn(turns, currentPlayer);
 
-            ElementalBishop eb = FindObjectOfType<ElementalBishop>();
-            
-        if (eb != null)
-                eb.CheckAndDestroyExpiredTiles();
-
-        }
-        turnText.text = "Turns: " + turns;
-
-        // clear expired statuses after we advanced the turn
-        ClearExpiredStatuses();
+    // Elemental Bishop cleanup
+    ElementalBishop eb = FindObjectOfType<ElementalBishop>();
+    if(eb != null)
+        eb.CheckAndDestroyExpiredTiles();
+}
 
 
-
-
-    }
     //for Skill Manager
     public int GetTurnCount()
 {

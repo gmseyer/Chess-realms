@@ -4,58 +4,67 @@ using UnityEngine.UI;
 
 public class TurnUI : MonoBehaviour
 {
+    public static TurnUI Instance; // Singleton reference
+
     [Header("References")]
     public TextMeshProUGUI turnText;
     public AudioSource audioSource; // optional
     public AudioClip turnSound; // optional
 
     [Header("Animation Settings")]
-    public float popScale = 1.3f; // how much it grows on turn
-    public float popDuration = 0.3f; // duration of pop animation
+    public float popScale = 1.3f;
+    public float popDuration = 0.3f;
 
-    [Header("Flavor Texts")]
-    [TextArea(2, 5)]
-    public string[] flavorTexts = new string[]
-    {
-        "The battlefield grows tense...",
-        "Darkness spreads across the field!",
-        "Allies ready for battle!",
-        "Enemies lurk in the shadows...",
-        "Fate hangs in the balance!"
-    };
+    [Header("UI Background")]
+    public Image turnBackground; // Assign a panel/image behind the turn text in inspector
+    public Color whiteTurnColor = new Color(1f, 1f, 1f, 0.2f); // semi-transparent white
+    public Color blackTurnColor = new Color(0f, 0f, 0f, 0.2f); // semi-transparent black
 
     private int currentTurn = 0;
     private Vector3 originalScale;
 
     private void Awake()
     {
-        if(turnText != null)
+        // Singleton setup
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // only one instance allowed
+            return;
+        }
+        Instance = this;
+
+        if (turnText != null)
             originalScale = turnText.transform.localScale;
     }
 
     /// <summary>
     /// Call this whenever the turn changes
     /// </summary>
-    public void UpdateTurn(int turnNumber)
+    /// <param name="turnNumber">Current turn number</param>
+    /// <param name="currentPlayer">"White" or "Black"</param>
+    public void UpdateTurn(int turnNumber, string currentPlayer)
     {
         currentTurn = turnNumber;
 
         if (turnText != null)
         {
-            // Update text with flavor text
-            string flavor = flavorTexts.Length > 0 ? flavorTexts[turnNumber % flavorTexts.Length] : "";
-            turnText.text = $"Turn: {turnNumber}\n{flavor}";
+            // Show turn number and current player
+            turnText.text = $"TURN: {turnNumber} - {currentPlayer}";
 
-            // Change color for fun (even turns green, odd yellow)
-            turnText.color = (turnNumber % 2 == 0) ? Color.green : Color.yellow;
+            // Color: White = light gray, Black = dark gray
+            turnText.color = currentPlayer.ToLower() == "white" ? Color.white : Color.black;
+            if (turnBackground != null)
+            {
+                turnBackground.color = currentPlayer.ToLower() == "white" ? whiteTurnColor : blackTurnColor;
+            }
 
-            // Animate pop
+            // Animate
             StopAllCoroutines();
             StartCoroutine(PopAnimation());
         }
 
-        // Play sound effect if assigned
-        if(audioSource != null && turnSound != null)
+        // Play sound if assigned
+        if (audioSource != null && turnSound != null)
         {
             audioSource.PlayOneShot(turnSound);
         }
@@ -67,22 +76,33 @@ public class TurnUI : MonoBehaviour
         Vector3 targetScale = originalScale * popScale;
 
         // Scale up
-        while(timer < popDuration / 2f)
+        while (timer < popDuration / 2f)
         {
             timer += Time.deltaTime;
-            turnText.transform.localScale = Vector3.Lerp(originalScale, targetScale, timer / (popDuration/2f));
+            turnText.transform.localScale = Vector3.Lerp(originalScale, targetScale, timer / (popDuration / 2f));
             yield return null;
         }
 
         // Scale down
         timer = 0f;
-        while(timer < popDuration / 2f)
+        while (timer < popDuration / 2f)
         {
             timer += Time.deltaTime;
-            turnText.transform.localScale = Vector3.Lerp(targetScale, originalScale, timer / (popDuration/2f));
+            turnText.transform.localScale = Vector3.Lerp(targetScale, originalScale, timer / (popDuration / 2f));
             yield return null;
         }
 
         turnText.transform.localScale = originalScale;
     }
+    
+
+    
+
+
+
+
+
+
+
+
 }
