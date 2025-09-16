@@ -37,79 +37,80 @@ public class MovePlate : MonoBehaviour
     if (attack)
     {
         GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
-        if (cp != null)
-        {
-            Chessman targetCm = cp.GetComponent<Chessman>();
-
-            // Special check for bishop capture
-            if (cp.name == "white_bishop")
+            if (cp != null)
             {
-                Bishop bishop = cp.GetComponent<Bishop>();
+                Chessman targetCm = cp.GetComponent<Chessman>();
 
-                if (bishop != null && !targetCm.isInvulnerable)
+                // Special check for bishop capture
+                if (cp.name == "white_bishop")
                 {
-                    controller.GetComponent<Game>().SetPositionEmpty(matrixX, matrixY);
-                    Destroy(cp);
+                    Bishop bishop = cp.GetComponent<Bishop>();
 
-                    bishop.OnBishopButtonClick();
-                    return; // Stop processing further
+                    if (bishop != null && !targetCm.isInvulnerable)
+                    {
+                        controller.GetComponent<Game>().SetPositionEmpty(matrixX, matrixY);
+                        Destroy(cp);
+
+                        bishop.OnBishopButtonClick();
+                        return; // Stop processing further
+                    }
                 }
-            }
 
-            if (targetCm != null && targetCm.isInvulnerable)
-            {
-                Debug.Log($"{targetCm.name} is invulnerable — attack cancelled.");
-                return;
-            }
-// ----------------- QUEEN PASSIVE SECTION -----------------
-// <-- NEW: debug log when queen is about to be taken -->
-if (cp.name.ToLower().Contains("queen"))
-        {
-            Debug.Log($"[MovePlate] Queen is about to be taken: {cp.name} at ({matrixX},{matrixY}) by {movingPiece.name}");
-
-            Queen queen = cp.GetComponent<Queen>();
-            if (queen != null)
-            {
-                bool passiveActivated = queen.TryTriggerGloryForTheQueen();
-
-                if (passiveActivated)
+                if (targetCm != null && targetCm.isInvulnerable)
                 {
-                    Debug.Log("[MovePlate] Queen survives thanks to Glory for the Queen!");
-                    // Cancel capture flow: queen not destroyed
-                    movingPiece.DestroyMovePlates();
-                    movingPiece.ClearFortify();
-                    movingPiece.CheckMoveTiles_End();
-                    controller.GetComponent<Game>().NextTurn();
-                    return; // stop further processing
+                    Debug.Log($"{targetCm.name} is invulnerable — attack cancelled.");
+                    return;
                 }
-            }
-        }
+                // ----------------- QUEEN PASSIVE SECTION -----------------
+                // <-- NEW: debug log when queen is about to be taken -->
+                if (cp.name.ToLower().Contains("queen"))
+                {
+                    Debug.Log($"[MovePlate] Queen is about to be taken: {cp.name} at ({matrixX},{matrixY}) by {movingPiece.name}");
+
+                    Queen queen = cp.GetComponent<Queen>();
+                    if (queen != null)
+                    {
+                        bool passiveActivated = queen.TryTriggerGloryForTheQueen();
+
+                        if (passiveActivated)
+                        {
+                            Debug.Log("[MovePlate] Queen survives thanks to Glory for the Queen!");
+                            // Cancel capture flow: queen not destroyed
+                            movingPiece.DestroyMovePlates();
+                            movingPiece.ClearFortify();
+                            movingPiece.CheckMoveTiles_End();
+                            controller.GetComponent<Game>().NextTurn();
+                            return; // stop further processing
+                        }
+                    }
+                }  // --QUEEN PASSIVE END -------------------------------------
+
+                if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
+                if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
 
 
 
-            // ---------------------------------------------------------
-
-            if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
-            if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
-
-            
-            Destroy(cp);
-            
-             // ---------- QUEEN DESTROYED LOG ----------
-        if (cp.name.ToLower().Contains("queen"))
-        {
-            Debug.Log($"[MovePlate] Queen destroyed: {cp.name} at ({matrixX},{matrixY})");
-        }
 
 
-            Knight attackerKnight = reference.GetComponent<Knight>();
-            if (attackerKnight != null && attackerKnight.IsMomentumReady())
-            {
-                // prevent the usual NextTurn flow: spawn momentum teleport tiles and let player choose
-                Knight.ActiveKnight = attackerKnight; // keep it selected (useful)
-                attackerKnight.TriggerKnightsMomentum();
-                return; // IMPORTANT: stop further processing so the player can click momentum tile
-            }
+                Destroy(cp);
+
+                // ---------- QUEEN DESTROYED LOG ----------
+                if (cp.name.ToLower().Contains("queen"))
+                {
+                    Debug.Log($"[MovePlate] Queen destroyed: {cp.name} at ({matrixX},{matrixY})");
+                }
+
+
+                Knight attackerKnight = reference.GetComponent<Knight>();
+                if (attackerKnight != null && attackerKnight.IsMomentumReady())
+                {
+                    // prevent the usual NextTurn flow: spawn momentum teleport tiles and let player choose
+                    Knight.ActiveKnight = attackerKnight; // keep it selected (useful)
+                    attackerKnight.TriggerKnightsMomentum();
+                    return; // IMPORTANT: stop further processing so the player can click momentum tile
+                }
+
+           
         }
     }
 
@@ -122,6 +123,14 @@ if (cp.name.ToLower().Contains("queen"))
     movingPiece.SetXBoard(matrixX);
     movingPiece.SetYBoard(matrixY);
     movingPiece.SetCoords();
+    
+
+    
+
+
+
+
+
     controller.GetComponent<Game>().SetPosition(reference);
 
     movingPiece.DestroyMovePlates();

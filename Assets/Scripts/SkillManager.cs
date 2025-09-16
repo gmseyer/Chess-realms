@@ -16,8 +16,8 @@ public class SkillManager : MonoBehaviour
     public static SkillManager Instance;
 
     [Header("Skill Points")]
-    public int whiteSkillPoints = 4;
-    public int blackSkillPoints = 4;
+    public int whiteSkillPoints = 5;
+    public int blackSkillPoints = 5;
 
     [Header("UI References")]
     public Text whiteSPText;  // Drag UI Text from Inspector

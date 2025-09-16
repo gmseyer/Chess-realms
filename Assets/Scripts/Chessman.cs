@@ -29,6 +29,9 @@ public class Chessman : MonoBehaviour
     public Sprite white_elemental_bishop;
     public Sprite white_arch_bishop;
 
+    //Royal Units
+    public Sprite white_royal_pawn;
+
     //Elemental Tiles
     public Sprite tile_lava;
     public Sprite tile_ice;
@@ -135,9 +138,15 @@ public class Chessman : MonoBehaviour
                 case "white_bishop": this.GetComponent<SpriteRenderer>().sprite = white_bishop; player = "white"; break;
                 case "white_king": this.GetComponent<SpriteRenderer>().sprite = white_king; player = "white"; break;
                 case "white_rook": this.GetComponent<SpriteRenderer>().sprite = white_rook; player = "white"; break;
+                
+                //Summoned Units
                 case "white_elemental_bishop": this.GetComponent<SpriteRenderer>().sprite = white_elemental_bishop; player = "white"; break;
                 case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
-                
+                //Royal Units
+                case "white_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = white_royal_pawn; player = "white"; break;
+
+
+
                 case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
                 case "tile_earth": this.GetComponent<SpriteRenderer>().sprite = tile_earth; player = "neutral"; break;
