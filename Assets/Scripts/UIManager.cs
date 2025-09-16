@@ -47,6 +47,7 @@ public Button fortifyButton;
         if (pieceName.Contains("queen")) return queenPanel;
         if (pieceName.Contains("king")) return kingPanel;
         
+        
 
         return null;
     }
@@ -136,6 +137,33 @@ public Button fortifyButton;
         UpdateSkillPointDisplay();
         game.NextTurn();
     }
+
+    public void RegalSafeguardSelected()
+{
+    if (selectedPiece == null)
+    {
+        Debug.Log("RegalSafeguardSelected: no piece selected.");
+        return;
+    }
+
+    if (!selectedPiece.name.Contains("queen"))
+    {
+        Debug.Log("RegalSafeguardSelected: selected piece is not a queen.");
+        return;
+    }
+
+    Queen queenScript = selectedPiece.GetComponent<Queen>();
+    if (queenScript == null)
+    {
+        Debug.LogError("RegalSafeguardSelected: selected piece has no Queen script.");
+        return;
+    }
+
+    queenScript.RegalSafeguard();
+
+    // update SP display
+    UpdateSkillPointDisplay();
+}
 
 
 

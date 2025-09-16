@@ -26,17 +26,17 @@ public class MovePlate : MonoBehaviour
         }
     }
 
-  public void OnMouseUp()
-{
-    controller = GameObject.FindGameObjectWithTag("GameController");
-
-    Chessman movingPiece = reference.GetComponent<Chessman>();
-    Knight knightComponent = movingPiece.GetComponent<Knight>();
-
-    // ----------------- Handle Attacks -----------------
-    if (attack)
+    public void OnMouseUp()
     {
-        GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
+        controller = GameObject.FindGameObjectWithTag("GameController");
+
+        Chessman movingPiece = reference.GetComponent<Chessman>();
+        Knight knightComponent = movingPiece.GetComponent<Knight>();
+
+        // ----------------- Handle Attacks -----------------
+        if (attack)
+        {
+            GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
             if (cp != null)
             {
                 Chessman targetCm = cp.GetComponent<Chessman>();
@@ -110,60 +110,65 @@ public class MovePlate : MonoBehaviour
                     return; // IMPORTANT: stop further processing so the player can click momentum tile
                 }
 
-           
+
+            }
         }
-    }
 
-    // ----------------- Move Chessman -----------------
-    controller.GetComponent<Game>().SetPositionEmpty(
-        movingPiece.GetXBoard(),
-        movingPiece.GetYBoard()
-    );
+        // ----------------- Move Chessman -----------------
+        controller.GetComponent<Game>().SetPositionEmpty(
+            movingPiece.GetXBoard(),
+            movingPiece.GetYBoard()
+        );
 
-    movingPiece.SetXBoard(matrixX);
-    movingPiece.SetYBoard(matrixY);
-    movingPiece.SetCoords();
-    
-
-    
+        movingPiece.SetXBoard(matrixX);
+        movingPiece.SetYBoard(matrixY);
+        movingPiece.SetCoords();
 
 
 
 
 
-    controller.GetComponent<Game>().SetPosition(reference);
 
-    movingPiece.DestroyMovePlates();
-    movingPiece.ClearFortify();
-    movingPiece.CheckMoveTiles_End();
 
-    // ----------------- Lunar Leap Check -----------------
-    if (knightComponent != null && knightComponent.CanDoubleMove)
-    {
-        // If Lunar Leap was active, disable it after this move
-        knightComponent.CanDoubleMove = false;
 
-        Debug.Log("[LunarLeap] Knight finished Lunar Leap — turn ends.");
-        controller.GetComponent<Game>().NextTurn();
-    }
-    else
-    {
-        // Normal turn ending
-        controller.GetComponent<Game>().NextTurn();
-    }
+        controller.GetComponent<Game>().SetPosition(reference);
 
-    // ----------------- Hide UI Panels -----------------
-    if (UIManager.Instance != null)
-    {
-        UIManager.Instance.pawnPanel?.SetActive(false);
-        UIManager.Instance.knightPanel?.SetActive(false);
-        UIManager.Instance.bishopPanel?.SetActive(false);
-        UIManager.Instance.rookPanel?.SetActive(false);
-        UIManager.Instance.queenPanel?.SetActive(false);
-        UIManager.Instance.kingPanel?.SetActive(false);
-        UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
-        UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
-    }
+        movingPiece.DestroyMovePlates();
+        movingPiece.ClearFortify();
+        movingPiece.CheckMoveTiles_End();
+
+        // ----------------- Lunar Leap Check -----------------
+        if (knightComponent != null && knightComponent.CanDoubleMove)
+        {
+            // If Lunar Leap was active, disable it after this move
+            knightComponent.CanDoubleMove = false;
+
+            Debug.Log("[LunarLeap] Knight finished Lunar Leap — turn ends.");
+            controller.GetComponent<Game>().NextTurn();
+        }
+        else
+        {
+            // Normal turn ending
+            controller.GetComponent<Game>().NextTurn();
+        }
+
+        // ----------------- Hide UI Panels -----------------
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.pawnPanel?.SetActive(false);
+            UIManager.Instance.knightPanel?.SetActive(false);
+            UIManager.Instance.bishopPanel?.SetActive(false);
+            UIManager.Instance.rookPanel?.SetActive(false);
+            UIManager.Instance.queenPanel?.SetActive(false);
+            UIManager.Instance.kingPanel?.SetActive(false);
+            UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
+
+        }
+        if (SkillManagerTMP.Instance != null)
+        {
+            SkillManagerTMP.Instance.skillPanel?.SetActive(false);
+        }
 }
 
 

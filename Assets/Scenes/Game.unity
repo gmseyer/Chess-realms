@@ -1909,6 +1909,42 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - skillName: GLORY FOR THE QUEEN
+    skillType: PASSIVE
+    spCost: 0
+    cooldown: 15
+    duration: 0
+    limitation: 
+    icon: {fileID: 21300000, guid: c73fea41b447dd54b9416fa61f22c095, type: 3}
+    effect: When the Queen is about to be captured, a Pawn on its starting tile is
+      sacrificed first to prevent her capture.
+    onActivate:
+      m_PersistentCalls:
+        m_Calls: []
+  - skillName: REGAL SAFEGUARD
+    skillType: ACTIVE
+    spCost: 1
+    cooldown: 20
+    duration: 2
+    limitation: 
+    icon: {fileID: 21300000, guid: c73fea41b447dd54b9416fa61f22c095, type: 3}
+    effect: Sacrifice one pawn to gain invulnerability until the next turn, does
+      not consume turn.
+    onActivate:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1484006862}
+          m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+          m_MethodName: RegalSafeguardSelected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   skillNameText: {fileID: 354717656}
   spCostText: {fileID: 712606975}
   cooldownText: {fileID: 1160215722}
@@ -7782,7 +7818,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 413170295}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 72916002}
+        m_TargetAssemblyTypeName: SkillManagerTMP, Assembly-CSharp
+        m_MethodName: OpenSkillPanel
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 9
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &413170295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12867,7 +12915,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &630779430
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13751,7 +13799,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 681187651}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 72916002}
+        m_TargetAssemblyTypeName: SkillManagerTMP, Assembly-CSharp
+        m_MethodName: OpenSkillPanel
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 10
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &681187651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21212,41 +21272,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &1016413075
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1016413076}
-  m_Layer: 5
-  m_Name: bishopCHOOSE
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1016413076
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1016413075}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1261838823}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 5.3, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1036105570
 GameObject:
   m_ObjectHideFlags: 0
@@ -25552,7 +25577,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ROYAL ESCORT
+  m_text: REGAL SAFEGUARD
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -25969,7 +25994,6 @@ RectTransform:
   - {fileID: 1704887039}
   - {fileID: 1768255667}
   - {fileID: 261894094}
-  - {fileID: 1016413076}
   m_Father: {fileID: 728448602}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

@@ -6,7 +6,8 @@ using System.Collections.Generic;
 
 [System.Serializable]
 public class Skill
-{
+{   
+   
     public string skillName = "Placeholder Skill";
     public string skillType = "Active"; // Can be Active/Passive
     public int spCost = 0;
@@ -23,6 +24,8 @@ public class Skill
 
 public class SkillManagerTMP : MonoBehaviour
 {
+
+     public static SkillManagerTMP Instance { get; private set; }
     [Header("All Skills List")]
     public List<Skill> skills = new List<Skill>();
 
@@ -73,29 +76,31 @@ public class SkillManagerTMP : MonoBehaviour
             skillPanel.SetActive(false);
         });
     }
-
-    /// <summary>
-    /// Sets TMP UI fields for the skill
-    /// </summary>
-    /// <param name="skill"></param>
-   private void SetUI(Skill skill)
-{
-    if (skillNameText != null) skillNameText.text = skill.skillName;
-    if (spCostText != null) spCostText.text = $"SP Cost: {skill.spCost}";
-    if (cooldownText != null) cooldownText.text = $"Cooldown: {skill.cooldown}";
-    if (limitationText != null) limitationText.text = $"Limitation: {skill.limitation}";
-    if (effectText != null) effectText.text = skill.effect;
-    if (durationText != null) durationText.text = skill.duration > 0 ? $"Duration: {skill.duration} turns" : "";
-    if (skillTypeText != null) skillTypeText.text = skill.skillType;
-
-    // ✅ Set the skill icon
-    if (skillIconImage != null)
+    
+     private void Awake()
     {
-        if (skill.icon != null)
-            skillIconImage.sprite = skill.icon; // use the icon from the skill
-        else
-            skillIconImage.sprite = null; // clear if no icon assigned
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
-}
+    
+   private void SetUI(Skill skill)
+    {
+        if (skillNameText != null) skillNameText.text = skill.skillName;
+        if (spCostText != null) spCostText.text = $"SP Cost: {skill.spCost}";
+        if (cooldownText != null) cooldownText.text = $"Cooldown: {skill.cooldown}";
+        if (limitationText != null) limitationText.text = $"Limitation: {skill.limitation}";
+        if (effectText != null) effectText.text = skill.effect;
+        if (durationText != null) durationText.text = skill.duration > 0 ? $"Duration: {skill.duration} turns" : "";
+        if (skillTypeText != null) skillTypeText.text = skill.skillType;
+
+        // ✅ Set the skill icon
+        if (skillIconImage != null)
+        {
+            if (skill.icon != null)
+                skillIconImage.sprite = skill.icon; // use the icon from the skill
+            else
+                skillIconImage.sprite = null; // clear if no icon assigned
+        }
+    }
 
 }
