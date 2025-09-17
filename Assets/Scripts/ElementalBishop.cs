@@ -110,7 +110,7 @@ if (!SkillManager.Instance.SpendPlayerSP("white", 1)) // assuming white is the p
     private void SpawnMovePlate(Game game, int x, int y, string tileName)
     {
         float fx = x * 0.57f - 1.98f;
-    float fy = y * 0.56f - 1.95f;
+        float fy = y * 0.56f - 1.95f;
 
         GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
 

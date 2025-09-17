@@ -114,7 +114,13 @@ public class MovePlate : MonoBehaviour
             }
         }
 
-        // ----------------- Move Chessman -----------------
+        // ----------------- Tile Effects Check (BEFORE moving) -----------------
+        bool iceEffectTriggered = CheckTileIceEffect(movingPiece, matrixX, matrixY);
+        bool lavaEffectTriggered = CheckTileLavaEffect(movingPiece, matrixX, matrixY);
+
+        // ----------------- Move Chessman (skip if tile effects triggered) -----------------
+        if (!iceEffectTriggered && !lavaEffectTriggered)
+        {
         controller.GetComponent<Game>().SetPositionEmpty(
             movingPiece.GetXBoard(),
             movingPiece.GetYBoard()
@@ -136,6 +142,7 @@ public class MovePlate : MonoBehaviour
         movingPiece.DestroyMovePlates();
         movingPiece.ClearFortify();
         movingPiece.CheckMoveTiles_End();
+        }
 
         // ----------------- Lunar Leap Check -----------------
         if (knightComponent != null && knightComponent.CanDoubleMove)
@@ -192,6 +199,174 @@ public class MovePlate : MonoBehaviour
         return reference;
     }
 
+    private bool CheckTileIceEffect(Chessman movingPiece, int x, int y)
+    {
+        Game game = controller.GetComponent<Game>();
+        
+        // Check if there's a tile_ice at the destination
+        GameObject tileAtPosition = game.GetPosition(x, y);
+        if (tileAtPosition != null && tileAtPosition.name == "tile_ice")
+        {
+            Debug.Log($"[Tile_Ice] {movingPiece.name} landed on ice tile at ({x},{y}) - triggering random movement!");
+            
+            // Find empty tiles around the current position
+            List<Vector2Int> emptyTiles = FindEmptyTilesAround(game, x, y);
+            
+            if (emptyTiles.Count > 0)
+            {
+                // Randomly pick one of the empty tiles
+                Vector2Int randomTile = emptyTiles[Random.Range(0, emptyTiles.Count)];
+                
+                // Move the piece to the random position
+                MovePieceRandomly(movingPiece, randomTile.x, randomTile.y, game);
+                
+                Debug.Log($"[Tile_Ice] {movingPiece.name} randomly moved to ({randomTile.x},{randomTile.y})");
+                
+                // Destroy the ice tile (one-use effect)
+                DestroyIceTile(game, x, y);
+                
+                // Clean up and end turn after ice effect
+                movingPiece.DestroyMovePlates();
+                movingPiece.ClearFortify();
+                movingPiece.CheckMoveTiles_End();
+                //game.NextTurn(); 
+                
+                return true; // Ice effect triggered
+            }
+            else
+            {
+                Debug.Log("[Tile_Ice] No empty tiles around - piece stays on ice tile");
+                
+                // Destroy the ice tile (one-use effect)
+                DestroyIceTile(game, x, y);
+                
+                // Clean up and end turn even if no movement
+                movingPiece.DestroyMovePlates();
+                movingPiece.ClearFortify();
+                movingPiece.CheckMoveTiles_End();
+                //game.NextTurn();
+                
+                return true; // Ice effect triggered (even if no movement)
+            }
+        }
+        
+        return false; // No ice effect
+    }
+    
+    private bool CheckTileLavaEffect(Chessman movingPiece, int x, int y)
+    {
+        Game game = controller.GetComponent<Game>();
+        
+        // Check if there's a tile_lava at the destination
+        GameObject tileAtPosition = game.GetPosition(x, y);
+        if (tileAtPosition != null && tileAtPosition.name == "tile_lava")
+        {
+            Debug.Log($"[Tile_Lava] {movingPiece.name} stepped on lava tile at ({x},{y}) - INSTANT DESTRUCTION!");
+            
+            // Destroy the piece
+            DestroyPiece(movingPiece, game);
+            
+            // Destroy the lava tile (one-use effect)
+            DestroyLavaTile(game, x, y);
+            
+            // Clean up and end turn after lava effect
+            movingPiece.DestroyMovePlates();
+            movingPiece.ClearFortify();
+            movingPiece.CheckMoveTiles_End();
+            
+            return true; // Lava effect triggered
+        }
+        
+        return false; // No lava effect
+    }
+    
+    private List<Vector2Int> FindEmptyTilesAround(Game game, int centerX, int centerY)
+    {
+        List<Vector2Int> emptyTiles = new List<Vector2Int>();
+        
+        // Check all 8 directions around the current position
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0) continue; // Skip the center tile
+                
+                int checkX = centerX + dx;
+                int checkY = centerY + dy;
+                
+                // Check if position is on board
+                if (!game.PositionOnBoard(checkX, checkY)) continue;
+                
+                // Check if position is empty
+                if (game.GetPosition(checkX, checkY) == null)
+                {
+                    emptyTiles.Add(new Vector2Int(checkX, checkY));
+                }
+            }
+        }
+        
+        Debug.Log($"[Tile_Ice] Found {emptyTiles.Count} empty tiles around ({centerX},{centerY})");
+        return emptyTiles;
+    }
+    
+    private void MovePieceRandomly(Chessman piece, int newX, int newY, Game game)
+    {
+        // Clear the old position
+        game.ClearPosition(piece.GetXBoard(), piece.GetYBoard());
+        
+        // Update the piece's coordinates
+        piece.SetXBoard(newX);
+        piece.SetYBoard(newY);
+        piece.SetCoords(); // Update visual position
+        
+        // Set the piece at the new position
+        game.SetPositionAt(piece.gameObject, newX, newY);
+        
+        Debug.Log($"[Tile_Ice] Moved {piece.name} to ({newX},{newY})");
+    }
+    
+    private void DestroyIceTile(Game game, int x, int y)
+    {
+        // Get the ice tile at the position
+        GameObject iceTile = game.GetPosition(x, y);
+        if (iceTile != null && iceTile.name == "tile_ice")
+        {
+            // Clear the position in the game board
+            game.ClearPosition(x, y);
+            
+            // Destroy the GameObject
+            Destroy(iceTile);
+            
+            Debug.Log($"[Tile_Ice] Ice tile destroyed at ({x},{y}) - one-use effect consumed!");
+        }
+    }
+    
+    private void DestroyLavaTile(Game game, int x, int y)
+    {
+        // Get the lava tile at the position
+        GameObject lavaTile = game.GetPosition(x, y);
+        if (lavaTile != null && lavaTile.name == "tile_lava")
+        {
+            // Clear the position in the game board
+            game.ClearPosition(x, y);
+            
+            // Destroy the GameObject
+            Destroy(lavaTile);
+            
+            Debug.Log($"[Tile_Lava] Lava tile destroyed at ({x},{y}) - one-use effect consumed!");
+        }
+    }
+    
+    private void DestroyPiece(Chessman piece, Game game)
+    {
+        // Clear the piece's position from the game board
+        game.ClearPosition(piece.GetXBoard(), piece.GetYBoard());
+        
+        // Destroy the piece GameObject
+        Destroy(piece.gameObject);
+        
+        Debug.Log($"[Tile_Lava] {piece.name} destroyed by lava!");
+    }
 
     
 }
