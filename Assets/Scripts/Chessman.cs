@@ -45,6 +45,7 @@ public class Chessman : MonoBehaviour
     [HideInInspector] public bool isInvulnerable = false;        // immune to attack
     [HideInInspector] public int invulnerableUntilTurn = -1;      // inclusive turn when it expires
     [HideInInspector] public StatusManager statusManager;
+    [HideInInspector] public Color originalColor; // Store original color for stunned pieces
     [Header("Skill Points")]
     public int skillPoints = 4; // default SP per piece
 
@@ -68,6 +69,34 @@ public class Chessman : MonoBehaviour
     private void Awake()
     {
         statusManager = gameObject.AddComponent<StatusManager>();
+    }
+
+    // Visual indicator for stunned pieces
+    public void UpdateVisualStatus()
+    {
+        Game game = controller?.GetComponent<Game>();
+        if (game == null) return;
+
+        bool isStunned = statusManager.HasStatus(StatusType.Stunned, game.turns);
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        
+        if (sr != null)
+        {
+            if (isStunned)
+            {
+                // Store original color if not already stored
+                if (originalColor == Color.clear)
+                    originalColor = sr.color;
+                // Set to yellow
+                sr.color = Color.yellow;
+            }
+            else
+            {
+                // Restore original color
+                if (originalColor != Color.clear)
+                    sr.color = originalColor;
+            }
+        }
     }
 
 
@@ -194,6 +223,8 @@ public class Chessman : MonoBehaviour
 
         //  Debug.Log($"{name} activated at ({GetXBoard()}, {GetYBoard()})");
 
+        // Update visual status after activation
+        UpdateVisualStatus();
     }
 
     public void ActivateFortify()
@@ -315,6 +346,9 @@ public class Chessman : MonoBehaviour
         // ✅ Create new move plates (only if it's this piece's turn)
         InitiateMovePlates();
         CheckMoveTiles_Start();
+        
+        // Update visual status when piece is clicked
+        
     }
 
 
@@ -329,7 +363,7 @@ public class Chessman : MonoBehaviour
 
 
     public void DestroyMovePlates()
-    {
+    {   UpdateVisualStatus();
         //Destroy old MovePlates
         GameObject[] movePlates = GameObject.FindGameObjectsWithTag("MovePlate");
         for (int i = 0; i < movePlates.Length; i++)
@@ -351,6 +385,14 @@ public class Chessman : MonoBehaviour
                 return; // no move plates
             }
         }
+        // In the InitiateMovePlates() method, add this check after the turn check:
+
+// Check if piece is stunned
+if (statusManager.HasStatus(StatusType.Stunned, game.turns))
+{
+    Debug.Log($"[Stunned] {name} is stunned and cannot move this turn.");
+    return; // no move plates
+}
 
         if (this.name.StartsWith("black_pawn"))
         {
@@ -407,7 +449,7 @@ public class Chessman : MonoBehaviour
                 case "white_king": SurroundMovePlate(); break;
             }
         }
-
+        
 
     }
 

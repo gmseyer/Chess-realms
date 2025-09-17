@@ -7,6 +7,7 @@ public enum StatusType
     Ghost,
     Phase,
     Locked,
+    Stunned,
 
     specialTile, //status for special tiles like lava
      SolidBlock //status for tile_earth

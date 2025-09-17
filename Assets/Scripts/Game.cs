@@ -127,7 +127,7 @@ public class Game : MonoBehaviour
         k.movePlatePrefab = movePlatePrefabReference;
             }
         }
-        
+
 
        if (name.Contains("queen"))
 {
@@ -188,7 +188,7 @@ public class Game : MonoBehaviour
     ClearExpiredRestrictions();
     ResetAllPieceTurnFlags();
     ClearExpiredStatuses();
-
+    
     // Update the Turn UI with player
     if(TurnUI.Instance != null)
         TurnUI.Instance.UpdateTurn(turns, currentPlayer);

@@ -1630,6 +1630,30 @@ MonoBehaviour:
     onActivate:
       m_PersistentCalls:
         m_Calls: []
+  - skillName: ENCHANTING INFLUENCE
+    skillType: ACTIVE
+    spCost: 1
+    cooldown: 999
+    duration: 0
+    limitation: 
+    icon: {fileID: 21300000, guid: aef29be8dc8ac684e91fcb3d0fcee480, type: 3}
+    effect: Select 1 opponent piece (Except King and Queen). Randomly move them to
+      1 empty tile around them.
+    onActivate:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1206980336}
+          m_TargetAssemblyTypeName: Queen, Assembly-CSharp
+          m_MethodName: TriggerEnchantingInfluence
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   skillNameText: {fileID: 354717656}
   spCostText: {fileID: 712606975}
   cooldownText: {fileID: 1160215722}
@@ -9453,7 +9477,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 539268485}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 72916002}
+        m_TargetAssemblyTypeName: SkillManagerTMP, Assembly-CSharp
+        m_MethodName: OpenSkillPanel
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 12
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &539268485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11020,7 +11056,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &630779430
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20653,7 +20689,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b20cc6c53a4deee4fbb293f59cab53e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movePlatePrefab: {fileID: 0}
+  movePlatePrefab: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
+    type: 3}
+  hasUsedEnchantingInfluence: 0
 --- !u!224 &1206980337
 RectTransform:
   m_ObjectHideFlags: 0
@@ -33713,7 +33751,7 @@ Transform:
   m_GameObject: {fileID: 1989920199}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -12809.301}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 426.97668, y: 426.97668, z: 142.32556}
   m_ConstrainProportionsScale: 0
   m_Children: []
