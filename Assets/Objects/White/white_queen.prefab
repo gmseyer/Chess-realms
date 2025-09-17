@@ -145,7 +145,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b20cc6c53a4deee4fbb293f59cab53e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movePlatePrefab: {fileID: 0}
+  movePlatePrefab: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
+    type: 3}
 --- !u!114 &8690685665206543964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,7 +172,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
-  movePlate: {fileID: 0}
+  movePlate: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
+    type: 3}
   black_queen: {fileID: 0}
   black_knight: {fileID: 0}
   black_bishop: {fileID: 0}

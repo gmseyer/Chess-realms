@@ -127,15 +127,18 @@ public class Game : MonoBehaviour
         k.movePlatePrefab = movePlatePrefabReference;
             }
         }
+        
 
-        if (name.Contains("queen"))
-        {
-            if (obj.GetComponent<Queen>() == null)
-            {
-                Queen q = obj.AddComponent<Queen>();
-                q.movePlatePrefab = movePlatePrefabReference;
-            }
-        }
+       if (name.Contains("queen"))
+{
+    Queen q = obj.GetComponent<Queen>();
+    if (q == null)
+    {
+        q = obj.AddComponent<Queen>();
+    }
+    // Always assign the prefab reference
+    q.movePlatePrefab = movePlatePrefabReference;
+}
    
 
         cm.Activate();

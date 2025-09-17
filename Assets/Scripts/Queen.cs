@@ -9,18 +9,21 @@ public class Queen : Pieces
 
 
     // Cooldown for RegalSafeguard active
-private int regalSafeguardCooldown = 0;      // current turns left
+    private int regalSafeguardCooldown = 0;      // current turns left
     private const int regalSafeguardCooldownMax = 20; // example: 3 turns cooldown
 
 
 
     public GameObject movePlatePrefab;
-      private Chessman chessman;
+    private Chessman chessman;
     private StatusManager statusManager;
 
-    /// <summary>
-    /// Call this at the start of the turn to decrease cooldowns
-    /// </summary>
+    [Header("Enchanting Influence")]
+    public bool hasUsedEnchantingInfluence = false;
+   
+
+
+
     public override void ResetTurnFlags()
     {
         if (passiveCooldownRemaining > 0)
@@ -203,7 +206,73 @@ private int regalSafeguardCooldown = 0;      // current turns left
         return false;
     }
 
+    // start of Enchanting Influence
 
+        // Add this before the closing brace of the Queen class
+// Enchanting Influence skill - Step 1: Generate tiles around the board
+public void TriggerEnchantingInfluence()
+{
+    // Check if already used this battle
+    if (hasUsedEnchantingInfluence)
+    {
+        Debug.LogWarning("[Enchanting Influence] Already used this battle — skill blocked.");
+        return;
+    }
+
+    // Get game reference
+    Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+    
+    // Get current player
+    string currentPlayer = game.GetCurrentPlayer();
+    
+    // Check SP cost (1 SP) - but don't deduct yet, just check if we can afford it
+    const int enchantingInfluenceCost = 1;
+    if (SkillManager.Instance.GetPlayerSP(currentPlayer) < enchantingInfluenceCost)
+    {
+        Debug.LogWarning($"[Enchanting Influence] Not enough SP for {currentPlayer} (cost {enchantingInfluenceCost}).");
+        return;
+    }
+
+    // Remove existing moveplates
+    foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+        Destroy(plate);
+
+    // Spawn enchanting influence plates on every tile on the board
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            SpawnEnchantingInfluencePlate(x, y, game);
+        }
+    }
+
+    Debug.Log("[Enchanting Influence] Selection tiles generated. Select an enemy piece.");
+}
+
+
+private void SpawnEnchantingInfluencePlate(int x, int y, Game game)
+{
+    // Use the same positioning as other move plates
+   float fx = x * 0.57f - 1.98f;
+    float fy = y * 0.56f - 1.95f;
+
+    GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+
+    // Remove default MovePlate script
+    MovePlate old = mp.GetComponent<MovePlate>();
+    if (old != null) Destroy(old);
+
+    // Add EnchantingInfluencePlate script
+    EnchantingInfluencePlate plate = mp.AddComponent<EnchantingInfluencePlate>();
+    plate.Setup(game, x, y, this);
+
+    // Make enchanting influence plates visually distinct (purple)
+    SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();
+    if (sr != null)
+    {
+        sr.color = Color.magenta; // Purple color for enchanting influence
+    }
+}
 
 
 
