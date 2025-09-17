@@ -7,7 +7,8 @@ public enum SkillType
 {
     Fortify, //Rook 1st skill
     HealingBenediction, //Bishop 1st skill 
-    LunarLeap // Knight 1st skill
+    LunarLeap, // Knight 1st skill
+    CelestialSummon //Bishop 2nd skill
      
     // Add more skills here
 }
