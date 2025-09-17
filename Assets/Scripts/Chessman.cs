@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //cd /c/Users/acer/Downloads/Chess_App-master/Chess_App-master
-//START OF TESTING OF SACRIFICE
+
 
 
 
@@ -209,19 +209,19 @@ public class Chessman : MonoBehaviour
     {
         fortifyActive = false;
     }
-    public void SetCoords()
+    public void SetCoords() //new constants for 1440 x 3040 resolution
     {
         //Get the board value in order to convert to xy coords
         float x = xBoard;
         float y = yBoard;
 
         //Adjust by variable offset
-        x *= 0.66f;
-        y *= 0.66f;
+        x *= 0.57f;
+        y *= 0.56f;
 
         //Add constants (pos 0,0)
-        x += -2.3f;
-        y += -2.3f;
+        x += -1.99f;
+        y += -1.94f; 
 
         //Set actual unity values
         this.transform.position = new Vector3(x, y, -1.0f);
@@ -695,12 +695,12 @@ public class Chessman : MonoBehaviour
         float y = matrixY;
 
         //Adjust by variable offset
-        x *= 0.66f;
-        y *= 0.66f;
+        x *= 0.57f;
+        y *= 0.56f;
 
         //Add constants (pos 0,0)
-        x += -2.3f;
-        y += -2.3f;
+        x += -1.98f;
+        y += -1.95f; 
 
         //Set actual unity values
         GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
@@ -717,12 +717,12 @@ public class Chessman : MonoBehaviour
         float y = matrixY;
 
         //Adjust by variable offset
-        x *= 0.66f;
-        y *= 0.66f;
+         x *= 0.57f;
+        y *= 0.56f;
 
         //Add constants (pos 0,0)
-        x += -2.3f;
-        y += -2.3f;
+        x += -1.98f;
+        y += -1.95f; 
 
         //Set actual unity values
         GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);

@@ -84,8 +84,8 @@ public class Bishop : Pieces
         Debug.LogError($"[Bishop] ERROR: Prefab is NULL for {pieceName} at ({x},{y})!");
         return;
     }
-        float fx = x * 0.66f - 2.3f;
-        float fy = y * 0.66f - 2.3f;
+        float fx = x * 0.57f - 1.98f;
+        float fy = y * 0.56f - 1.95f;
 
         GameObject mp = Instantiate(prefab, new Vector3(fx, fy, -3f), Quaternion.identity);
 
@@ -135,8 +135,8 @@ public class Bishop : Pieces
 
     private void SpawnHealingPlate(Game game, int x, int y)
     {
-        float fx = x * 0.66f + -2.3f;
-        float fy = y * 0.66f + -2.3f;
+        float fx = x * 0.57f - 1.98f;
+    float fy = y * 0.56f - 1.95f;
 
         GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
 
@@ -305,8 +305,8 @@ public class Bishop : Pieces
             return;
         }
         
-        float fx = x * 0.66f - 2.3f;
-        float fy = y * 0.66f - 2.3f;
+        float fx = x * 0.57f - 1.98f;
+    float fy = y * 0.56f - 1.95f;
 
         GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
 

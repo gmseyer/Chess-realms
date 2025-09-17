@@ -135,9 +135,8 @@ private System.Collections.IEnumerator FloatAndDestroy(GameObject textObj)
 
     private void SpawnPhantomPlate(int x, int y)
     {
-        float fx = x * 0.66f - 2.3f;
-        float fy = y * 0.66f - 2.3f;
-
+       float fx = x * 0.57f - 1.98f;
+         float fy = y * 0.56f - 1.95f;
         GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
 
         // Remove default MovePlate script
@@ -291,8 +290,8 @@ public void TriggerKnightsMomentum()
 
 private void SpawnMomentumPlate(int x, int y)
 {
-    float fx = x * 0.66f - 2.3f;
-    float fy = y * 0.66f - 2.3f;
+    float fx = x * 0.57f - 1.98f;
+    float fy = y * 0.56f - 1.95f;
 
     GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
 
