@@ -2,14 +2,16 @@ using UnityEngine;
 
 public class Bishop : MonoBehaviour
 {
-    public GameObject movePlatePrefab; 
-      public GameObject elementalSummonPlatePrefab; 
-    public GameObject archbishopSummonPlatePrefab; 
+    public GameObject movePlatePrefab;
+    public GameObject elementalSummonPlatePrefab;
+    public GameObject archbishopSummonPlatePrefab;
     [Header("Prefabs (Auto-Loaded)")]
-     public bool hasUsedHealingBenediction = false; // Once-per-battle mark
-     
+    public bool hasUsedHealingBenediction = false; // Once-per-battle mark
 
-     private void Awake()
+    public int matrixX;
+    public int matrixY;
+
+    private void Awake()
     {
         // Auto-load if not assigned in Inspector
         if (elementalSummonPlatePrefab == null)
@@ -24,7 +26,7 @@ public class Bishop : MonoBehaviour
         if (archbishopSummonPlatePrefab == null)
             Debug.LogError("[Bishop] Could not load ArchbishopSummonPlate from Resources!");
     }
-    
+
     public void OnBishopButtonClick()
     {
         Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
@@ -68,14 +70,14 @@ public class Bishop : MonoBehaviour
     }
 
 
-     private void SpawnTile(Game game, int x, int y, GameObject prefab, string pieceName)
+    private void SpawnTile(Game game, int x, int y, GameObject prefab, string pieceName)
     {
 
-            if (prefab == null)
-    {
-        Debug.LogError($"[Bishop] ERROR: Prefab is NULL for {pieceName} at ({x},{y})!");
-        return;
-    }
+        if (prefab == null)
+        {
+            Debug.LogError($"[Bishop] ERROR: Prefab is NULL for {pieceName} at ({x},{y})!");
+            return;
+        }
         float fx = x * 0.66f - 2.3f;
         float fy = y * 0.66f - 2.3f;
 
@@ -87,7 +89,7 @@ public class Bishop : MonoBehaviour
         mp.AddComponent<EndTurnPlate>().Setup(game, x, y, pieceName);
     }
 
-     public void HealingBenediction()
+    public void HealingBenediction()
     {
         Debug.Log($"[HealingBenediction] Attempting activation... HasUsed? {hasUsedHealingBenediction}");
 
@@ -141,31 +143,35 @@ public class Bishop : MonoBehaviour
 
     //test
     public void TestHealingBenedictionWithSP()
-{
-    string player = "white"; // Bishop is always white in this test
-
-    // 1️⃣ Check if skill is on cooldown
-    if (SkillManager.Instance.IsSkillOnCooldown(player, SkillType.HealingBenediction))
     {
-        Debug.LogWarning("[HealingBenediction] Skill is on cooldown — cannot use.");
-        return;
+        string player = "white"; // Bishop is always white in this test
+
+        // 1️⃣ Check if skill is on cooldown
+        if (SkillManager.Instance.IsSkillOnCooldown(player, SkillType.HealingBenediction))
+        {
+            Debug.LogWarning("[HealingBenediction] Skill is on cooldown — cannot use.");
+            return;
+        }
+
+        // 2️⃣ Try spend SP
+        if (!SkillManager.Instance.SpendPlayerSP(player, 1))
+        {
+            Debug.LogWarning("[HealingBenediction] Not enough SP to cast.");
+            return;
+        }
+
+        // 3️⃣ Activate skill (your existing logic)
+        HealingBenediction();
+
+        // 4️⃣ Start cooldown (e.g. 3 turns)
+        SkillManager.Instance.StartCooldown(player, SkillType.HealingBenediction, 3);
+
+        Debug.Log("[HealingBenediction] Skill activated successfully!");
     }
 
-    // 2️⃣ Try spend SP
-    if (!SkillManager.Instance.SpendPlayerSP(player, 1))
-    {
-        Debug.LogWarning("[HealingBenediction] Not enough SP to cast.");
-        return;
-    }
+    //START OF TESTING OF SACRIFICE
+   
 
-    // 3️⃣ Activate skill (your existing logic)
-    HealingBenediction();
-
-    // 4️⃣ Start cooldown (e.g. 3 turns)
-    SkillManager.Instance.StartCooldown(player, SkillType.HealingBenediction, 3);
-
-    Debug.Log("[HealingBenediction] Skill activated successfully!");
-}
 
 
 }

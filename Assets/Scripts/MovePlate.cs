@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MovePlate : MonoBehaviour
-{
+{ 
     //Some functions will need reference to the controller
     public GameObject controller;
 

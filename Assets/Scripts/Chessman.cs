@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //cd /c/Users/acer/Downloads/Chess_App-master/Chess_App-master
+//START OF TESTING OF SACRIFICE
 
+
+
+ 
 public class Chessman : MonoBehaviour
 {
     //References to objects in our Unity Scene
@@ -138,7 +142,7 @@ public class Chessman : MonoBehaviour
                 case "white_bishop": this.GetComponent<SpriteRenderer>().sprite = white_bishop; player = "white"; break;
                 case "white_king": this.GetComponent<SpriteRenderer>().sprite = white_king; player = "white"; break;
                 case "white_rook": this.GetComponent<SpriteRenderer>().sprite = white_rook; player = "white"; break;
-                
+
                 //Summoned Units
                 case "white_elemental_bishop": this.GetComponent<SpriteRenderer>().sprite = white_elemental_bishop; player = "white"; break;
                 case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
@@ -188,7 +192,7 @@ public class Chessman : MonoBehaviour
 
         }
 
-      //  Debug.Log($"{name} activated at ({GetXBoard()}, {GetYBoard()})");
+        //  Debug.Log($"{name} activated at ({GetXBoard()}, {GetYBoard()})");
 
     }
 
@@ -337,40 +341,40 @@ public class Chessman : MonoBehaviour
     public virtual void InitiateMovePlates()
     {
 
-         Game game = controller.GetComponent<Game>();
-         
-          if (game.IsPlayerRestrictedToPawns(player))
-    {
-        if (!name.Contains("pawn"))
-        {
-            Debug.Log($"[TemporalShift] {name} cannot move this turn.");
-            return; // no move plates
-        }
-    }
+        Game game = controller.GetComponent<Game>();
 
-if (this.name.StartsWith("black_pawn"))
-    {
-        PawnMovePlate(xBoard, yBoard - 1);
-        if (yBoard == 6 && game.GetPosition(xBoard, yBoard - 1) == null && game.GetPosition(xBoard, yBoard - 2) == null)
+        if (game.IsPlayerRestrictedToPawns(player))
         {
-            if (game.PositionOnBoard(xBoard, yBoard - 2) && game.GetPosition(xBoard, yBoard - 2) == null)
+            if (!name.Contains("pawn"))
             {
-                MovePlateSpawn(xBoard, yBoard - 2);
+                Debug.Log($"[TemporalShift] {name} cannot move this turn.");
+                return; // no move plates
             }
         }
-    }
+
+        if (this.name.StartsWith("black_pawn"))
+        {
+            PawnMovePlate(xBoard, yBoard - 1);
+            if (yBoard == 6 && game.GetPosition(xBoard, yBoard - 1) == null && game.GetPosition(xBoard, yBoard - 2) == null)
+            {
+                if (game.PositionOnBoard(xBoard, yBoard - 2) && game.GetPosition(xBoard, yBoard - 2) == null)
+                {
+                    MovePlateSpawn(xBoard, yBoard - 2);
+                }
+            }
+        }
 
         else if (this.name.StartsWith("white_pawn"))
-    {
-        PawnMovePlate(xBoard, yBoard + 1);
-        if (yBoard == 1 && game.GetPosition(xBoard, yBoard + 1) == null && game.GetPosition(xBoard, yBoard + 2) == null)
         {
-            if (game.PositionOnBoard(xBoard, yBoard + 2) && game.GetPosition(xBoard, yBoard + 2) == null)
+            PawnMovePlate(xBoard, yBoard + 1);
+            if (yBoard == 1 && game.GetPosition(xBoard, yBoard + 1) == null && game.GetPosition(xBoard, yBoard + 2) == null)
             {
-                MovePlateSpawn(xBoard, yBoard + 2);
+                if (game.PositionOnBoard(xBoard, yBoard + 2) && game.GetPosition(xBoard, yBoard + 2) == null)
+                {
+                    MovePlateSpawn(xBoard, yBoard + 2);
+                }
             }
         }
-    }
 
         else
         {
@@ -502,32 +506,32 @@ if (this.name.StartsWith("black_pawn"))
     }
 
     public void LunarLeapMovePlate()
-{
-    int x = xBoard;
-    int y = yBoard;
+    {
+        int x = xBoard;
+        int y = yBoard;
 
-    // Top rank
-    PointMovePlate(x - 1, y + 2);
-    PointMovePlate(x,     y + 2);
-    PointMovePlate(x + 1, y + 2);
+        // Top rank
+        PointMovePlate(x - 1, y + 2);
+        PointMovePlate(x, y + 2);
+        PointMovePlate(x + 1, y + 2);
 
-    // Top middle
-    for (int i = -2; i <= 2; i++)
-        PointMovePlate(x + i, y + 1);
+        // Top middle
+        for (int i = -2; i <= 2; i++)
+            PointMovePlate(x + i, y + 1);
 
-    // Center rank
-    for (int i = -2; i <= 2; i++)
-        PointMovePlate(x + i, y);
+        // Center rank
+        for (int i = -2; i <= 2; i++)
+            PointMovePlate(x + i, y);
 
-    // Lower middle
-    for (int i = -2; i <= 2; i++)
-        PointMovePlate(x + i, y - 1);
+        // Lower middle
+        for (int i = -2; i <= 2; i++)
+            PointMovePlate(x + i, y - 1);
 
-    // Lower rank
-    PointMovePlate(x - 1, y - 2);
-    PointMovePlate(x,     y - 2);
-    PointMovePlate(x + 1, y - 2);
-}
+        // Lower rank
+        PointMovePlate(x - 1, y - 2);
+        PointMovePlate(x, y - 2);
+        PointMovePlate(x + 1, y - 2);
+    }
 
 
     public void PointMovePlate(int x, int y)
