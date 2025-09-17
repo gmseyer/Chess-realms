@@ -207,6 +207,22 @@ public class MovePlate : MonoBehaviour
         GameObject tileAtPosition = game.GetPosition(x, y);
         if (tileAtPosition != null && tileAtPosition.name == "tile_ice")
         {
+            // Check if it's an Elemental Bishop (immune to ice)
+            if (movingPiece.name == "white_elemental_bishop")
+            {
+                Debug.Log($"[Tile_Ice] {movingPiece.name} is immune to ice - tile disappears!");
+                
+                // Just destroy the ice tile (no random movement)
+                DestroyIceTile(game, x, y);
+                
+                // Clean up and end turn
+                movingPiece.DestroyMovePlates();
+                movingPiece.ClearFortify();
+                movingPiece.CheckMoveTiles_End();
+                
+                return true; // Ice effect triggered (but piece stays in place)
+            }
+            
             Debug.Log($"[Tile_Ice] {movingPiece.name} landed on ice tile at ({x},{y}) - triggering random movement!");
             
             // Find empty tiles around the current position
@@ -254,31 +270,46 @@ public class MovePlate : MonoBehaviour
     }
     
     private bool CheckTileLavaEffect(Chessman movingPiece, int x, int y)
+{
+    Game game = controller.GetComponent<Game>();
+    
+    // Check if there's a tile_lava at the destination
+    GameObject tileAtPosition = game.GetPosition(x, y);
+    if (tileAtPosition != null && tileAtPosition.name == "tile_lava")
     {
-        Game game = controller.GetComponent<Game>();
-        
-        // Check if there's a tile_lava at the destination
-        GameObject tileAtPosition = game.GetPosition(x, y);
-        if (tileAtPosition != null && tileAtPosition.name == "tile_lava")
+        // Check if it's an Elemental Bishop (immune to lava)
+        if (movingPiece.name == "white_elemental_bishop")
         {
-            Debug.Log($"[Tile_Lava] {movingPiece.name} stepped on lava tile at ({x},{y}) - INSTANT DESTRUCTION!");
+            Debug.Log($"[Tile_Lava] {movingPiece.name} is immune to lava - tile disappears!");
             
-            // Destroy the piece
-            DestroyPiece(movingPiece, game);
-            
-            // Destroy the lava tile (one-use effect)
+            // Just destroy the lava tile (no piece destruction)
             DestroyLavaTile(game, x, y);
             
-            // Clean up and end turn after lava effect
+            // Clean up and end turn
+            movingPiece.DestroyMovePlates();
+            movingPiece.ClearFortify();
+            movingPiece.CheckMoveTiles_End();
+            
+            return true; // Lava effect triggered (but piece survives)
+        }
+        else
+        {
+            // Normal lava effect - destroy piece
+            Debug.Log($"[Tile_Lava] {movingPiece.name} stepped on lava tile at ({x},{y}) - INSTANT DESTRUCTION!");
+            
+            DestroyPiece(movingPiece, game);
+            DestroyLavaTile(game, x, y);
+            
             movingPiece.DestroyMovePlates();
             movingPiece.ClearFortify();
             movingPiece.CheckMoveTiles_End();
             
             return true; // Lava effect triggered
         }
-        
-        return false; // No lava effect
     }
+    
+    return false; // No lava effect
+}
     
     private List<Vector2Int> FindEmptyTilesAround(Game game, int centerX, int centerY)
     {

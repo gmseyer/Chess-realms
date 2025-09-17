@@ -469,11 +469,22 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
                 Chessman targetCm = target.GetComponent<Chessman>();
                 if (targetCm != null)
                 {
-                    // Treat tile_earth as solid/invulnerable
+                    // Treat tile_earth as solid/invulnerable (except for Elemental Bishop)
                     if (targetCm.name == "tile_earth")
                     {
-                        Debug.Log($"{targetCm.name} is a solid block. Cannot pass or land.");
-                        break; // stop movement
+                        // Check if this is an Elemental Bishop (can pass through boulders)
+                        if (this.name == "white_elemental_bishop")
+                        {
+                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                            x += xIncrement;
+                            y += yIncrement;
+                            continue; // pass through and continue
+                        }
+                        else
+                        {
+                            Debug.Log($"{targetCm.name} is a solid block. Cannot pass or land.");
+                            break; // stop movement
+                        }
                     }
 
                     // Special tile like lava/ice: can land and pass
@@ -588,11 +599,20 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
             Chessman targetCm = cp.GetComponent<Chessman>();
             if (targetCm != null)
             {
-                // Check for tile_earth → solid block
+                // Check for tile_earth → solid block (except for Elemental Bishop)
                 if (targetCm.name == "tile_earth")
                 {
-                    Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
-                    return; // cannot land or pass
+                    // Check if this is an Elemental Bishop (can pass through boulders)
+                    if (this.name == "white_elemental_bishop")
+                    {
+                        Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                        return; // pass through but don't land
+                    }
+                    else
+                    {
+                        Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
+                        return; // cannot land or pass
+                    }
                 }
 
                 // Special tile like lava/ice → can land
@@ -653,11 +673,20 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
                 Chessman targetCm = cp.GetComponent<Chessman>();
                 if (targetCm != null)
                 {
-                    // tile_earth → block movement
+                    // tile_earth → block movement (except for Elemental Bishop)
                     if (targetCm.name == "tile_earth")
                     {
-                        Debug.Log($"{targetCm.name} is a solid block. Pawn cannot move forward.");
-                        break; // stop movement
+                        // Check if this is an Elemental Bishop (can pass through boulders)
+                        if (this.name == "white_elemental_bishop")
+                        {
+                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                            continue; // pass through and continue
+                        }
+                        else
+                        {
+                            Debug.Log($"{targetCm.name} is a solid block. Pawn cannot move forward.");
+                            break; // stop movement
+                        }
                     }
 
                     // Special tile → can land and continue checking
@@ -696,11 +725,20 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
                 Chessman targetCm = target.GetComponent<Chessman>();
                 if (targetCm != null)
                 {
-                    // tile_earth → cannot attack
+                    // tile_earth → cannot attack (except for Elemental Bishop)
                     if (targetCm.name == "tile_earth")
                     {
-                        Debug.Log($"{targetCm.name} is a solid block. Pawn cannot attack.");
-                        continue;
+                        // Check if this is an Elemental Bishop (can pass through boulders)
+                        if (this.name == "white_elemental_bishop")
+                        {
+                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                            continue; // pass through and continue
+                        }
+                        else
+                        {
+                            Debug.Log($"{targetCm.name} is a solid block. Pawn cannot attack.");
+                            continue;
+                        }
                     }
 
                     // Special tile → skip attack
