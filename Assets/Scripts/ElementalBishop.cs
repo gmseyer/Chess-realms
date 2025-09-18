@@ -100,10 +100,10 @@ if (!SkillManager.Instance.SpendPlayerSP("white", 1)) // assuming white is the p
     private string GetCooldownText(string skillName, int currentTurn)
     {
         if (!skillCooldowns.TryGetValue(skillName, out int availableTurn))
-            return ""; // no cooldown yet
+            return "READY"; // no cooldown yet
 
         int remaining = availableTurn - currentTurn;
-        return (remaining > 0) ? $"COOLDOWN: {remaining}" : "";
+        return (remaining > 0) ? $"CD: {remaining}" : "";
     }
 
 

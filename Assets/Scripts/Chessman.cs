@@ -473,7 +473,7 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
                     if (targetCm.name == "tile_earth")
                     {
                         // Check if this is an Elemental Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop")
+                        if (this.name == "white_elemental_bishop" || name.Contains("king"))
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             x += xIncrement;
@@ -603,7 +603,7 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
                 if (targetCm.name == "tile_earth")
                 {
                     // Check if this is an Elemental Bishop (can pass through boulders)
-                    if (this.name == "white_elemental_bishop")
+                    if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king")
                     {
                         Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
@@ -677,7 +677,7 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
                     if (targetCm.name == "tile_earth")
                     {
                         // Check if this is an Elemental Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop")
+                        if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king")
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
@@ -729,7 +729,7 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
                     if (targetCm.name == "tile_earth")
                     {
                         // Check if this is an Elemental Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop")
+                        if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king")
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
@@ -775,12 +775,10 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
         float y = matrixY;
 
         //Adjust by variable offset
-        x *= 0.57f;
-        y *= 0.56f;
+        x *= 0.57f;  y *= 0.56f;
 
         //Add constants (pos 0,0)
-        x += -1.98f;
-        y += -1.95f; 
+        x += -1.98f;  y += -1.95f; 
 
         //Set actual unity values
         GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);

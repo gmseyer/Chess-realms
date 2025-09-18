@@ -208,7 +208,7 @@ public class MovePlate : MonoBehaviour
         if (tileAtPosition != null && tileAtPosition.name == "tile_ice")
         {
             // Check if it's an Elemental Bishop (immune to ice)
-            if (movingPiece.name == "white_elemental_bishop")
+            if (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "white_king" || movingPiece.name == "black_king")
             {
                 Debug.Log($"[Tile_Ice] {movingPiece.name} is immune to ice - tile disappears!");
                 
@@ -278,7 +278,7 @@ public class MovePlate : MonoBehaviour
     if (tileAtPosition != null && tileAtPosition.name == "tile_lava")
     {
         // Check if it's an Elemental Bishop (immune to lava)
-        if (movingPiece.name == "white_elemental_bishop")
+        if (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "white_king" || movingPiece.name == "black_king")
         {
             Debug.Log($"[Tile_Lava] {movingPiece.name} is immune to lava - tile disappears!");
             

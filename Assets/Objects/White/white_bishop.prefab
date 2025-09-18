@@ -145,8 +145,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movePlatePrefab: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
     type: 3}
-  elementalSummonPlatePrefab: {fileID: 7175574283804147198, guid: d5f5c9ea2e81fc349836b2a850b168c6,
+  elementalSummonPlatePrefab: {fileID: 5189061764991892605, guid: 349cb154c004dd040b702d4024401b88,
     type: 3}
-  archbishopSummonPlatePrefab: {fileID: 462244655158606250, guid: 840785cde64981f42b1ee747545fe2c1,
+  archbishopSummonPlatePrefab: {fileID: 7788733488434319561, guid: 548ddb1664d6af54ebf7b85f12e67332,
     type: 3}
   hasUsedHealingBenediction: 0
