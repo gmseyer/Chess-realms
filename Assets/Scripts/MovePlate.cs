@@ -6,7 +6,6 @@ public class MovePlate : MonoBehaviour
 { 
     //Some functions will need reference to the controller
     public GameObject controller;
-
     //The Chesspiece that was tapped to create this MovePlate
     GameObject reference = null;
 
@@ -29,7 +28,6 @@ public class MovePlate : MonoBehaviour
     public void OnMouseUp()
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
-
         Chessman movingPiece = reference.GetComponent<Chessman>();
         Knight knightComponent = movingPiece.GetComponent<Knight>();
 
@@ -88,10 +86,6 @@ public class MovePlate : MonoBehaviour
                 if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
                 if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
 
-
-
-
-
                 Destroy(cp);
 
                 // ---------- QUEEN DESTROYED LOG ----------
@@ -129,13 +123,6 @@ public class MovePlate : MonoBehaviour
         movingPiece.SetXBoard(matrixX);
         movingPiece.SetYBoard(matrixY);
         movingPiece.SetCoords();
-
-
-
-
-
-
-
 
         controller.GetComponent<Game>().SetPosition(reference);
 
@@ -187,6 +174,16 @@ public class MovePlate : MonoBehaviour
     {
         matrixX = x;
         matrixY = y;
+    }
+
+    public int GetMatrixX()
+    {
+        return matrixX;
+    }
+
+    public int GetMatrixY()
+    {
+        return matrixY;
     }
 
     public void SetReference(GameObject obj)
@@ -397,7 +394,5 @@ public class MovePlate : MonoBehaviour
         Destroy(piece.gameObject);
         
         Debug.Log($"[Tile_Lava] {piece.name} destroyed by lava!");
-    }
-
-    
+    }   
 }

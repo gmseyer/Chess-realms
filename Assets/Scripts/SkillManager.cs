@@ -8,7 +8,8 @@ public enum SkillType
     Fortify, //Rook 1st skill
     HealingBenediction, //Bishop 1st skill 
     LunarLeap, // Knight 1st skill
-    CelestialSummon //Bishop 2nd skill
+    CelestialSummon, //Bishop 2nd skill
+    RoyalAcolyte //Pawn promotion skill
      
     // Add more skills here
 }

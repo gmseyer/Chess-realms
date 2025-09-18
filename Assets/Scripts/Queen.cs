@@ -275,5 +275,43 @@ private void SpawnEnchantingInfluencePlate(int x, int y, Game game)
 }
 
 
+// Call this from UI button for Regal Safeguard skill
+public void AttemptRegalSafeguard()
+{
+    // Get the selected piece from UIManager
+    if (UIManager.Instance == null)
+    {
+        Debug.Log("RegalSafeguardSelected: UIManager not found.");
+        return;
+    }
+
+    GameObject selectedPiece = UIManager.Instance.selectedPiece;
+    if (selectedPiece == null)
+    {
+        Debug.Log("RegalSafeguardSelected: no piece selected.");
+        return;
+    }
+
+    if (!selectedPiece.name.Contains("queen"))
+    {
+        Debug.Log("RegalSafeguardSelected: selected piece is not a queen.");
+        return;
+    }
+
+    Queen queenScript = selectedPiece.GetComponent<Queen>();
+    if (queenScript == null)
+    {
+        Debug.LogError("RegalSafeguardSelected: selected piece has no Queen script.");
+        return;
+    }
+
+    queenScript.RegalSafeguard();
+
+    // update SP display
+    if (UIManager.Instance != null)
+    {
+        UIManager.Instance.UpdateSkillPointDisplay();
+    }
+}
 
 }

@@ -5,6 +5,8 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
 {
     private bool hasUsedRoyalCastling = false; // once per battle
     public GameObject movePlatePrefab; // optional, keep if you want later
+    private bool hasUsedFortify = false; // once per rook limitation
+
 
     // small helper used during testing
     public void TestSkill()
@@ -119,4 +121,120 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
         }
         return null;
     }
+
+
+ // Call this from UI button for Fortify skill
+// Call this from UI button for Fortify skill
+public void AttemptFortify()
+{
+    // ✅ ONCE PER ROOK LIMITATION CHECK
+    if (hasUsedFortify)
+    {
+        Debug.Log("FortifySelected: This rook has already used Fortify this battle.");
+        return;
+    }
+
+    // Get the selected piece from UIManager
+    if (UIManager.Instance == null)
+    {
+        Debug.Log("FortifySelected: UIManager not found.");
+        return;
+    }
+
+    GameObject selectedPiece = UIManager.Instance.selectedPiece;
+    if (selectedPiece == null)
+    {
+        Debug.Log("FortifySelected: no piece selected.");
+        return;
+    }
+
+    if (!selectedPiece.name.Contains("rook"))
+    {
+        Debug.Log("FortifySelected: selected piece is not a rook.");
+        return;
+    }
+
+    Chessman rookCm = selectedPiece.GetComponent<Chessman>();
+    if (rookCm == null)
+    {
+        Debug.Log("FortifySelected: selected object has no Chessman.");
+        return;
+    }
+
+    Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+    if (game == null)
+    {
+        Debug.LogError("FortifySelected: GameController not found.");
+        return;
+    }
+
+    // Make sure it's the owner's turn
+    string currentPlayer = game.GetCurrentPlayer();
+    if (rookCm.GetPlayer() != currentPlayer)
+    {
+        Debug.Log($"FortifySelected: it's {currentPlayer}'s turn. Can't use {rookCm.name}.");
+        return;
+    }
+
+    const int fortifyCost = 1;
+
+    // ✅ UPDATED: Use SkillManager instead of Game.SpendPlayerSP
+    if (SkillManager.Instance == null)
+    {
+        Debug.LogError("FortifySelected: SkillManager not found.");
+        return;
+    }
+
+    bool paid = SkillManager.Instance.SpendPlayerSP(currentPlayer, fortifyCost);
+    if (!paid)
+    {
+        Debug.Log($"{currentPlayer} does not have enough SP to use Fortify (cost {fortifyCost}).");
+        return;
+    }
+
+    Debug.Log($"{currentPlayer} paid {fortifyCost} SP for Fortify. Remaining SP: {SkillManager.Instance.GetPlayerSP(currentPlayer)}");
+
+    // APPLY EFFECT: make allied pieces around rook invulnerable
+    int cx = rookCm.GetXBoard();
+    int cy = rookCm.GetYBoard();
+
+    for (int dx = -1; dx <= 1; dx++)
+    {
+        for (int dy = -1; dy <= 1; dy++)
+        {
+            if (dx == 0 && dy == 0) continue;
+            int tx = cx + dx;
+            int ty = cy + dy;
+            if (!game.PositionOnBoard(tx, ty)) continue;
+
+            GameObject target = game.GetPosition(tx, ty);
+            if (target == null) continue;
+
+            Chessman targetCm = target.GetComponent<Chessman>();
+            if (targetCm == null) continue;
+
+            if (targetCm.GetPlayer() == rookCm.GetPlayer())
+            {
+                targetCm.isInvulnerable = true;
+                targetCm.invulnerableUntilTurn = game.turns + 2;
+                Debug.Log($"{targetCm.name} is now invulnerable until turn {targetCm.invulnerableUntilTurn}");
+            }
+        }
+    }
+
+    // ✅ MARK AS USED - Once per rook limitation
+    hasUsedFortify = true;
+    Debug.Log($"{rookCm.name} has used Fortify and cannot use it again this battle.");
+
+    // tidy up and end turn
+    rookCm.DestroyMovePlates();
+    // update the UI SP readout
+    if (UIManager.Instance != null)
+    {
+        UIManager.Instance.UpdateSkillPointDisplay();
+    }
+    game.NextTurn();
+}
+
+
 }

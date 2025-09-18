@@ -7,22 +7,20 @@ using UnityEngine.UI;
 public class Game : MonoBehaviour
 {
 
-     public static Game Instance; //added for easy access to Game instance, mostly for SkillManager
+    public static Game Instance; //added for easy access to Game instance, mostly for SkillManager
     public GameObject chesspiece;
-    //public GameObject pawnPrefab;
-
-    //public Pawn selectedPawn;
+    
 
     public int turns = 0;
     public TurnUI turnUI;
     [SerializeField] Text turnText;
+
     //Matrices needed, positions of each of the GameObjects
     //Also separate arrays for the players in order to easily keep track of them all
     //Keep in mind that the same objects are going to be in "positions" and "playerBlack"/"playerWhite"
     private GameObject[,] positions = new GameObject[8, 8];
     private GameObject[] playerBlack = new GameObject[16];
     private GameObject[] playerWhite = new GameObject[16];
-
     private GameObject[] playerNeutral = new GameObject[32]; // for future use
 
     //current turn
@@ -38,10 +36,6 @@ public class Game : MonoBehaviour
     public int restrictionExpiresOnTurn = -1;       // until (inclusive) this turn
     
 
-
-  
-
-   
     public void Start()
     {
         playerWhite = new GameObject[] {
@@ -76,9 +70,6 @@ public class Game : MonoBehaviour
             SetPosition(playerWhite[i]);
             SetPosition(playerNeutral[i]);
         }
-
-
-
     }
 
     public GameObject Create(string name, int x, int y)
@@ -97,18 +88,17 @@ public class Game : MonoBehaviour
 
         if (name.StartsWith("white"))
         cm.SetPlayer("white");
-    else if (name.StartsWith("black"))
+        else if (name.StartsWith("black"))
         cm.SetPlayer("black");
-    else if (name.StartsWith("tile"))
+        else if (name.StartsWith("tile"))
         cm.SetPlayer("neutral");
 
         else if (name == "tile_earth")
-{
-    cm.SetPlayer("neutral");          // neutral tile
-    cm.statusManager.AddStatus(StatusType.Invulnerable, 999); // never expires
-    cm.statusManager.AddStatus(StatusType.SolidBlock, 999);   // blocks movement
-}   
-
+        {
+        cm.SetPlayer("neutral");          // neutral tile
+        cm.statusManager.AddStatus(StatusType.Invulnerable, 999); // never expires
+        cm.statusManager.AddStatus(StatusType.SolidBlock, 999);   // blocks movement
+        }   
 
         if (name.Contains("bishop"))
         {
@@ -119,6 +109,7 @@ public class Game : MonoBehaviour
                 b.movePlatePrefab = movePlatePrefabReference;
             }
         }
+
         if (name.Contains("knight"))
         {
             if (obj.GetComponent<Knight>() == null)
@@ -130,20 +121,41 @@ public class Game : MonoBehaviour
 
 
        if (name.Contains("queen"))
-{
-    Queen q = obj.GetComponent<Queen>();
-    if (q == null)
-    {
-        q = obj.AddComponent<Queen>();
-    }
-    // Always assign the prefab reference
-    q.movePlatePrefab = movePlatePrefabReference;
-}
-   
-
+        {
+        Queen q = obj.GetComponent<Queen>();
+            if (q == null)
+            {
+             q = obj.AddComponent<Queen>();
+            }
+         // Always assign the prefab reference
+         q.movePlatePrefab = movePlatePrefabReference;
+        }
         cm.Activate();
         return obj;
     }
+
+    public void NextTurn()
+{
+    // Switch player
+    currentPlayer = (currentPlayer == "white") ? "black" : "white";
+    turns++;
+
+    ClearExpiredRestrictions();
+    ResetAllPieceTurnFlags();
+    ClearExpiredStatuses();
+    
+    // Update the Turn UI with player
+    if(TurnUI.Instance != null)
+        TurnUI.Instance.UpdateTurn(turns, currentPlayer);
+
+    // Elemental Bishop cleanup
+    ElementalBishop eb = FindObjectOfType<ElementalBishop>();
+    if(eb != null)
+        eb.CheckAndDestroyExpiredTiles();
+}
+
+
+
 
     public void SetPosition(GameObject obj)
     {
@@ -179,32 +191,11 @@ public class Game : MonoBehaviour
         return gameOver;
     }
 
-   public void NextTurn()
-{
-    // Switch player
-    currentPlayer = (currentPlayer == "white") ? "black" : "white";
-    turns++;
-
-    ClearExpiredRestrictions();
-    ResetAllPieceTurnFlags();
-    ClearExpiredStatuses();
     
-    // Update the Turn UI with player
-    if(TurnUI.Instance != null)
-        TurnUI.Instance.UpdateTurn(turns, currentPlayer);
-
-    // Elemental Bishop cleanup
-    ElementalBishop eb = FindObjectOfType<ElementalBishop>();
-    if(eb != null)
-        eb.CheckAndDestroyExpiredTiles();
-}
-
-
-    //for Skill Manager
-    public int GetTurnCount()
-{
+    public int GetTurnCount()//for Skill Manager
+    {
     return turns;
-}
+    }
 
     public void Update()
     {
@@ -336,10 +327,4 @@ public void SetPositionAt(GameObject obj, int x, int y)
             return false;
         }
     }
-
-
-
-
-
-
 }

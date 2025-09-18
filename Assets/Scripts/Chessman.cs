@@ -3,29 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //cd /c/Users/acer/Downloads/Chess_App-master/Chess_App-master
-
-
-
-
  
 public class Chessman : MonoBehaviour
 {
-    //References to objects in our Unity Scene
+    //References 
     public GameObject controller;
     public GameObject movePlate;
-
     private GameObject panelForThisPiece;
 
-
-    //Position for this Chesspiece on the Board
-    //The correct position will be set later
+    // Position for this Chesspiece on the Board
     protected int xBoard = -1;
     protected int yBoard = -1;
 
     //Variable for keeping track of the player it belongs to "black" or "white"
     protected string player;
 
-    //References to all the possible Sprites that this Chesspiece could be
+    //Normal Pieces
     public Sprite black_queen, black_knight, black_bishop, black_king, black_rook, black_pawn;
     public Sprite white_queen, white_knight, white_bishop, white_king, white_rook, white_pawn;
 
@@ -41,16 +34,22 @@ public class Chessman : MonoBehaviour
     public Sprite tile_ice;
     public Sprite tile_earth;
 
-    [HideInInspector] public bool fortifyActive = false; // ---------- temporary status ----------
-    [HideInInspector] public bool isInvulnerable = false;        // immune to attack
+    [HideInInspector] public bool fortifyActive = false; 
+    [HideInInspector] public bool isInvulnerable = false;        
     [HideInInspector] public int invulnerableUntilTurn = -1;      // inclusive turn when it expires
     [HideInInspector] public StatusManager statusManager;
     [HideInInspector] public Color originalColor; // Store original color for stunned pieces
+
+
     [Header("Skill Points")]
-    public int skillPoints = 4; // default SP per piece
+    public int skillPoints = 4; // not working
+    private int lastX;
+    private int lastY;
 
-
-
+     private void Awake()
+    {
+        statusManager = gameObject.AddComponent<StatusManager>();
+    }
 
     private void Start()
     {
@@ -63,20 +62,15 @@ public class Chessman : MonoBehaviour
             // fallback (only if you forgot to put UIManager in scene)
             panelForThisPiece = GameObject.Find(name.Contains("knight") ? "KnightPanel" : "PawnPanel");
         }
-    }
+    }   
 
 
-    private void Awake()
-    {
-        statusManager = gameObject.AddComponent<StatusManager>();
-    }
 
-    // Visual indicator for stunned pieces
+    // ********************BOARD FUNCTIONS********************
     public void UpdateVisualStatus()
     {
         Game game = controller?.GetComponent<Game>();
         if (game == null) return;
-
         bool isStunned = statusManager.HasStatus(StatusType.Stunned, game.turns);
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         
@@ -100,12 +94,6 @@ public class Chessman : MonoBehaviour
     }
 
 
-    //****************TEST FUNCTION ADD****************************
-
-    private int lastX;
-    private int lastY;
-
-
     public void CheckMoveTiles_Start()
     {
         lastX = GetXBoard();
@@ -123,6 +111,16 @@ public class Chessman : MonoBehaviour
         if (newX != lastX || newY != lastY)
         {
             Debug.Log($"{name} MOVED from ({lastX},{lastY}) to ({newX},{newY})");
+            
+            // Check for pawn promotion after movement
+            if (name.Contains("pawn"))
+            {
+                Pawn pawnScript = GetComponent<Pawn>();
+                if (pawnScript != null)
+                {
+                    pawnScript.CheckForPromotion();
+                }
+            }
         }
         else
         {
@@ -130,116 +128,6 @@ public class Chessman : MonoBehaviour
         }
     }
 
-
-
-
-
-
-
-
-
-    public void Activate()
-    {
-        //Get the game controller
-        controller = GameObject.FindGameObjectWithTag("GameController");
-
-        //Take the instantiated location and adjust transform
-        SetCoords();
-
-        //Choose correct sprite based on piece's name
-        if (this.name.StartsWith("black_pawn"))
-        {
-            this.GetComponent<SpriteRenderer>().sprite = black_pawn;
-            player = "black";
-        }
-        else if (this.name.StartsWith("white_pawn"))
-        {
-            this.GetComponent<SpriteRenderer>().sprite = white_pawn;
-            player = "white";
-        }
-        else
-        {
-            switch (this.name)
-            {
-                case "black_queen": this.GetComponent<SpriteRenderer>().sprite = black_queen; player = "black"; break;
-                case "black_knight": this.GetComponent<SpriteRenderer>().sprite = black_knight; player = "black"; break;
-                case "black_bishop": this.GetComponent<SpriteRenderer>().sprite = black_bishop; player = "black"; break;
-                case "black_king": this.GetComponent<SpriteRenderer>().sprite = black_king; player = "black"; break;
-                case "black_rook": this.GetComponent<SpriteRenderer>().sprite = black_rook; player = "black"; break;
-                case "white_queen": this.GetComponent<SpriteRenderer>().sprite = white_queen; player = "white"; break;
-                case "white_knight": this.GetComponent<SpriteRenderer>().sprite = white_knight; player = "white"; break;
-                case "white_bishop": this.GetComponent<SpriteRenderer>().sprite = white_bishop; player = "white"; break;
-                case "white_king": this.GetComponent<SpriteRenderer>().sprite = white_king; player = "white"; break;
-                case "white_rook": this.GetComponent<SpriteRenderer>().sprite = white_rook; player = "white"; break;
-
-                //Summoned Units
-                case "white_elemental_bishop": this.GetComponent<SpriteRenderer>().sprite = white_elemental_bishop; player = "white"; break;
-                case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
-                //Royal Units
-                case "white_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = white_royal_pawn; player = "white"; break;
-
-
-
-                case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
-                case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
-                case "tile_earth": this.GetComponent<SpriteRenderer>().sprite = tile_earth; player = "neutral"; break;
-            }
-        }
-
-        // Example for white king
-        if (this.name == "white_king")
-        {
-            statusManager.AddStatus(StatusType.Invulnerable, 10); // invulnerable until end of turn 10
-            isInvulnerable = true;
-            invulnerableUntilTurn = 10;
-            Debug.Log($"{name} is invulnerable until turn {invulnerableUntilTurn}");
-        }
-        else if (this.name == "black_king")
-        {
-            statusManager.AddStatus(StatusType.Invulnerable, 10); // invulnerable until end of turn 10
-            isInvulnerable = true;
-            invulnerableUntilTurn = 10;
-            Debug.Log($"{name} is invulnerable until turn {invulnerableUntilTurn}");
-        }
-        else if (this.name == "tile_lava")
-        {
-            statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
-            Debug.Log($"{name} is a special tile.");
-
-        }
-        else if (this.name == "tile_ice")
-        {
-            statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
-            Debug.Log($"{name} is a special tile.");
-
-        }
-        else if (this.name == "tile_earth")
-        {
-            statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
-            statusManager.AddStatus(StatusType.Invulnerable, 99); // immovable tile status
-            Debug.Log($"{name} is a special tileeee.");
-
-        }
-
-        //  Debug.Log($"{name} activated at ({GetXBoard()}, {GetYBoard()})");
-
-        // Update visual status after activation
-        UpdateVisualStatus();
-    }
-
-    public void ActivateFortify()
-    {
-        fortifyActive = true;
-        // remove old plates and show the new fortify plates immediately
-        DestroyMovePlates();
-        InitiateMovePlates();
-    }
-
-    // Called to clear fortify (when move completes)
-    public void ClearFortify()
-    {
-        fortifyActive = false;
-    }
     public void SetCoords() //new constants for 1440 x 3040 resolution
     {
         //Get the board value in order to convert to xy coords
@@ -277,11 +165,120 @@ public class Chessman : MonoBehaviour
     {
         yBoard = y;
     }
-    // Add to Chessman.cs (anywhere inside the class)
+
+    // IMPORTANT FUNCTION
     public string GetPlayer()
     {
         return player;
     }
+
+     public void SetPlayer(string p)
+    {
+        player = p;
+    }
+
+    public void RecalculatePanel()
+    {
+        panelForThisPiece = UIManager.Instance.GetPanelForPieceName(name);
+    }
+
+
+    // ********************PIECE SPECIFIC FUNCTIONS********************
+   
+    public void ActivateFortify() 
+    {
+        fortifyActive = true;
+        DestroyMovePlates();
+        InitiateMovePlates();
+    }
+    public void ClearFortify()
+    {
+        fortifyActive = false;
+    }
+
+
+
+
+    //******************* LOGIC FUNCTIONS********************
+
+    public void Activate() 
+    {
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        SetCoords(); // setting position of pieces on board
+
+        if (this.name.StartsWith("black_pawn"))
+        {
+            this.GetComponent<SpriteRenderer>().sprite = black_pawn;
+            player = "black";
+        }
+        else if (this.name.StartsWith("white_pawn"))
+        {
+            this.GetComponent<SpriteRenderer>().sprite = white_pawn;
+            player = "white";
+        }
+        else
+        {
+            switch (this.name)
+            {
+                case "black_queen": this.GetComponent<SpriteRenderer>().sprite = black_queen; player = "black"; break;
+                case "black_knight": this.GetComponent<SpriteRenderer>().sprite = black_knight; player = "black"; break;
+                case "black_bishop": this.GetComponent<SpriteRenderer>().sprite = black_bishop; player = "black"; break;
+                case "black_king": this.GetComponent<SpriteRenderer>().sprite = black_king; player = "black"; break;
+                case "black_rook": this.GetComponent<SpriteRenderer>().sprite = black_rook; player = "black"; break;
+                case "white_queen": this.GetComponent<SpriteRenderer>().sprite = white_queen; player = "white"; break;
+                case "white_knight": this.GetComponent<SpriteRenderer>().sprite = white_knight; player = "white"; break;
+                case "white_bishop": this.GetComponent<SpriteRenderer>().sprite = white_bishop; player = "white"; break;
+                case "white_king": this.GetComponent<SpriteRenderer>().sprite = white_king; player = "white"; break;
+                case "white_rook": this.GetComponent<SpriteRenderer>().sprite = white_rook; player = "white"; break;
+
+                //Summoned Units
+                case "white_elemental_bishop": this.GetComponent<SpriteRenderer>().sprite = white_elemental_bishop; player = "white"; break;
+                case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
+                //Royal Units
+                case "white_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = white_royal_pawn; player = "white"; break;
+                //Elemental Tiles
+                case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
+                case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
+                case "tile_earth": this.GetComponent<SpriteRenderer>().sprite = tile_earth; player = "neutral"; break;
+            }
+        }
+
+        if (this.name == "white_king")
+        {
+            statusManager.AddStatus(StatusType.Invulnerable, 10); // invulnerable until end of turn 10
+            isInvulnerable = true;
+            invulnerableUntilTurn = 10;
+            Debug.Log($"{name} is invulnerable until turn {invulnerableUntilTurn}");
+        }
+        else if (this.name == "black_king")
+        {
+            statusManager.AddStatus(StatusType.Invulnerable, 10); // invulnerable until end of turn 10
+            isInvulnerable = true;
+            invulnerableUntilTurn = 10;
+            Debug.Log($"{name} is invulnerable until turn {invulnerableUntilTurn}");
+        }
+        else if (this.name == "tile_lava")
+        {
+            statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
+            Debug.Log($"{name} is a special tile.");
+
+        }
+        else if (this.name == "tile_ice")
+        {
+            statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
+            Debug.Log($"{name} is a special tile.");
+
+        }
+        else if (this.name == "tile_earth")
+        {
+            statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
+            statusManager.AddStatus(StatusType.Invulnerable, 99); // immovable tile status
+            Debug.Log($"{name} is a special tileeee.");
+
+        }
+        UpdateVisualStatus();
+    }
+
 
     private void OnMouseUp() //on click panels
     {
@@ -333,48 +330,19 @@ public class Chessman : MonoBehaviour
             else if (name.Contains("king"))
                 panelForThisPiece = UIManager.Instance.kingPanel;
 
-
         }
         // store selected piece for UI buttons
         if (UIManager.Instance != null) UIManager.Instance.selectedPiece = this.gameObject;
-
         panelForThisPiece?.SetActive(true);
 
-        // ✅ Remove old move plates
-        DestroyMovePlates();
-
-        // ✅ Create new move plates (only if it's this piece's turn)
-        InitiateMovePlates();
+        DestroyMovePlates(); // ✅ Remove old move plates
+        InitiateMovePlates(); // ✅ Create new move plates (only if it's this piece's turn)
         CheckMoveTiles_Start();
-        
-        // Update visual status when piece is clicked
-        
     }
 
-
-
-
-
-    public void RecalculatePanel()
-    {
-        panelForThisPiece = UIManager.Instance.GetPanelForPieceName(name);
-    }
-
-
-
-    public void DestroyMovePlates()
-    {   UpdateVisualStatus();
-        //Destroy old MovePlates
-        GameObject[] movePlates = GameObject.FindGameObjectsWithTag("MovePlate");
-        for (int i = 0; i < movePlates.Length; i++)
-        {
-            Destroy(movePlates[i]); //Be careful with this function "Destroy" it is asynchronous
-        }
-    }
 
     public virtual void InitiateMovePlates()
     {
-
         Game game = controller.GetComponent<Game>();
 
         if (game.IsPlayerRestrictedToPawns(player))
@@ -387,12 +355,12 @@ public class Chessman : MonoBehaviour
         }
         // In the InitiateMovePlates() method, add this check after the turn check:
 
-// Check if piece is stunned
-if (statusManager.HasStatus(StatusType.Stunned, game.turns))
-{
-    Debug.Log($"[Stunned] {name} is stunned and cannot move this turn.");
-    return; // no move plates
-}
+        // Check if piece is stunned
+        if (statusManager.HasStatus(StatusType.Stunned, game.turns))
+        {
+            Debug.Log($"[Stunned] {name} is stunned and cannot move this turn.");
+            return; // no move plates
+        }
 
         if (this.name.StartsWith("black_pawn"))
         {
@@ -449,10 +417,20 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
                 case "white_king": SurroundMovePlate(); break;
             }
         }
-        
+    } // END OF INITIATEMOVEPLATES
 
+
+    public void DestroyMovePlates()
+    {   UpdateVisualStatus();
+        //Destroy old MovePlates
+        GameObject[] movePlates = GameObject.FindGameObjectsWithTag("MovePlate");
+        for (int i = 0; i < movePlates.Length; i++)
+        {
+            Destroy(movePlates[i]); //Be careful with this function "Destroy" it is asynchronous
+        }
     }
 
+    // ******************** MOVEMENT LOGIC FUNCTIONS********************
     public void LineMovePlate(int xIncrement, int yIncrement)
     {
         Game sc = controller.GetComponent<Game>();
@@ -529,9 +507,6 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
             y += yIncrement;
         }
     }
-
-
-
 
     public void LMovePlate()
     {
@@ -649,8 +624,6 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
     }
 
 
-
-
     public void PawnMovePlate(int x, int y)
     {
         Game sc = controller.GetComponent<Game>();
@@ -670,7 +643,7 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
 
             if (cp != null)
             {
-                Chessman targetCm = cp.GetComponent<Chessman>();
+                Chessman targetCm = cp.GetComponent<Chessman>(); 
                 if (targetCm != null)
                 {
                     // tile_earth → block movement (except for Elemental Bishop)
@@ -764,21 +737,19 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
         }
     }
 
-
-
-
-
     public void MovePlateSpawn(int matrixX, int matrixY)
     {
         //Get the board value in order to convert to xy coords
         float x = matrixX;
         float y = matrixY;
 
-        //Adjust by variable offset
-        x *= 0.57f;  y *= 0.56f;
+
+        x *= 0.57f;
+        y *= 0.56f;
 
         //Add constants (pos 0,0)
-        x += -1.98f;  y += -1.95f; 
+        x += -1.98f;
+        y += -1.95f; 
 
         //Set actual unity values
         GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
@@ -810,17 +781,5 @@ if (statusManager.HasStatus(StatusType.Stunned, game.turns))
         mpScript.SetReference(gameObject);
         mpScript.SetCoords(matrixX, matrixY);
     }
-
-
-    public void SetPlayer(string p)
-    {
-        player = p;
-    }
-
-
-
-
-
-
 
 }
