@@ -21,5 +21,11 @@ public class EndTurnPlate : MonoBehaviour
 
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate") )
             Destroy(plate);
+
+        // In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(game.GetCurrentPlayer(), pieceName, "DIVINE OFFERING", 0);
+}
     }
 }

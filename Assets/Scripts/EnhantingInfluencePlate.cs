@@ -88,7 +88,11 @@ Debug.Log("[Enchanting Influence] Skill marked as used for this battle.");
 
 // Destroy moveplates immediately after moving enemy
 DestroyAllMovePlates();
-
+// In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(currentPlayer, "QUEEN", "ENCHANTING INFLUENCE", 2);
+}
 // End the Queen's turn
 game.NextTurn();
     }

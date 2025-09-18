@@ -91,7 +91,11 @@ public class EternityPiercePlate : MonoBehaviour
 
         // Destroy all moveplates
         DestroyAllMovePlates();
-
+        // In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(currentPlayer, "ARCHBISHOP", "ETERNITY PIERCE", spCost);
+}
         // End the Archbishop's turn
         game.NextTurn();
     }

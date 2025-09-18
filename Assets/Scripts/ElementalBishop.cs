@@ -66,7 +66,11 @@ if (!SkillManager.Instance.SpendPlayerSP("white", 1)) // assuming white is the p
     Debug.LogWarning("[ElementalBishop] Not enough Skill Points!");
     return;
 }
-
+// In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(game.GetCurrentPlayer(), "ELEMENTAL BISHOP", tileName, 1);
+}
 
         // ✅ Put skill on cooldown for 5 turns
         skillCooldowns[tileName] = currentTurn + 5;

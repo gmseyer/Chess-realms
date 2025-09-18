@@ -109,6 +109,11 @@ public class Queen : Pieces
                 if (pawnCm != null && pawnCm.GetPlayer() == owner)
                 {
                     Debug.Log($"[Queen Passive] Sacrificing {piece.name} at ({x},{pawnRow}) instead of the queen!");
+                    // In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(owner, "QUEEN", "GLORY FOR THE QUEEN", 0);
+}
                     game.ClearPosition(x, pawnRow);
                     Destroy(piece);
 
@@ -174,7 +179,11 @@ public class Queen : Pieces
         statusManager.AddStatus(StatusType.Invulnerable, expiresOnTurn);
 
         Debug.Log($"{chessman.name} activated Regal Safeguard → sacrificed a pawn and is INVULNERABLE until turn {expiresOnTurn}");
-
+        // In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(currentPlayer, "QUEEN", "REGAL SAFEGUARD", 1);
+}
         // End turn
         //chessman.DestroyMovePlates();  // removed it because main purpose of the skill is to offensive invulnerable
         // game.NextTurn();  // so basically after getting invul, the queen can attack normally and gain invul so she is safe until next turn

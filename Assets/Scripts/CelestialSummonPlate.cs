@@ -117,5 +117,11 @@ public class CelestialSummonPlate : MonoBehaviour
         game.NextTurn();
         
         Debug.Log("[Celestial Summon] Celestial Summon completed! Turn ended.");
+        // In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(game.GetCurrentPlayer(), "BISHOP", "CELESTIAL SUMMON", 2);
+}
+
     }
 }

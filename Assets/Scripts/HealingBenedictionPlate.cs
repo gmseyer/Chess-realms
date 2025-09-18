@@ -38,7 +38,11 @@ public class HealingBenedictionPlate : MonoBehaviour
     {
         game.Create(pieceToRevive, x, y);
         Debug.Log($"[HealingBenedictionPlate] Revived {pieceToRevive} at ({x},{y})");
-
+        // In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(bishop.GetComponent<Chessman>().GetPlayer(), "BISHOP", "HEALING BENEDICTION", 1);
+}
         bishop.hasUsedHealingBenediction = true;
         Debug.Log($"[HealingBenedictionPlate] Bishop state AFTER revive: hasUsed={bishop.hasUsedHealingBenediction}");
 

@@ -247,7 +247,11 @@ private System.Collections.IEnumerator FloatAndDestroy(GameObject textObj)
 
         nextAvailableTurn = currentTurn + lunarLeapCooldownTurns;
         Debug.Log($"[LunarLeap] Activated. Next available on turn {nextAvailableTurn}.");
-
+        // In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(player, cm.name, "LUNAR LEAP", lunarLeapSPCost);
+}
     }
 
 

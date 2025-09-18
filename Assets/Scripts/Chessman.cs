@@ -11,6 +11,10 @@ public class Chessman : MonoBehaviour
     public GameObject movePlate;
     private GameObject panelForThisPiece;
 
+    // Add these fields inside the Chessman class
+    private bool wasAttack = false;
+    private string lastMoveNotation = "";
+
     // Position for this Chesspiece on the Board
     protected int xBoard = -1;
     protected int yBoard = -1;
@@ -45,6 +49,47 @@ public class Chessman : MonoBehaviour
     public int skillPoints = 4; // not working
     private int lastX;
     private int lastY;
+
+
+    //********************TEST FUNCTIONS********************
+
+        // Add this right after the using statements at the top of Chessman.cs
+public static class ChessNotation
+{
+    private static string[] files = { "a", "b", "c", "d", "e", "f", "g", "h" };
+    private static string[] ranks = { "1", "2", "3", "4", "5", "6", "7", "8" };
+    
+   public static string BoardToNotation(int x, int y)
+    {
+        if (x < 0 || x > 7 || y < 0 || y > 7) return "invalid";
+        return files[x] + ranks[y];
+    }
+    
+    public static string GetPieceNotation(string pieceName)
+    {
+        if (pieceName.Contains("pawn")) return "P";
+        if (pieceName.Contains("knight")) return "N";
+        if (pieceName.Contains("bishop")) return "B";
+        if (pieceName.Contains("rook")) return "R";
+        if (pieceName.Contains("queen")) return "Q";
+        if (pieceName.Contains("king")) return "K";
+        if (pieceName.Contains("elemental_bishop")) return "EB";
+        if (pieceName.Contains("arch_bishop")) return "AB";
+        return "?";
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
      private void Awake()
     {
@@ -98,35 +143,51 @@ public class Chessman : MonoBehaviour
     {
         lastX = GetXBoard();
         lastY = GetYBoard();
+         wasAttack = false; // Reset attack flag
         Debug.Log($"{name} START position: ({lastX}, {lastY})");
     }
 
     public void CheckMoveTiles_End()
+{
+    int newX = GetXBoard();
+    int newY = GetYBoard();
+
+    Debug.Log($"{name} END position: ({newX}, {newY})");
+
+    if (newX != lastX || newY != lastY)
     {
-        int newX = GetXBoard();
-        int newY = GetYBoard();
+        string fromSquare = ChessNotation.BoardToNotation(lastX, lastY);
+        string toSquare = ChessNotation.BoardToNotation(newX, newY);
+        string pieceType = ChessNotation.GetPieceNotation(name);
+        
+        // Generate basic notation
+        string notation = $"{pieceType}{fromSquare} to {toSquare}";
+        lastMoveNotation = notation;
+        Game game = controller?.GetComponent<Game>();
+if (game != null)
+{
+    game.AddMoveToHistory(notation);
+}
 
-        Debug.Log($"{name} END position: ({newX}, {newY})");
-
-        if (newX != lastX || newY != lastY)
+        Debug.Log($"{name} MOVED: {notation}");
+        
+        // Check for pawn promotion after movement
+        if (name.Contains("pawn"))
         {
-            Debug.Log($"{name} MOVED from ({lastX},{lastY}) to ({newX},{newY})");
-            
-            // Check for pawn promotion after movement
-            if (name.Contains("pawn"))
+            Pawn pawnScript = GetComponent<Pawn>();
+            if (pawnScript != null)
             {
-                Pawn pawnScript = GetComponent<Pawn>();
-                if (pawnScript != null)
-                {
-                    pawnScript.CheckForPromotion();
-                }
+                pawnScript.CheckForPromotion();
             }
         }
-        else
-        {
-            Debug.Log($"{name} DID NOT MOVE");
-        }
     }
+    else
+    {
+        Debug.Log($"{name} DID NOT MOVE");
+    }
+    // Add this line in CheckMoveTiles_End() after generating notation
+
+}
 
     public void SetCoords() //new constants for 1440 x 3040 resolution
     {

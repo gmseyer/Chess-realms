@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class Game : MonoBehaviour
 {
@@ -10,6 +11,10 @@ public class Game : MonoBehaviour
     public static Game Instance; //added for easy access to Game instance, mostly for SkillManager
     public GameObject chesspiece;
     
+    // Add these fields to Game.cs
+public TMPro.TextMeshProUGUI moveHistoryText; // For full history
+public TMPro.TextMeshProUGUI latestMoveText;  // For latest move only
+private List<string> moveHistory = new List<string>();
 
     public int turns = 0;
     public TurnUI turnUI;
@@ -35,6 +40,49 @@ public class Game : MonoBehaviour
     public string restrictedToPawnsPlayer = null;   // "white" / "black" 
     public int restrictionExpiresOnTurn = -1;       // until (inclusive) this turn
     
+
+
+    //*******TEST FUNCTIONS********************
+   public void AddMoveToHistory(string notation)
+{
+        
+    moveHistory.Add(notation);
+    UpdateMoveHistoryUI();
+    UpdateLatestMoveUI(notation);
+}
+// Add this method to Game.cs
+public void AddSkillToHistory()
+{
+    if (moveHistoryText != null)
+    {
+        moveHistory.Add("Used skill");
+        UpdateMoveHistoryUI();
+    }
+}
+
+private void UpdateMoveHistoryUI()
+{
+    if (moveHistoryText != null)
+    {
+        string historyText = "Move History:\n";
+        foreach (string move in moveHistory)
+        {
+            historyText += move + "\n";
+        }
+        moveHistoryText.text = historyText;
+    }
+}
+
+private void UpdateLatestMoveUI(string latestMove)
+{
+    if (latestMoveText != null)
+    {
+        latestMoveText.text = "Latest Move: " + latestMove;
+    }
+}
+
+
+
 
     public void Start()
     {

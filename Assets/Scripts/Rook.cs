@@ -97,7 +97,11 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
 
         hasUsedRoyalCastling = true;
         Debug.Log($"[RoyalCastling] Swap complete! Rook at ({kingX},{kingY}), King at ({rookX},{rookY})");
-
+        
+        if (SkillTracker.Instance != null)
+    {
+        SkillTracker.Instance.LogSkillUsage(currentPlayer, cm.name, "ROYAL CASTLING", cost);
+    }
         // end turn
         game.NextTurn();
     }
@@ -124,7 +128,7 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
 
 
  // Call this from UI button for Fortify skill
-// Call this from UI button for Fortify skill
+
 public void AttemptFortify()
 {
     // ✅ ONCE PER ROOK LIMITATION CHECK
@@ -192,6 +196,10 @@ public void AttemptFortify()
         return;
     }
 
+     if (SkillTracker.Instance != null)
+    {
+        SkillTracker.Instance.LogSkillUsage(currentPlayer, rookCm.name, "FORTIFY", fortifyCost);
+    }
     Debug.Log($"{currentPlayer} paid {fortifyCost} SP for Fortify. Remaining SP: {SkillManager.Instance.GetPlayerSP(currentPlayer)}");
 
     // APPLY EFFECT: make allied pieces around rook invulnerable

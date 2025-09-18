@@ -32,7 +32,9 @@ public class Bishop : Pieces
         if (archbishopSummonPlatePrefab == null)
             Debug.LogError("[Bishop] Could not load ArchbishopSummonPlate from Resources!");
     }
-    
+
+
+    //*******************start divine offering*******************
     public void OnBishopButtonClick() //responsible for summoning that is called upon bishops death
     {
         Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();

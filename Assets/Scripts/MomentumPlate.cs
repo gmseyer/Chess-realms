@@ -35,5 +35,10 @@ public class MomentumPlate : MonoBehaviour
         Debug.Log($"[MomentumPlate] Teleport clicked at ({x},{y}) for {knight.name}");
         // Let the Knight handle the teleport + cooldown + turn end
         knight.ExecuteMomentumTeleport(x, y);
+        // In Rook.cs, in AttemptFortify() method:
+if (SkillTracker.Instance != null)
+{
+    SkillTracker.Instance.LogSkillUsage(knight.GetComponent<Chessman>().GetPlayer(), "KNIGHT", "KNIGHTS MOMENTUM", 0);
+}
     }
 }
