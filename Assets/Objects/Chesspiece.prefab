@@ -124,6 +124,7 @@ MonoBehaviour:
   isInvulnerable: 0
   invulnerableUntilTurn: -1
   statusManager: {fileID: 0}
+  originalColor: {r: 0, g: 0, b: 0, a: 0}
   skillPoints: 4
 --- !u!61 &7068999908475216718
 BoxCollider2D:

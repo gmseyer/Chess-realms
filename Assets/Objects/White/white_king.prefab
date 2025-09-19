@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2648b481cac0d574fb94e5c49b2b2130, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c496b49ab9c00f24aa4133453c9fccec, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -113,6 +113,18 @@ MonoBehaviour:
   white_king: {fileID: 21300000, guid: 2648b481cac0d574fb94e5c49b2b2130, type: 3}
   white_rook: {fileID: 21300000, guid: fa0a2ff3626721748bf657c7c6022e11, type: 3}
   white_pawn: {fileID: 21300000, guid: da81633aa03645145ae1b41587366583, type: 3}
+  white_elemental_bishop: {fileID: 0}
+  white_arch_bishop: {fileID: 0}
+  white_royal_pawn: {fileID: 0}
+  tile_lava: {fileID: 0}
+  tile_ice: {fileID: 0}
+  tile_earth: {fileID: 0}
+  fortifyActive: 0
+  isInvulnerable: 0
+  invulnerableUntilTurn: -1
+  statusManager: {fileID: 0}
+  originalColor: {r: 0, g: 0, b: 0, a: 0}
+  skillPoints: 4
 --- !u!61 &20908956982734287
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -149,7 +161,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.2, y: 0.2}
+    oldSize: {x: 2, y: 2}
     newSize: {x: 0.2, y: 0.2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

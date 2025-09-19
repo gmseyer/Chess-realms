@@ -10,7 +10,7 @@ public class Bishop : Pieces
     
     // Cache Chessman reference like Queen does
     private Chessman chessman;
-
+ 
     private void Awake()
     {
         // Cache Chessman reference (following Queen pattern)

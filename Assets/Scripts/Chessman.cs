@@ -14,7 +14,7 @@ public class Chessman : MonoBehaviour
     // Add these fields inside the Chessman class
     private bool wasAttack = false;
     private string lastMoveNotation = "";
-
+ 
     // Position for this Chesspiece on the Board
     protected int xBoard = -1;
     protected int yBoard = -1;
@@ -67,14 +67,15 @@ public static class ChessNotation
     
     public static string GetPieceNotation(string pieceName)
     {
+        if (pieceName.Contains("elemental_bishop")) return "EB";
+        if (pieceName.Contains("arch")) return "AB";
         if (pieceName.Contains("pawn")) return "P";
         if (pieceName.Contains("knight")) return "N";
         if (pieceName.Contains("bishop")) return "B";
         if (pieceName.Contains("rook")) return "R";
         if (pieceName.Contains("queen")) return "Q";
         if (pieceName.Contains("king")) return "K";
-        if (pieceName.Contains("elemental_bishop")) return "EB";
-        if (pieceName.Contains("arch_bishop")) return "AB";
+        
         return "?";
     }
 }
@@ -170,16 +171,6 @@ if (game != null)
 }
 
         Debug.Log($"{name} MOVED: {notation}");
-        
-        // Check for pawn promotion after movement
-        if (name.Contains("pawn"))
-        {
-            Pawn pawnScript = GetComponent<Pawn>();
-            if (pawnScript != null)
-            {
-                pawnScript.CheckForPromotion();
-            }
-        }
     }
     else
     {

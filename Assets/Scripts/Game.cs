@@ -15,7 +15,7 @@ public class Game : MonoBehaviour
 public TMPro.TextMeshProUGUI moveHistoryText; // For full history
 public TMPro.TextMeshProUGUI latestMoveText;  // For latest move only
 private List<string> moveHistory = new List<string>();
-
+ 
     public int turns = 0;
     public TurnUI turnUI;
     [SerializeField] Text turnText;
@@ -77,7 +77,7 @@ private void UpdateLatestMoveUI(string latestMove)
 {
     if (latestMoveText != null)
     {
-        latestMoveText.text = "Latest Move: " + latestMove;
+        latestMoveText.text = latestMove;
     }
 }
 
@@ -123,7 +123,7 @@ private void UpdateLatestMoveUI(string latestMove)
     public GameObject Create(string name, int x, int y)
     {
         GameObject obj;
-         obj = Instantiate(chesspiece, new Vector3(0, 0, -1), Quaternion.identity);
+         obj = Instantiate(chesspiece, new Vector3(0, 0, 0), Quaternion.identity);
         Chessman cm = obj.GetComponent<Chessman>();
         cm.controller = this.gameObject; // Also assign controller for other pieces!
         cm.name = name;
@@ -155,6 +155,16 @@ private void UpdateLatestMoveUI(string latestMove)
                 Bishop b = obj.AddComponent<Bishop>();
                 // ✅ assign prefab from a central reference
                 b.movePlatePrefab = movePlatePrefabReference;
+            }
+        }
+
+        if (name.Contains("arch_bishop"))
+        {
+            if (obj.GetComponent<Archbishop>() == null)
+            {
+                Archbishop ab = obj.AddComponent<Archbishop>();
+                // ✅ assign prefab from a central reference
+                ab.movePlatePrefab = movePlatePrefabReference;
             }
         }
 

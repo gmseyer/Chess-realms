@@ -5,10 +5,12 @@ public class Archbishop : MonoBehaviour
     private Game game;
     private static bool temporalShiftUsed = false; // ✅ shared flag for whole battle
     public static bool eternityPierceUsed = false; // ✅ shared flag for whole battle
+    public static bool soulbindingConquestUsed = false; // ✅ shared flag for whole battle
+    public static string capturedPieceName = ""; // Store the name of the captured piece
 
     public GameObject movePlatePrefab; // Add this field
 
-    private void Start()
+    private void Start() 
     {
         game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
     }
@@ -136,6 +138,106 @@ public class Archbishop : MonoBehaviour
         if (sr != null)
         {
             sr.color = Color.red; // Red color for eternity pierce
+        }
+    }
+
+    // Soulbinding Conquest passive skill
+    public static void TriggerSoulbindingConquest(string capturedPiece)
+    {
+        // Check if already used this battle
+        if (soulbindingConquestUsed)
+        {
+            Debug.LogWarning("[Soulbinding Conquest] Already used this battle — skill blocked.");
+            return;
+        }
+
+        // Check if captured piece is valid for summoning
+        if (!IsValidPieceForSummoning(capturedPiece))
+        {
+            Debug.Log($"[Soulbinding Conquest] {capturedPiece} is not valid for summoning.");
+            return;
+        }
+
+        // Store the captured piece name and mark as used
+        capturedPieceName = capturedPiece;
+        soulbindingConquestUsed = true;
+
+        Debug.Log($"[Soulbinding Conquest] Captured {capturedPiece} - summoning tiles will be created!");
+    }
+
+    private static bool IsValidPieceForSummoning(string pieceName)
+    {
+        return pieceName.Contains("pawn") || 
+               pieceName.Contains("knight") || 
+               pieceName.Contains("rook") || 
+               pieceName.Contains("bishop");
+    }
+
+    public void SpawnSoulbindingSummonPlates()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        string currentPlayer = game.GetCurrentPlayer();
+
+        // Get all vacant tiles on the player's side
+        Vector2Int[] playerSidePositions = GetPlayerSidePositions(currentPlayer);
+        
+        int platesSpawned = 0;
+        foreach (Vector2Int pos in playerSidePositions)
+        {
+            if (game.GetPosition(pos.x, pos.y) == null)
+            {
+                SpawnSoulbindingPlate(game, pos.x, pos.y);
+                platesSpawned++;
+            }
+        }
+
+        Debug.Log($"[Soulbinding Conquest] Spawned {platesSpawned} summon plates for {capturedPieceName}.");
+    }
+
+    private Vector2Int[] GetPlayerSidePositions(string player)
+    {
+        if (player == "white")
+        {
+            return new Vector2Int[]
+            {
+                new Vector2Int(0, 0), new Vector2Int(1, 0), new Vector2Int(2, 0), new Vector2Int(3, 0),
+                new Vector2Int(4, 0), new Vector2Int(5, 0), new Vector2Int(6, 0), new Vector2Int(7, 0),
+                new Vector2Int(0, 1), new Vector2Int(1, 1), new Vector2Int(2, 1), new Vector2Int(3, 1),
+                new Vector2Int(4, 1), new Vector2Int(5, 1), new Vector2Int(6, 1), new Vector2Int(7, 1)
+            };
+        }
+        else
+        {
+            return new Vector2Int[]
+            {
+                new Vector2Int(0, 6), new Vector2Int(1, 6), new Vector2Int(2, 6), new Vector2Int(3, 6),
+                new Vector2Int(4, 6), new Vector2Int(5, 6), new Vector2Int(6, 6), new Vector2Int(7, 6),
+                new Vector2Int(0, 7), new Vector2Int(1, 7), new Vector2Int(2, 7), new Vector2Int(3, 7),
+                new Vector2Int(4, 7), new Vector2Int(5, 7), new Vector2Int(6, 7), new Vector2Int(7, 7)
+            };
+        }
+    }
+
+    private void SpawnSoulbindingPlate(Game game, int x, int y)
+    {
+        float fx = x * 0.57f - 1.98f;
+        float fy = y * 0.56f - 1.95f;
+
+        GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+
+        // Remove default MovePlate script
+        MovePlate oldScript = mp.GetComponent<MovePlate>();
+        if (oldScript != null) Destroy(oldScript);
+
+        // Add SoulbindingSummonPlate script
+        SoulbindingSummonPlate plate = mp.AddComponent<SoulbindingSummonPlate>();
+        plate.Setup(game, x, y, capturedPieceName);
+
+        // Make summon plates visually distinct (green)
+        SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.color = Color.green; // Green color for summon plates
         }
     }
 }

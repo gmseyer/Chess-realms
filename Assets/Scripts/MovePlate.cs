@@ -11,7 +11,7 @@ public class MovePlate : MonoBehaviour
 
     //Location on the board
     int matrixX;
-    int matrixY;
+    int matrixY; 
 
     //false: movement, true: attacking
     public bool attack = false;
@@ -85,6 +85,74 @@ public class MovePlate : MonoBehaviour
 
                 if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
                 if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
+
+                // ----------------- ARCHBISHOP SOULBINDING CONQUEST SECTION -----------------
+                // Check if the attacking piece is an Archbishop
+                if (movingPiece.name.Contains("arch_bishop"))
+                {
+                    Debug.Log($"[MovePlate] Archbishop {movingPiece.name} captured {cp.name} - checking Soulbinding Conquest!");
+                    
+                    // Check if Soulbinding Conquest can be triggered (not already used)
+                    if (!Archbishop.soulbindingConquestUsed)
+                    {
+                        // Store the original state
+                        bool wasUsed = Archbishop.soulbindingConquestUsed;
+                        string originalCapturedPiece = Archbishop.capturedPieceName;
+                        
+                        // Trigger Soulbinding Conquest passive
+                        Archbishop.TriggerSoulbindingConquest(cp.name);
+                        
+                        // Check if the skill was actually triggered (state changed)
+                        if (Archbishop.soulbindingConquestUsed && Archbishop.capturedPieceName == cp.name)
+                        {
+                            // Don't end turn yet - spawn summon plates instead
+                            movingPiece.DestroyMovePlates();
+                            movingPiece.ClearFortify();
+                            movingPiece.CheckMoveTiles_End();
+                            
+                            // Spawn summon plates
+                            Archbishop archbishop = movingPiece.GetComponent<Archbishop>();
+                            if (archbishop != null)
+                            {
+                                archbishop.SpawnSoulbindingSummonPlates();
+                            }
+                            
+                            // Destroy the captured piece
+                            Destroy(cp);
+                            
+                            // Hide UI panels
+                            if (UIManager.Instance != null)
+                            {
+                                UIManager.Instance.pawnPanel?.SetActive(false);
+                                UIManager.Instance.knightPanel?.SetActive(false);
+                                UIManager.Instance.bishopPanel?.SetActive(false);
+                                UIManager.Instance.rookPanel?.SetActive(false);
+                                UIManager.Instance.queenPanel?.SetActive(false);
+                                UIManager.Instance.kingPanel?.SetActive(false);
+                                UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
+                                UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
+                            }
+                            if (SkillManagerTMP.Instance != null)
+                            {
+                                SkillManagerTMP.Instance.skillPanel?.SetActive(false);
+                            }
+                            
+                            return; // Stop processing - don't call NextTurn() yet
+                        }
+                        else
+                        {
+                            // Skill was not triggered (invalid piece), restore original state
+                            Archbishop.soulbindingConquestUsed = wasUsed;
+                            Archbishop.capturedPieceName = originalCapturedPiece;
+                            Debug.Log($"[MovePlate] Soulbinding Conquest not triggered for {cp.name} - invalid piece type");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("[MovePlate] Soulbinding Conquest already used this battle - normal capture.");
+                    }
+                }
+                // --ARCHBISHOP SOULBINDING CONQUEST END -------------------------------------
 
                 Destroy(cp);
 

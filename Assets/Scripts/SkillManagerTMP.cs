@@ -86,11 +86,11 @@ public class SkillManagerTMP : MonoBehaviour
    private void SetUI(Skill skill)
     {
         if (skillNameText != null) skillNameText.text = skill.skillName;
-        if (spCostText != null) spCostText.text = $"SP Cost: {skill.spCost}";
-        if (cooldownText != null) cooldownText.text = $"Cooldown: {skill.cooldown}";
-        if (limitationText != null) limitationText.text = $"Limitation: {skill.limitation}";
+        if (spCostText != null) spCostText.text = $"SP: {skill.spCost}";
+        if (cooldownText != null) cooldownText.text = $"CD: {skill.cooldown}";
+        if (limitationText != null) limitationText.text = $"LIMITATION: {skill.limitation}";
         if (effectText != null) effectText.text = skill.effect;
-        if (durationText != null) durationText.text = skill.duration > 0 ? $"Duration: {skill.duration} turns" : "";
+        if (durationText != null) durationText.text = skill.duration > 0 ? $"DURATION: {skill.duration} TURNS" : "";
         if (skillTypeText != null) skillTypeText.text = skill.skillType;
 
         // ✅ Set the skill icon
