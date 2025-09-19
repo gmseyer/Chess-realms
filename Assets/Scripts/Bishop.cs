@@ -6,8 +6,7 @@ public class Bishop : Pieces
     public GameObject elementalSummonPlatePrefab; 
     public GameObject archbishopSummonPlatePrefab; 
     [Header("Prefabs (Auto-Loaded)")]
-    public bool hasUsedHealingBenediction = false; // Once-per-battle mark
-    public static bool hasUsedCelestialSummon = false; // Once-per-battle mark (static for all bishops)
+    // Removed hasUsedHealingBenediction and hasUsedCelestialSummon - now using CooldownManager
     
     // Cache Chessman reference like Queen does
     private Chessman chessman;
@@ -38,6 +37,25 @@ public class Bishop : Pieces
     public void OnBishopButtonClick() //responsible for summoning that is called upon bishops death
     {
         Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        
+        // ✅ Safety check for chessman reference
+        if (chessman == null)
+        {
+            chessman = GetComponent<Chessman>();
+            if (chessman == null)
+            {
+                Debug.LogError("[DivineOffering] No Chessman component found!");
+                return;
+            }
+        }
+        
+        // ✅ NEW: Use CooldownManager for twice-per-battle cooldown
+        string player = chessman.GetPlayer();
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "DivineOffering"))
+        {
+            Debug.Log("[DivineOffering] Skill is on cooldown - cannot use this battle.");
+            return;
+        }
 
         if (elementalSummonPlatePrefab == null)
             Debug.LogError("[Bishop] Elemental Summon Plate Prefab is NOT assigned!");
@@ -75,6 +93,19 @@ public class Bishop : Pieces
                 }
             }
         }
+        
+        // ✅ NEW: Initialize or consume use for Divine Offering (2 uses per battle)
+        if (CooldownManager.Instance != null)
+        {
+            // If not initialized yet, set it up for 2 uses per battle
+            if (!CooldownManager.Instance.IsOnCooldown(player, "DivineOffering"))
+            {
+                CooldownManager.Instance.StartCooldown(player, "DivineOffering", CooldownManager.CooldownType.UsesPerBattle, 2);
+            }
+            // Consume one use
+            CooldownManager.Instance.ConsumeUse(player, "DivineOffering");
+        }
+        Debug.Log("[DivineOffering] Skill activated - one use consumed.");
     }
 
 
@@ -99,9 +130,22 @@ public class Bishop : Pieces
 
      public void HealingBenediction()
     {
-        Debug.Log($"[HealingBenediction] Attempting activation... HasUsed? {hasUsedHealingBenediction}");
+        // ✅ Safety check for chessman reference
+        if (chessman == null)
+        {
+            chessman = GetComponent<Chessman>();
+            if (chessman == null)
+            {
+                Debug.LogError("[HealingBenediction] No Chessman component found!");
+                return;
+            }
+        }
+        
+        string player = chessman.GetPlayer();
+        Debug.Log($"[HealingBenediction] Attempting activation for {player}...");
 
-        if (hasUsedHealingBenediction)
+        // ✅ NEW: Use CooldownManager instead of hasUsedHealingBenediction
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "HealingBenediction"))
         {
             Debug.Log("[HealingBenediction] Already used — skill blocked.");
             return;
@@ -121,7 +165,7 @@ public class Bishop : Pieces
             new Vector2Int(4, 1), new Vector2Int(5, 1),
             new Vector2Int(6, 1), new Vector2Int(7, 1)
         };
-
+    
         int platesSpawned = 0;
         foreach (Vector2Int pos in whiteStartPositions)
         {
@@ -133,6 +177,13 @@ public class Bishop : Pieces
         }
 
         Debug.Log($"[HealingBenediction] Spawned {platesSpawned} revival plates.");
+        
+        // ✅ NEW: Start cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "HealingBenediction", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log("[HealingBenediction] Skill activated - now on cooldown for this battle.");
     }
 
     private void SpawnHealingPlate(Game game, int x, int y)
@@ -154,8 +205,8 @@ public class Bishop : Pieces
 {
     string player = "white"; // Bishop is always white in this test
 
-    // 1️⃣ Check if skill is on cooldown
-    if (SkillManager.Instance.IsSkillOnCooldown(player, SkillType.HealingBenediction))
+    // ✅ NEW: Use CooldownManager instead of SkillManager cooldown
+    if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "HealingBenediction"))
     {
         Debug.LogWarning("[HealingBenediction] Skill is on cooldown — cannot use.");
         return;
@@ -168,14 +219,49 @@ public class Bishop : Pieces
         return;
     }
 
-    // 3️⃣ Activate skill (your existing logic)
-    HealingBenediction();
-
-    // 4️⃣ Start cooldown (e.g. 3 turns)
-    SkillManager.Instance.StartCooldown(player, SkillType.HealingBenediction, 3);
+    // 3️⃣ Activate skill (your existing logic) - but skip the cooldown check since we already did it
+    HealingBenedictionWithoutCooldownCheck();
 
     Debug.Log("[HealingBenediction] Skill activated successfully!");
 }
+
+    // Original HealingBenediction logic without cooldown check (for internal use)
+    private void HealingBenedictionWithoutCooldownCheck()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+
+        Vector2Int[] whiteStartPositions = new Vector2Int[]
+        {
+            new Vector2Int(0, 0), new Vector2Int(7, 0),
+            new Vector2Int(1, 0), new Vector2Int(6, 0),
+            new Vector2Int(0, 1), new Vector2Int(1, 1),
+            new Vector2Int(2, 1), new Vector2Int(3, 1),
+            new Vector2Int(4, 1), new Vector2Int(5, 1),
+            new Vector2Int(6, 1), new Vector2Int(7, 1)
+        };
+    
+        int platesSpawned = 0;
+        foreach (Vector2Int pos in whiteStartPositions)
+        {
+            if (game.GetPosition(pos.x, pos.y) == null)
+            {
+                SpawnHealingPlate(game, pos.x, pos.y);
+                platesSpawned++;
+            }
+        }
+
+        Debug.Log($"[HealingBenediction] Spawned {platesSpawned} revival plates.");
+        
+        // ✅ NEW: Start cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown("white", "HealingBenediction", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log("[HealingBenediction] Skill activated - now on cooldown for this battle.");
+    }
 
     // Celestial Summon: Sacrifice function
     public void Sacrifice()
@@ -186,8 +272,8 @@ public class Bishop : Pieces
         // Get current player
         string currentPlayer = game.GetCurrentPlayer();
         
-        // Once-per-battle check (static for all bishops)
-        if (hasUsedCelestialSummon)
+        // ✅ NEW: Use CooldownManager instead of hasUsedCelestialSummon
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(currentPlayer, "CelestialSummon"))
         {
             Debug.LogWarning("[Celestial Summon] Already used this battle — skill blocked.");
             return;
@@ -271,8 +357,11 @@ public class Bishop : Pieces
         // Generate summon tiles on empty squares (like OnBishopButtonClick)
         GenerateCelestialSummonTiles(game, currentPlayer);
         
-        // Mark as used (once per battle) - static flag
-        hasUsedCelestialSummon = true;
+        // ✅ NEW: Start cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(currentPlayer, "CelestialSummon", CooldownManager.CooldownType.OncePerBattle);
+        }
         
         Debug.Log($"[Celestial Summon] Bishop sacrificed at ({bishopX},{bishopY}) for {currentPlayer} player! Summon tiles generated. SP cost: {celestialSummonCost}");
     }

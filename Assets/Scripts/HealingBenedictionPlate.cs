@@ -23,9 +23,9 @@ public class HealingBenedictionPlate : MonoBehaviour
         return;
     }
 
-    Debug.Log($"[HealingBenedictionPlate] Bishop state BEFORE revive: hasUsed={bishop.hasUsedHealingBenediction}");
-
-    if (bishop.hasUsedHealingBenediction)
+    // ✅ NEW: Use CooldownManager instead of hasUsedHealingBenediction
+    string player = bishop.GetComponent<Chessman>().GetPlayer();
+    if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "HealingBenediction"))
     {
         Debug.LogWarning("[HealingBenedictionPlate] Skill already used — click ignored.");
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
@@ -38,13 +38,18 @@ public class HealingBenedictionPlate : MonoBehaviour
     {
         game.Create(pieceToRevive, x, y);
         Debug.Log($"[HealingBenedictionPlate] Revived {pieceToRevive} at ({x},{y})");
-        // In Rook.cs, in AttemptFortify() method:
-if (SkillTracker.Instance != null)
-{
-    SkillTracker.Instance.LogSkillUsage(bishop.GetComponent<Chessman>().GetPlayer(), "BISHOP", "HEALING BENEDICTION", 1);
-}
-        bishop.hasUsedHealingBenediction = true;
-        Debug.Log($"[HealingBenedictionPlate] Bishop state AFTER revive: hasUsed={bishop.hasUsedHealingBenediction}");
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, "BISHOP", "HEALING BENEDICTION", 1);
+        }
+        
+        // ✅ NEW: Start cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "HealingBenediction", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log($"[HealingBenedictionPlate] Bishop state AFTER revive: cooldown started for {player}");
 
         game.NextTurn();
     }

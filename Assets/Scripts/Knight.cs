@@ -7,7 +7,7 @@ public class Knight : MonoBehaviour
     private Game game;
 
     [Header("Skill State")]
-    public bool hasUsedPhantomCharge = false;
+    // Removed hasUsedPhantomCharge - now using CooldownManager
 
     // Runtime-selected knight
     public static Knight ActiveKnight;
@@ -18,17 +18,19 @@ public class Knight : MonoBehaviour
 
     [Header("Lunar Leap Cooldown")]
     public int lunarLeapCooldownTurns = 10;  // how many turns until skill can be used again
-    private int nextAvailableTurn = 0;       // the turn when the skill can next be used
+    // Removed nextAvailableTurn - now using CooldownManager
 
    // Momentum (passive teleport after capture)
 [Header("Knight's Momentum Passive")]
 public int momentumCooldownTurns = 15;     // cooldown length (in turns)
-private int nextMomentumAvailableTurn = 0; // turn when momentum is next available
+// Removed nextMomentumAvailableTurn - now using CooldownManager
 
 // Check if the passive is ready (public helper other scripts can call)
 public bool IsMomentumReady()
 {
-    return game != null && game.GetTurnCount() >= nextMomentumAvailableTurn;
+    if (game == null) return false;
+    string player = GetComponent<Chessman>().GetPlayer();
+    return CooldownManager.Instance == null || !CooldownManager.Instance.IsOnCooldown(player, "KnightsMomentum");
 }
 
 
@@ -110,9 +112,13 @@ private System.Collections.IEnumerator FloatAndDestroy(GameObject textObj)
 
     private void DoPhantomCharge()
     {
-        if (hasUsedPhantomCharge)
+        Chessman cm = GetComponent<Chessman>();
+        string player = cm.GetPlayer();
+        
+        // ✅ NEW: Use CooldownManager instead of hasUsedPhantomCharge
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "PhantomCharge"))
         {
-            Debug.Log("[PhantomCharge] Skill already used this battle.");
+            Debug.Log("[PhantomCharge] Skill is on cooldown - cannot use this battle.");
             return;
         }
 
@@ -158,21 +164,33 @@ private System.Collections.IEnumerator FloatAndDestroy(GameObject textObj)
     // Called by PhantomChargePlate when a tile is clicked
     public void ExecutePhantomCharge(int targetX, int targetY)
     {
-        if (hasUsedPhantomCharge)
+        string player = GetComponent<Chessman>().GetPlayer();
+        
+        // ✅ NEW: Use CooldownManager instead of hasUsedPhantomCharge
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "PhantomCharge"))
         {
             Debug.LogWarning("[PhantomCharge] Already executed this battle.");
             return;
         }
 
-        string player = GetComponent<Chessman>().GetPlayer();
         if (!SkillManager.Instance.SpendPlayerSP(player, 1))
         {
             Debug.LogWarning($"[PhantomCharge] Not enough SP for {player}.");
             return;
         }
 
-        hasUsedPhantomCharge = true;
+        // ✅ NEW: Start cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "PhantomCharge", CooldownManager.CooldownType.OncePerBattle);
+        }
         Debug.Log($"[PhantomCharge] {name} spent 1 SP for Phantom Charge. Remaining SP: {SkillManager.Instance.GetPlayerSP(player)}");
+
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, name, "PHANTOM CHARGE", 1);
+        }
 
         Chessman cm = GetComponent<Chessman>();
 
@@ -215,17 +233,15 @@ private System.Collections.IEnumerator FloatAndDestroy(GameObject textObj)
 
     private void StartLunarLeap()
     {
-
-        int currentTurn = game.GetTurnCount();  // assuming Game has a turn counter
-        if (currentTurn < nextAvailableTurn)
-        {
-            Debug.LogWarning($"[LunarLeap] Skill on cooldown. Available on turn {nextAvailableTurn}.");
-            return; // exit without activating Lunar Leap
-        }
-
-
         Chessman cm = GetComponent<Chessman>();
         string player = cm.GetPlayer();
+
+        // ✅ NEW: Use CooldownManager instead of manual cooldown tracking
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "LunarLeap"))
+        {
+            Debug.LogWarning("[LunarLeap] Skill is on cooldown - cannot use yet.");
+            return;
+        }
 
         // Check SP
         if (!SkillManager.Instance.SpendPlayerSP(player, lunarLeapSPCost))
@@ -245,13 +261,17 @@ private System.Collections.IEnumerator FloatAndDestroy(GameObject textObj)
 
         Debug.Log($"[LunarLeap] {name} activated! Knight can move using new pattern this turn.");
 
-        nextAvailableTurn = currentTurn + lunarLeapCooldownTurns;
-        Debug.Log($"[LunarLeap] Activated. Next available on turn {nextAvailableTurn}.");
-        // In Rook.cs, in AttemptFortify() method:
-if (SkillTracker.Instance != null)
-{
-    SkillTracker.Instance.LogSkillUsage(player, cm.name, "LUNAR LEAP", lunarLeapSPCost);
-}
+        // ✅ NEW: Start cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "LunarLeap", CooldownManager.CooldownType.TurnBased, lunarLeapCooldownTurns);
+        }
+        Debug.Log($"[LunarLeap] Activated. Will be available again in {lunarLeapCooldownTurns} turns.");
+        
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, cm.name, "LUNAR LEAP", lunarLeapSPCost);
+        }
     }
 
 
@@ -268,10 +288,13 @@ public void TriggerKnightsMomentum()
         return;
     }
 
-    int currentTurn = game.GetTurnCount();
-    if (currentTurn < nextMomentumAvailableTurn)
+    Chessman cm = GetComponent<Chessman>();
+    string player = cm.GetPlayer();
+    
+    // ✅ NEW: Use CooldownManager instead of manual cooldown tracking
+    if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "KnightsMomentum"))
     {
-        Debug.Log($"[Momentum] Not ready until turn {nextMomentumAvailableTurn}.");
+        Debug.Log("[Momentum] Not ready - still on cooldown.");
         return;
     }
 
@@ -346,10 +369,18 @@ public void ExecuteMomentumTeleport(int targetX, int targetY)
     Debug.Log($"[Momentum] {name} teleported to ({targetX},{targetY})");
     ShowFloatingText("MOVE+");
 
+    // Log skill usage
+    if (SkillTracker.Instance != null)
+    {
+        SkillTracker.Instance.LogSkillUsage(ActiveKnight.GetComponent<Chessman>().GetPlayer(), name, "KNIGHTS MOMENTUM", 0);
+    }
 
-    // Start cooldown: next available turn = current turn + cooldown length
-        nextMomentumAvailableTurn = game.GetTurnCount() + momentumCooldownTurns;
-    Debug.Log($"[Momentum] Next available on turn {nextMomentumAvailableTurn}");
+    // ✅ NEW: Start cooldown using CooldownManager
+    if (CooldownManager.Instance != null)
+    {
+        CooldownManager.Instance.StartCooldown(ActiveKnight.GetComponent<Chessman>().GetPlayer(), "KnightsMomentum", CooldownManager.CooldownType.TurnBased, momentumCooldownTurns);
+    }
+    Debug.Log($"[Momentum] Next available in {momentumCooldownTurns} turns");
 
     // Remove all moveplates (cleanup)
     foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))

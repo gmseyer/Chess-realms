@@ -23,11 +23,6 @@ public class PhantomChargePlate : MonoBehaviour
         }
 
         Debug.Log($"[PhantomChargePlate] Tile clicked at ({x},{y})");
-        // In Rook.cs, in AttemptFortify() method:
-if (SkillTracker.Instance != null)
-{
-    SkillTracker.Instance.LogSkillUsage(knight.GetComponent<Chessman>().GetPlayer(), "KNIGHT", "PHANTOM CHARGE", 1);
-}
         knight.ExecutePhantomCharge(x, y);
     }
 }

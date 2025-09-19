@@ -3,10 +3,7 @@ using UnityEngine;
 
 public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehaviour
 {
-    private bool hasUsedRoyalCastling = false; // once per battle
     public GameObject movePlatePrefab; // optional, keep if you want later
-    private bool hasUsedFortify = false; // once per rook limitation
-
 
     // small helper used during testing
     public void TestSkill()
@@ -44,12 +41,14 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
             return;
         }
 
-        // once-per-battle
-        if (hasUsedRoyalCastling)
+        // once-per-battle cooldown check
+        // ✅ NEW: Use CooldownManager instead of hasUsedRoyalCastling
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(rookPlayer, "RoyalCastling"))
         {
-            Debug.Log("[RoyalCastling] Skill already used this battle.");
+            Debug.Log("[RoyalCastling] Skill is on cooldown - cannot use this battle.");
             return;
         }
+       
 
         // find the king first (validate preconditions before spending SP)
         Chessman kingCm = FindKing(game, rookPlayer);
@@ -95,7 +94,12 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
         cm.DestroyMovePlates();
         kingCm.DestroyMovePlates();
 
-        hasUsedRoyalCastling = true;
+        // ✅ NEW: Start cooldown using CooldownManager
+        // ✅ Start cooldown using CooldownManager (with null check)
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(rookPlayer, "RoyalCastling", CooldownManager.CooldownType.OncePerBattle);
+        }
         Debug.Log($"[RoyalCastling] Swap complete! Rook at ({kingX},{kingY}), King at ({rookX},{rookY})");
         
         if (SkillTracker.Instance != null)
@@ -132,11 +136,8 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
 public void AttemptFortify()
 {
     // ✅ ONCE PER ROOK LIMITATION CHECK
-    if (hasUsedFortify)
-    {
-        Debug.Log("FortifySelected: This rook has already used Fortify this battle.");
-        return;
-    }
+   
+
 
     // Get the selected piece from UIManager
     if (UIManager.Instance == null)
@@ -188,6 +189,12 @@ public void AttemptFortify()
         Debug.LogError("FortifySelected: SkillManager not found.");
         return;
     }
+    // ✅ Check if CooldownManager exists before using it
+    if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(currentPlayer, "Fortify"))
+    {
+        Debug.Log("FortifySelected: Fortify is on co oldown - cannot use yet.");
+        return;
+    }
 
     bool paid = SkillManager.Instance.SpendPlayerSP(currentPlayer, fortifyCost);
     if (!paid)
@@ -231,8 +238,13 @@ public void AttemptFortify()
     }
 
     // ✅ MARK AS USED - Once per rook limitation
-    hasUsedFortify = true;
-    Debug.Log($"{rookCm.name} has used Fortify and cannot use it again this battle.");
+   // ✅ NEW: Start cooldown using CooldownManager (2 turns)
+    // ✅ Start cooldown using CooldownManager (with null check)
+    if (CooldownManager.Instance != null)
+    {
+        CooldownManager.Instance.StartCooldown(currentPlayer, "Fortify", CooldownManager.CooldownType.TurnBased, 4);
+    }
+Debug.Log($"{rookCm.name} has used Fortify and will be available again in 2 turns.");
 
     // tidy up and end turn
     rookCm.DestroyMovePlates();

@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class EndTurnPlate : MonoBehaviour
 {
+
+    //*******FOR DIVINE OFFERING*******
     private Game game;
     private int x, y;
     private string pieceName;
