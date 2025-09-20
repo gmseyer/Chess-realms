@@ -1613,6 +1613,41 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - skillName: CRUSHING ADVANCE
+    skillType: ACTIVE
+    spCost: 2
+    cooldown: 15
+    duration: 0
+    limitation: ONCE PER BATTLE
+    icon: {fileID: 21300000, guid: efac6b3d8351ed3449254f31e09dc390, type: 3}
+    effect: Charges 4 tiles in a chosen direction. Any pieces caught on the path
+      will be displaced. If the pieces has no where else to move, they are destroyed.
+    onActivate:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1013008862}
+          m_TargetAssemblyTypeName: RoyalRook, Assembly-CSharp
+          m_MethodName: CrushingAdvance
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - skillName: CELESTIAL SYNERGY
+    skillType: PASSIVE
+    spCost: 0
+    cooldown: 0
+    duration: 0
+    limitation: MUST BE ADJACENT WITH THE CELESTIAL PILLAR
+    icon: {fileID: 21300000, guid: efac6b3d8351ed3449254f31e09dc390, type: 3}
+    effect: When adjacent with the celestial pillar, Gain queen movements.
+    onActivate:
+      m_PersistentCalls:
+        m_Calls: []
   skillNameText: {fileID: 354717656}
   spCostText: {fileID: 712606975}
   cooldownText: {fileID: 1160215722}
@@ -17193,7 +17228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movePlatePrefab: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
     type: 3}
-  celestialOrbPrefab: {fileID: 2729628619029622064, guid: e60429d8d9c09094f99505a6a1ec27e5,
+  celestialOrbPrefab: {fileID: 5435579201252216220, guid: f51c1ba2731d04e4ca3ddc0eeb944983,
     type: 3}
 --- !u!1 &851182646
 GameObject:
@@ -18705,7 +18740,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 25
+          m_IntArgument: 38
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -24230,7 +24265,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 25
+          m_IntArgument: 37
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

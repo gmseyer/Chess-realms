@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Bishop : Pieces
 {
@@ -402,14 +403,168 @@ public class Bishop : Pieces
         GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
 
         MovePlate oldScript = mp.GetComponent<MovePlate>();
-        if (oldScript != null) Destroy(oldScript);
+        if (oldScript != null) Destroy(oldScript); 
 
         // Add CelestialSummonPlate component instead of EndTurnPlate
         mp.AddComponent<CelestialSummonPlate>().Setup(game, x, y, player);
     }
- 
 
+    // Wraithform Ascension Skill
+    public void WraithformAscension()
+    {
+        string player = "white"; // Bishop is always white
+        
+        // Check SP cost (2 SP)
+        if (!SkillManager.Instance.SpendPlayerSP(player, 2))
+        {
+            Debug.LogWarning("[WraithformAscension] Not enough SP to cast.");
+            return;
+        }
+        
+        // Get the selected Bishop (following existing Bishop pattern)
+        Bishop selectedBishop = null;
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
+        {
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedBishop = selectedPiece.GetComponent<Bishop>();
+        }
+        
+        if (selectedBishop == null)
+        {
+            Debug.LogError("[WraithformAscension] No selected Bishop found!");
+            return;
+        }
+        
+        // Get current turn and calculate expiration
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        int currentTurn = game.turns;
+        int expirationTurn = currentTurn + 14;
+        
+        // Add Ethereal status to the selected Bishop
+        Chessman selectedChessman = selectedBishop.GetComponent<Chessman>();
+        if (selectedChessman != null && selectedChessman.statusManager != null)
+        {
+            selectedChessman.statusManager.AddStatus(StatusType.Ethereal, expirationTurn);
+            Debug.Log($"[WraithformAscension] Bishop gained Ethereal status until turn {expirationTurn}");
+        }
+        else
+        {
+            Debug.LogError("[WraithformAscension] Could not find Chessman or StatusManager component on selected Bishop!");
+            return;
+        }
+        
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, "BISHOP", "WRAITHFORM ASCENSION", 2);
+        }
+        
+        Debug.Log("[WraithformAscension] Skill activated successfully!");
+    }
 
+    // Ethereal movement method - can pass through any piece but only land on empty tiles
+    public void GenerateEtherealMovePlates()
+    {
+        // ✅ Safety check for chessman reference (following existing Bishop pattern)
+        if (chessman == null)
+        {
+            chessman = GetComponent<Chessman>();
+            if (chessman == null)
+            {
+                Debug.LogError("[EtherealMovement] No Chessman component found!");
+                return;
+            }
+        }
+        
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        int currentTurn = game.turns;
+        
+        // Check if Bishop has Ethereal status
+        if (!chessman.statusManager.HasStatus(StatusType.Ethereal, currentTurn))
+        {
+            Debug.LogWarning("[EtherealMovement] Bishop does not have Ethereal status!");
+            return;
+        }
+        
+        // Generate diagonal movement plates (like normal Bishop)
+        EtherealLineMovePlate(1, 1);   // Up-Right
+        EtherealLineMovePlate(-1, -1); // Down-Left
+        EtherealLineMovePlate(-1, 1);  // Up-Left
+        EtherealLineMovePlate(1, -1);  // Down-Right
+        
+        Debug.Log("[EtherealMovement] Ethereal move plates generated - can pass through any piece!");
+    }
 
+    // Helper method for ethereal line movement
+    private void EtherealLineMovePlate(int xIncrement, int yIncrement)
+    {
+        // ✅ Safety check for chessman reference (following existing Bishop pattern)
+        if (chessman == null)
+        {
+            chessman = GetComponent<Chessman>();
+            if (chessman == null)
+            {
+                Debug.LogError("[EtherealLineMovePlate] No Chessman component found!");
+                return;
+            }
+        }
+        
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        int x = chessman.GetXBoard();
+        int y = chessman.GetYBoard();
+        
+        // List to track enemies passed through
+        List<GameObject> passedEnemies = new List<GameObject>();
+        
+        while (game.PositionOnBoard(x + xIncrement, y + yIncrement))
+        {
+            x += xIncrement;
+            y += yIncrement;
+            
+            GameObject target = game.GetPosition(x, y);
+            if (target == null)
+            {
+                // Empty tile - can land here
+                EtherealMovePlateSpawn(x, y, passedEnemies);
+            }
+            else
+            {
+                // Occupied tile - check if it's an enemy
+                Chessman targetCm = target.GetComponent<Chessman>();
+                if (targetCm != null && targetCm.GetPlayer() != chessman.GetPlayer())
+                {
+                    // Enemy piece - add to passed enemies list
+                    passedEnemies.Add(target);
+                    Debug.Log($"[EtherealMovement] Bishop passed through enemy: {target.name}");
+                }
+                // Continue to next tile to check for empty destination
+                continue;
+            }
+        }
+    }
+
+    // Helper method to spawn ethereal move plates
+    private void EtherealMovePlateSpawn(int matrixX, int matrixY, List<GameObject> passedEnemies)
+    {
+        float x = matrixX * 0.57f - 1.98f;
+        float y = matrixY * 0.56f - 1.95f;
+        
+        GameObject mp = Instantiate(movePlatePrefab, new Vector3(x, y, -3f), Quaternion.identity);
+        
+        // Remove default MovePlate script
+        MovePlate oldScript = mp.GetComponent<MovePlate>();
+        if (oldScript != null) Destroy(oldScript);
+        
+        // Add EtherealMovePlate script
+        EtherealMovePlate etherealScript = mp.AddComponent<EtherealMovePlate>();
+        etherealScript.Setup(gameObject, matrixX, matrixY, passedEnemies);
+        
+        // Make ethereal move plates visually distinct (cyan color)
+        SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.color = Color.cyan;
+        }
+    }
 
 }

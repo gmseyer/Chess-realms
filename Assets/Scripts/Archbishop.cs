@@ -25,7 +25,7 @@ public class Archbishop : MonoBehaviour
         }
 
         // ✅ Deduct SP
-        if (!SkillManager.Instance.SpendPlayerSP("white", 2))
+        if (!SkillManager.Instance.SpendPlayerSP("white", 2)) 
         {
             Debug.LogWarning("[Archbishop] Not enough SP to use Temporal Shift!");
             return;

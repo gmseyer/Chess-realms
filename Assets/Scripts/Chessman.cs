@@ -33,6 +33,7 @@ public class Chessman : MonoBehaviour
     //Royal Units
     public Sprite white_royal_pawn;
     public Sprite white_royal_rook;
+    public Sprite white_royal_bishop;
 
     //Elemental Tiles
     public Sprite tile_lava;
@@ -70,6 +71,7 @@ public static class ChessNotation
     public static string GetPieceNotation(string pieceName)
     {
         if (pieceName.Contains("elemental_bishop")) return "EB";
+        if (pieceName.Contains("royal_bishop")) return "RB";
         if (pieceName.Contains("royal_rook")) return "RR";
         if (pieceName.Contains("arch")) return "AB";
         if (pieceName.Contains("pawn")) return "P";
@@ -123,6 +125,7 @@ public static class ChessNotation
         bool isStunned = statusManager.HasStatus(StatusType.Stunned, game.turns);
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         bool isTemporalShifted = game.IsPlayerRestrictedToPawns(player) && !name.Contains("pawn");
+        bool isEthereal = statusManager.HasStatus(StatusType.Ethereal, game.turns);
         
         if (sr != null)
         {
@@ -133,6 +136,14 @@ public static class ChessNotation
         originalColor = sr.color;
     // Set to yellow
     sr.color = Color.magenta;
+}
+else if (isEthereal)
+{
+    // Store original color if not already stored
+    if (originalColor == Color.clear)
+        originalColor = sr.color;
+    // Set to green for Ethereal
+    sr.color = Color.green;
 }
 else if (isTemporalShifted)
 {
@@ -150,8 +161,6 @@ else
 }
 
         }
-
-        
 
        
     }
@@ -197,7 +206,7 @@ if (game != null)
 
 }
 
-    public void SetCoords() //new constants for 1440 x 3040 resolution
+    public void SetCoords() //new constants for 1440 x 3040 resolution, positioning of pieces on the board
     {
         //Get the board value in order to convert to xy coords
         float x = xBoard;
@@ -211,6 +220,8 @@ if (game != null)
         x += -1.99f;
         y += -1.94f; 
 
+
+        
         //Set actual unity values
         this.transform.position = new Vector3(x, y, -1.0f);
     }
@@ -306,6 +317,7 @@ if (game != null)
                 //Royal Units
                 case "white_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = white_royal_pawn; player = "white"; break;
                 case "white_royal_rook": this.GetComponent<SpriteRenderer>().sprite = white_royal_rook; player = "white"; break;
+                case "white_royal_bishop": this.GetComponent<SpriteRenderer>().sprite = white_royal_bishop; player = "white"; break;
                 //Elemental Tiles
                 case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
@@ -365,6 +377,7 @@ if (game != null)
             UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
             UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
             UIManager.Instance.whiteRoyalRookPanel?.SetActive(false);
+            UIManager.Instance.whiteRoyalBishopPanel?.SetActive(false);
         }
 
         // Get reference to Game controller
@@ -393,6 +406,8 @@ if (game != null)
                 panelForThisPiece = UIManager.Instance.whiteArchBishopPanel;
             else if (name.Contains("royal_rook"))
                 panelForThisPiece = UIManager.Instance.whiteRoyalRookPanel;
+            else if (name.Contains("royal_bishop"))
+                panelForThisPiece = UIManager.Instance.whiteRoyalBishopPanel;
             else if (name.Contains("knight"))
                 panelForThisPiece = UIManager.Instance.knightPanel;
             else if (name.Contains("bishop"))
@@ -496,10 +511,31 @@ if (game != null)
                 case "black_knight": LMovePlate(); break;
                 case "white_knight": LMovePlate(); break;
                 case "black_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
-                case "white_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case "white_bishop": 
+                    // Check for Ethereal status
+                    if (statusManager.HasStatus(StatusType.Ethereal, game.turns))
+                    {
+                        // Use ethereal movement (can pass through any piece)
+                        Bishop bishop = GetComponent<Bishop>();
+                        if (bishop != null)
+                        {
+                            bishop.GenerateEtherealMovePlates();
+                        }
+                        else
+                        {
+                            // Fallback to normal movement if Bishop component not found
+                            LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1);
+                        }
+                    }
+                    else
+                    {
+                        // Normal Bishop movement
+                        LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1);
+                    }
+                    break;
                 case "white_elemental_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_arch_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
-
+                case "white_royal_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "black_queen":
                     LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);
                     LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;

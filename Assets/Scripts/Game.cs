@@ -184,6 +184,16 @@ private void UpdateLatestMoveUI(string latestMove)
             }
         }
 
+        if (name.Contains("royal_bishop"))
+        {
+            if (obj.GetComponent<RoyalBishop>() == null)
+            {
+                RoyalBishop rb = obj.AddComponent<RoyalBishop>();
+                // ✅ assign prefab from a central reference
+                rb.movePlatePrefab = movePlatePrefabReference;
+            }
+        }
+
         if (name.Contains("knight"))
         {
             if (obj.GetComponent<Knight>() == null)
