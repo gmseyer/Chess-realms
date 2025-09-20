@@ -14,7 +14,7 @@ public class Knight : MonoBehaviour
     [Header("Lunar Leap")]
     public int lunarLeapSPCost = 1;        // SP cost
     public bool isLunarLeapActive = false; // Tracks if this turn is Lunar Leap
-    private bool canDoubleMove = false;
+    private bool canDoubleMove = false; 
 
     [Header("Lunar Leap Cooldown")]
     public int lunarLeapCooldownTurns = 10;  // how many turns until skill can be used again

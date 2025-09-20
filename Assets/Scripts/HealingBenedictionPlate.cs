@@ -12,7 +12,7 @@ public class HealingBenedictionPlate : MonoBehaviour
         y = tileY;
     }
 
-    private void OnMouseUp()
+    private void OnMouseUp() 
 {
     Debug.Log($"[HealingBenedictionPlate] Clicked at ({x},{y})");
 

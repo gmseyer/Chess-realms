@@ -287,7 +287,7 @@ public class Bishop : Pieces
             return;
         }
         
-        // Find the selected bishop from UIManager
+        // Find the selected bishop from UIManager 
         Bishop selectedBishop = null;
         int bishopX = -1, bishopY = -1;
         

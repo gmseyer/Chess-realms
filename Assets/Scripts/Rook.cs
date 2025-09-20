@@ -1,9 +1,16 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehaviour
 {
     public GameObject movePlatePrefab; // optional, keep if you want later
+    public GameObject celestialOrbPrefab; // Add this field for the orb marker prefab
+    
+    // Celestial Orb tracking
+    private static List<Vector2Int> celestialOrbLocations = new List<Vector2Int>();
+    private static List<bool> celestialOrbCaptured = new List<bool>();
+    private static List<GameObject> celestialOrbObjects = new List<GameObject>();
 
     // small helper used during testing
     public void TestSkill()
@@ -87,7 +94,7 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
         // Move king -> rook pos
         kingCm.SetXBoard(rookX);
         kingCm.SetYBoard(rookY);
-        kingCm.SetCoords();
+        kingCm.SetCoords(); 
         game.SetPositionAt(kingCm.gameObject, rookX, rookY);
 
         // Clean up any move plates if needed
@@ -254,6 +261,241 @@ Debug.Log($"{rookCm.name} has used Fortify and will be available again in 2 turn
         UIManager.Instance.UpdateSkillPointDisplay();
     }
     game.NextTurn();
+}
+
+// Royal Rook Promotion Skill
+public void royalRook()
+{
+    Debug.Log("[Royal Rook] Promotion skill activated!");
+    
+    // Clear any existing celestial orbs
+    ClearCelestialOrbs();
+    
+    Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+    
+    // Get all empty tiles on the board
+    List<Vector2Int> emptyTiles = new List<Vector2Int>();
+    
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            if (game.GetPosition(x, y) == null)
+            {
+                emptyTiles.Add(new Vector2Int(x, y));
+            }
+        }
+    }
+    
+    Debug.Log($"[Royal Rook] Found {emptyTiles.Count} empty tiles on the board");
+    
+    if (emptyTiles.Count < 3)
+    {
+        Debug.LogWarning("[Royal Rook] Not enough empty tiles to spawn 3 Celestial Orbs!");
+        return;
+    }
+    
+    // Choose 3 random empty tiles
+    List<Vector2Int> selectedTiles = new List<Vector2Int>();
+    List<Vector2Int> availableTiles = new List<Vector2Int>(emptyTiles);
+    
+    for (int i = 0; i < 3; i++)
+    {
+        int randomIndex = UnityEngine.Random.Range(0, availableTiles.Count);
+        Vector2Int selectedTile = availableTiles[randomIndex];
+        selectedTiles.Add(selectedTile);
+        availableTiles.RemoveAt(randomIndex);
+    }
+    
+    // Spawn Celestial Orb markers on selected tiles
+    foreach (Vector2Int tile in selectedTiles)
+    {
+        GameObject orb = SpawnCelestialOrb(game, tile.x, tile.y);
+        if (orb != null)
+        {
+            celestialOrbLocations.Add(tile);
+            celestialOrbCaptured.Add(false);
+            celestialOrbObjects.Add(orb);
+        }
+    }
+    
+    Debug.Log($"[Royal Rook] Spawned 3 Celestial Orbs on tiles: {string.Join(", ", selectedTiles)}");
+    
+    // End the Rook's turn
+    
+    
+    
+    // Hide UI panels before ending turn
+    if (UIManager.Instance != null)
+    {
+        UIManager.Instance.pawnPanel?.SetActive(false);
+        UIManager.Instance.knightPanel?.SetActive(false);
+        UIManager.Instance.bishopPanel?.SetActive(false);
+        UIManager.Instance.rookPanel?.SetActive(false);
+        UIManager.Instance.queenPanel?.SetActive(false);
+        UIManager.Instance.kingPanel?.SetActive(false);
+        UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
+        UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
+    }
+    
+    Debug.Log("[Royal Rook] Ending turn after casting skill");
+    game.NextTurn();
+   foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+           Destroy(plate); 
+}
+
+private GameObject SpawnCelestialOrb(Game game, int x, int y)
+{
+    // Use the same positioning as move plates
+    float fx = x * 0.57f - 1.98f;
+    float fy = y * 0.56f - 1.95f;
+    
+    // Instantiate the prefab instead of creating new GameObject
+    if (celestialOrbPrefab != null)
+    {
+        GameObject orb = Instantiate(celestialOrbPrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+        
+        // Debug: Check if orb has a sprite
+        SpriteRenderer sr = orb.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            Debug.Log($"[Royal Rook] Orb has sprite: {sr.sprite?.name ?? "NULL"}");
+        }
+        else
+        {
+            Debug.LogWarning("[Royal Rook] Orb prefab has no SpriteRenderer component!");
+        }
+        
+        // Add CelestialOrbMarker script if it doesn't exist
+        CelestialOrbMarker marker = orb.GetComponent<CelestialOrbMarker>();
+        if (marker == null)
+        {
+            marker = orb.AddComponent<CelestialOrbMarker>();
+        }
+        marker.Setup(game, x, y);
+        
+        Debug.Log($"[Royal Rook] Celestial Orb spawned at ({x},{y}) using prefab - Position: {orb.transform.position}");
+        return orb;
+    }
+    else
+    {
+        Debug.LogError("[Royal Rook] Celestial Orb prefab not assigned!");
+        return null;
+    }
+}
+
+// Clear all existing celestial orbs
+private void ClearCelestialOrbs()
+{
+    foreach (GameObject orb in celestialOrbObjects)
+    {
+        if (orb != null)
+        {
+            Destroy(orb);
+        }
+    }
+    celestialOrbLocations.Clear();
+    celestialOrbCaptured.Clear();
+    celestialOrbObjects.Clear();
+}
+
+// Check if Rook is on a celestial orb location
+public static void CheckCelestialOrbCapture(Vector2Int rookPosition)
+{
+    for (int i = 0; i < celestialOrbLocations.Count; i++)
+    {
+        if (celestialOrbLocations[i] == rookPosition && !celestialOrbCaptured[i])
+        {
+            // Rook captured this orb
+            celestialOrbCaptured[i] = true;
+            
+            // Change orb color to green
+            if (i < celestialOrbObjects.Count && celestialOrbObjects[i] != null)
+            {
+                SpriteRenderer sr = celestialOrbObjects[i].GetComponent<SpriteRenderer>();
+                if (sr != null)
+                {
+                    sr.color = Color.green;
+                }
+            }
+            
+            Debug.Log($"[Royal Rook] Celestial Orb captured at ({rookPosition.x},{rookPosition.y})!");
+            
+            // Check if all orbs are captured
+            bool allCaptured = true;
+            for (int j = 0; j < celestialOrbCaptured.Count; j++)
+            {
+                if (!celestialOrbCaptured[j])
+                {
+                    allCaptured = false;
+                    break;
+                }
+            }
+            
+            if (allCaptured)
+            {
+                Debug.Log("[Royal Rook] Ready for promotion!");
+                
+                // Find the Rook that captured the last orb
+                GameObject rookToPromote = FindRookAtPosition(rookPosition);
+                if (rookToPromote != null)
+                {
+                    // Get the position of the last orb captured
+                    Vector2Int promotionPosition = rookPosition;
+                    
+                    // Destroy the current Rook
+                    Destroy(rookToPromote);
+                    Debug.Log($"[Royal Rook] Destroyed Rook at ({promotionPosition.x},{promotionPosition.y})");
+                    
+                    // Destroy all celestial orbs
+                    foreach (GameObject orb in celestialOrbObjects)
+                    {
+                        if (orb != null)
+                        {
+                            Destroy(orb);
+                        }
+                    }
+                    Debug.Log("[Royal Rook] Destroyed all celestial orbs");
+                    
+                    // Create white_royal_rook at the last orb's position
+                    Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+                    GameObject royalRook = game.Create("white_royal_rook", promotionPosition.x, promotionPosition.y);
+                    
+                    if (royalRook != null)
+                    {
+                        Debug.Log($"[Royal Rook] Created white_royal_rook at ({promotionPosition.x},{promotionPosition.y})");
+                    }
+                    
+                    // Clear celestial orb tracking
+                    celestialOrbLocations.Clear();
+                    celestialOrbCaptured.Clear();
+                    celestialOrbObjects.Clear();
+                    
+                  
+                }
+                else
+                {
+                    Debug.LogError("[Royal Rook] Could not find Rook to promote!");
+                }
+            }
+            
+            break;
+        }
+    }
+}
+
+// Helper method to find the Rook at a specific position
+private static GameObject FindRookAtPosition(Vector2Int position)
+{
+    Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+    GameObject pieceAtPosition = game.GetPosition(position.x, position.y);
+    
+    if (pieceAtPosition != null && pieceAtPosition.name.Contains("rook"))
+    {
+        return pieceAtPosition;
+    }
+    
+    return null;
 }
 
 

@@ -34,6 +34,9 @@ public class EternityPiercePlate : MonoBehaviour
 
         // Execute the Eternity Pierce attack
         ExecuteEternityPierce();
+        
+      
+        
     }
 
     private void ExecuteEternityPierce()
@@ -84,6 +87,7 @@ public class EternityPiercePlate : MonoBehaviour
 
         // Stun all pieces in the line up to the clicked distance
         StunPiecesInLine(archbishopX, archbishopY, dirX, dirY, distance);
+        // Update visual status of all pieces on the board immediately
 
         // Mark skill as used
         Archbishop.eternityPierceUsed = true;
@@ -91,6 +95,7 @@ public class EternityPiercePlate : MonoBehaviour
 
         // Destroy all moveplates
         DestroyAllMovePlates();
+        
         // In Rook.cs, in AttemptFortify() method:
 if (SkillTracker.Instance != null)
 {
@@ -98,6 +103,11 @@ if (SkillTracker.Instance != null)
 }
         // End the Archbishop's turn
         game.NextTurn();
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+foreach (Chessman piece in allPieces)
+{
+    piece.UpdateVisualStatus();
+}
     }
 
     private void StunPiecesInLine(int startX, int startY, int dirX, int dirY, int maxDistance)

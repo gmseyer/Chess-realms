@@ -40,6 +40,12 @@ public class Archbishop : MonoBehaviour
             Destroy(plate);
 
         game.NextTurn();
+        // Update visual status of all pieces on the board immediately
+Chessman[] allPieces = FindObjectsOfType<Chessman>();
+foreach (Chessman piece in allPieces)
+{
+    piece.UpdateVisualStatus();
+}
     }
 
     // Eternity Pierce skill
@@ -139,6 +145,8 @@ public class Archbishop : MonoBehaviour
         {
             sr.color = Color.red; // Red color for eternity pierce
         }
+
+
     }
 
     // Soulbinding Conquest passive skill

@@ -210,6 +210,14 @@ public class MovePlate : MonoBehaviour
         }
         else
         {
+            // ----------------- Celestial Orb Capture Check -----------------
+            // Check if a Rook moved and captured a celestial orb
+            if (movingPiece.name.Contains("white_rook"))
+            {
+                Vector2Int rookPosition = new Vector2Int(matrixX, matrixY);
+                Rook.CheckCelestialOrbCapture(rookPosition);
+            }
+            
             // Normal turn ending
             controller.GetComponent<Game>().NextTurn();
         }

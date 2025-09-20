@@ -18,7 +18,7 @@ public class ElementalBishop : MonoBehaviour
 
     // TMP UI references (drag in from inspector)
     public TMP_Text infernalBrandCooldownText;
-    public TMP_Text glacialPathCooldownText;
+    public TMP_Text glacialPathCooldownText; 
     public TMP_Text stoneSentinelCooldownText;
 
     private Game game;

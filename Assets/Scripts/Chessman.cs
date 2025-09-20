@@ -32,6 +32,7 @@ public class Chessman : MonoBehaviour
 
     //Royal Units
     public Sprite white_royal_pawn;
+    public Sprite white_royal_rook;
 
     //Elemental Tiles
     public Sprite tile_lava;
@@ -68,6 +69,7 @@ public static class ChessNotation
     public static string GetPieceNotation(string pieceName)
     {
         if (pieceName.Contains("elemental_bishop")) return "EB";
+        if (pieceName.Contains("royal_rook")) return "RR";
         if (pieceName.Contains("arch")) return "AB";
         if (pieceName.Contains("pawn")) return "P";
         if (pieceName.Contains("knight")) return "N";
@@ -119,24 +121,38 @@ public static class ChessNotation
         if (game == null) return;
         bool isStunned = statusManager.HasStatus(StatusType.Stunned, game.turns);
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        bool isTemporalShifted = game.IsPlayerRestrictedToPawns(player) && !name.Contains("pawn");
         
         if (sr != null)
         {
-            if (isStunned)
-            {
-                // Store original color if not already stored
-                if (originalColor == Color.clear)
-                    originalColor = sr.color;
-                // Set to yellow
-                sr.color = Color.yellow;
-            }
-            else
-            {
-                // Restore original color
-                if (originalColor != Color.clear)
-                    sr.color = originalColor;
-            }
+           if (isStunned)
+{
+    // Store original color if not already stored
+    if (originalColor == Color.clear)
+        originalColor = sr.color;
+    // Set to yellow
+    sr.color = Color.magenta;
+}
+else if (isTemporalShifted)
+{
+    // Store original color if not already stored
+    if (originalColor == Color.clear)
+        originalColor = sr.color;
+    // Set to magenta for Temporal Shift
+    sr.color = Color.magenta;
+}
+else
+{
+    // Restore original color when effects end
+    if (originalColor != Color.clear)
+        sr.color = originalColor;
+}
+
         }
+
+        
+
+       
     }
 
 
@@ -288,6 +304,7 @@ if (game != null)
                 case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
                 //Royal Units
                 case "white_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = white_royal_pawn; player = "white"; break;
+                case "white_royal_rook": this.GetComponent<SpriteRenderer>().sprite = white_royal_rook; player = "white"; break;
                 //Elemental Tiles
                 case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
@@ -345,6 +362,7 @@ if (game != null)
             UIManager.Instance.kingPanel?.SetActive(false);
             UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
             UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteRoyalRookPanel?.SetActive(false);
         }
 
         // Get reference to Game controller
@@ -371,6 +389,8 @@ if (game != null)
                 panelForThisPiece = UIManager.Instance.whiteElementalBishopPanel;
             else if (name.Contains("arch_bishop"))
                 panelForThisPiece = UIManager.Instance.whiteArchBishopPanel;
+            else if (name.Contains("royal_rook"))
+                panelForThisPiece = UIManager.Instance.whiteRoyalRookPanel;
             else if (name.Contains("knight"))
                 panelForThisPiece = UIManager.Instance.knightPanel;
             else if (name.Contains("bishop"))
@@ -444,6 +464,7 @@ if (game != null)
             {
                 case "black_rook":
                 case "white_rook":
+                case "white_royal_rook":
                     if (fortifyActive)
                         SurroundMovePlate();
                     else

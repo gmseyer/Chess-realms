@@ -201,12 +201,18 @@ private void UpdateLatestMoveUI(string latestMove)
     ClearExpiredRestrictions();
     ResetAllPieceTurnFlags();
     ClearExpiredStatuses();
-    
+    // Update visual status of all pieces on the board immediately
+Chessman[] allPieces = FindObjectsOfType<Chessman>();
+foreach (Chessman piece in allPieces)
+{
+    piece.UpdateVisualStatus();
+}
     // Update the Turn UI with player
     if(TurnUI.Instance != null)
         TurnUI.Instance.UpdateTurn(turns, currentPlayer);
 
     // Elemental Bishop cleanup
+
     ElementalBishop eb = FindObjectOfType<ElementalBishop>();
     if(eb != null)
         eb.CheckAndDestroyExpiredTiles();
