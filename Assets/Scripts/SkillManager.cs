@@ -18,7 +18,7 @@ public class SkillManager : MonoBehaviour
 {
     public static SkillManager Instance;
 
-    [Header("Skill Points")]
+    [Header("Skill Points")] 
     public int whiteSkillPoints = 5;
     public int blackSkillPoints = 5;
 

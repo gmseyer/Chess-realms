@@ -20,7 +20,7 @@ public class SkillTracker : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else
+        else 
         {
             Destroy(gameObject);
         }

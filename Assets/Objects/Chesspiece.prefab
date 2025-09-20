@@ -121,6 +121,7 @@ MonoBehaviour:
   tile_lava: {fileID: 21300000, guid: f0c2abfac604f1345864039cd1e5dd5c, type: 3}
   tile_ice: {fileID: 21300000, guid: 263aa9c96d379b14c9805d6aa62510e2, type: 3}
   tile_earth: {fileID: 21300000, guid: bbfd5c64bda093e4a839e1433b8b1b71, type: 3}
+  celestial_pillar: {fileID: 21300000, guid: 0a2cb42e2cb1fba4c889ea65508732cb, type: 3}
   fortifyActive: 0
   isInvulnerable: 0
   invulnerableUntilTurn: -1

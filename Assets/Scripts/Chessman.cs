@@ -38,6 +38,7 @@ public class Chessman : MonoBehaviour
     public Sprite tile_lava;
     public Sprite tile_ice;
     public Sprite tile_earth;
+    public Sprite celestial_pillar;
 
     [HideInInspector] public bool fortifyActive = false; 
     [HideInInspector] public bool isInvulnerable = false;        
@@ -309,6 +310,7 @@ if (game != null)
                 case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
                 case "tile_earth": this.GetComponent<SpriteRenderer>().sprite = tile_earth; player = "neutral"; break;
+                case "celestial_pillar": this.GetComponent<SpriteRenderer>().sprite = celestial_pillar; player = "neutral"; break;
             }
         }
 
@@ -464,12 +466,30 @@ if (game != null)
             {
                 case "black_rook":
                 case "white_rook":
-                case "white_royal_rook":
                     if (fortifyActive)
                         SurroundMovePlate();
                     else
                     {
                         LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);
+                    }
+                    break;
+                case "white_royal_rook":
+                    if (fortifyActive)
+                        SurroundMovePlate();
+                    else
+                    {
+                        // Check for Celestial Synergy passive skill
+                        RoyalRook royalRook = GetComponent<RoyalRook>();
+                        if (royalRook != null && royalRook.CheckCelestialSynergy())
+                        {
+                            // Queen-like movement when Celestial Synergy is active
+                            royalRook.GenerateCelestialSynergyMovePlates();
+                        }
+                        else
+                        {
+                            // Normal Rook movement
+                            LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);
+                        }
                     }
                     break;
 

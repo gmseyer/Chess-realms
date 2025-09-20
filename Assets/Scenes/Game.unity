@@ -1589,6 +1589,30 @@ MonoBehaviour:
     onActivate:
       m_PersistentCalls:
         m_Calls: []
+  - skillName: CELESTIAL PILLAR
+    skillType: ACTIVE
+    spCost: 2
+    cooldown: 0
+    duration: 999
+    limitation: ONCE PER BATTLE
+    icon: {fileID: 21300000, guid: dfa466d5ed95cd7478d8dbf065677485, type: 3}
+    effect: Creates a celestial pillar on chosen tile. The pillar blocks all pieces
+      movements and can be use to interact with Royal Rook other skills.
+    onActivate:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1013008862}
+          m_TargetAssemblyTypeName: RoyalRook, Assembly-CSharp
+          m_MethodName: CelestialPillar
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   skillNameText: {fileID: 354717656}
   spCostText: {fileID: 712606975}
   cooldownText: {fileID: 1160215722}
@@ -12964,7 +12988,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 25
+          m_IntArgument: 36
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -17224,7 +17248,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &851369873
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19731,6 +19755,56 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1013008861
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1013008863}
+  - component: {fileID: 1013008862}
+  m_Layer: 5
+  m_Name: RoyalRookScript
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1013008862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013008861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc9c8fab63ce02e4fa8a659446a6dfe6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movePlatePrefab: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
+    type: 3}
+--- !u!224 &1013008863
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013008861}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 90}
+  m_LocalScale: {x: 0.007026315, y: 0.007026315, z: 0.007026315}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -1.8544595, y: 13226896}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1015292001
 GameObject:
   m_ObjectHideFlags: 0
@@ -40449,6 +40523,7 @@ MonoBehaviour:
   tile_lava: {fileID: 21300000, guid: f0c2abfac604f1345864039cd1e5dd5c, type: 3}
   tile_ice: {fileID: 21300000, guid: 263aa9c96d379b14c9805d6aa62510e2, type: 3}
   tile_earth: {fileID: 21300000, guid: bbfd5c64bda093e4a839e1433b8b1b71, type: 3}
+  celestial_pillar: {fileID: 0}
   fortifyActive: 0
   isInvulnerable: 0
   invulnerableUntilTurn: -1
@@ -42224,6 +42299,7 @@ SceneRoots:
   - {fileID: 1783933381}
   - {fileID: 1206980337}
   - {fileID: 1841563199}
+  - {fileID: 1013008863}
   - {fileID: 1396465291}
   - {fileID: 72916003}
   - {fileID: 1895310620}

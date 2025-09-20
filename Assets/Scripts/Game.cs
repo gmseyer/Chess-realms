@@ -146,6 +146,12 @@ private void UpdateLatestMoveUI(string latestMove)
         cm.SetPlayer("neutral");          // neutral tile
         cm.statusManager.AddStatus(StatusType.Invulnerable, 999); // never expires
         cm.statusManager.AddStatus(StatusType.SolidBlock, 999);   // blocks movement
+        }
+        else if (name == "celestial_pillar")
+        {
+        cm.SetPlayer("neutral");          // neutral tile
+        cm.statusManager.AddStatus(StatusType.Invulnerable, 999); // never expires
+        cm.statusManager.AddStatus(StatusType.SolidBlock, 999);   // blocks movement
         }   
 
         if (name.Contains("bishop"))
@@ -165,6 +171,16 @@ private void UpdateLatestMoveUI(string latestMove)
                 Archbishop ab = obj.AddComponent<Archbishop>();
                 // ✅ assign prefab from a central reference
                 ab.movePlatePrefab = movePlatePrefabReference;
+            }
+        }
+
+        if (name.Contains("royal_rook"))
+        {
+            if (obj.GetComponent<RoyalRook>() == null)
+            {
+                RoyalRook rr = obj.AddComponent<RoyalRook>();
+                // ✅ assign prefab from a central reference
+                rr.movePlatePrefab = movePlatePrefabReference;
             }
         }
 

@@ -126,7 +126,7 @@ if (SkillTracker.Instance != null)
 
    
 
-    private class ActiveTile
+    private class ActiveTile 
 {
     public GameObject tileObject;
     public int expireTurn;
