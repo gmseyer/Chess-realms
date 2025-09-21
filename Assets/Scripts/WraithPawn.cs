@@ -6,6 +6,9 @@ public class WraithPawn : MonoBehaviour
     private Game game;
     private int turnsUntilVanishing = 5;
     private bool hasExploded = false;
+    
+    // SoulboundCatalyst passive variables
+    private static int soulboundCatalystCooldown = 0; // Shared cooldown for all wraith pawns per player
 
     private void Awake()
     {
@@ -236,5 +239,94 @@ public class WraithPawn : MonoBehaviour
     public int GetTurnsUntilVanishing()
     {
         return turnsUntilVanishing;
+    }
+
+    // SoulboundCatalyst passive - gains SP when capturing enemy pieces
+    public void SoulboundCatalyst(GameObject capturedPiece)
+    {
+        if (capturedPiece == null)
+        {
+            Debug.LogWarning("[SoulboundCatalyst] Captured piece is null!");
+            return;
+        }
+
+        // Check if cooldown is active
+        if (game != null && game.turns <= soulboundCatalystCooldown)
+        {
+            Debug.Log($"[SoulboundCatalyst] On cooldown until turn {soulboundCatalystCooldown} (current: {game.turns})");
+            return;
+        }
+
+        string pieceName = capturedPiece.name.ToLower();
+        string player = chessman != null ? chessman.GetPlayer() : "white"; // Default to white for wraith pawns
+        int spGained = 0;
+
+        // Determine SP gain based on captured piece type
+        if (pieceName.Contains("rook") || pieceName.Contains("bishop") || pieceName.Contains("knight"))
+        {
+            spGained = 1;
+            Debug.Log($"[SoulboundCatalyst] {player} captured {capturedPiece.name} - gained 1 SP");
+        }
+        else if (pieceName.Contains("queen") || pieceName.Contains("king") || 
+                 pieceName.Contains("archbishop") || pieceName.Contains("royal") ||
+                 pieceName.Contains("elemental") || pieceName.Contains("celestial"))
+        {
+            spGained = 2;
+            Debug.Log($"[SoulboundCatalyst] {player} captured {capturedPiece.name} - gained 2 SP");
+        }
+        else if (pieceName.Contains("pawn"))
+        {
+            Debug.Log($"[SoulboundCatalyst] {player} captured {capturedPiece.name} - no SP gained (pawn)");
+            return; // No SP for pawns, but still start cooldown
+        }
+        else
+        {
+            // Default case for any other piece types
+            spGained = 2;
+            Debug.Log($"[SoulboundCatalyst] {player} captured {capturedPiece.name} - gained 2 SP (default)");
+        }
+
+        // Add SP to player
+        if (spGained > 0 && SkillManager.Instance != null)
+        {
+            SkillManager.Instance.AddPlayerSP(player, spGained);
+            
+            // Start 20-turn cooldown
+            if (game != null)
+            {
+                soulboundCatalystCooldown = game.turns + 20;
+                Debug.Log($"[SoulboundCatalyst] Cooldown started - available again on turn {soulboundCatalystCooldown}");
+            }
+            
+            // Log skill usage
+            if (SkillTracker.Instance != null)
+            {
+                SkillTracker.Instance.LogSkillUsage(player, "WRAITH PAWN", "SOULBOUND CATALYST", spGained);
+            }
+        }
+        else if (spGained == 0)
+        {
+            // Still start cooldown even if no SP gained
+            if (game != null)
+            {
+                soulboundCatalystCooldown = game.turns + 20;
+                Debug.Log($"[SoulboundCatalyst] Cooldown started (no SP gained) - available again on turn {soulboundCatalystCooldown}");
+            }
+        }
+    }
+
+    // Public method to check if SoulboundCatalyst is on cooldown
+    public static bool IsSoulboundCatalystOnCooldown(Game game)
+    {
+        if (game == null) return false;
+        return game.turns <= soulboundCatalystCooldown;
+    }
+
+    // Public method to get remaining cooldown turns
+    public static int GetSoulboundCatalystCooldownRemaining(Game game)
+    {
+        if (game == null) return 0;
+        int remaining = soulboundCatalystCooldown - game.turns;
+        return Mathf.Max(0, remaining);
     }
 }

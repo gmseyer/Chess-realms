@@ -31,7 +31,7 @@ public class RoyalBishop : Pieces
         
         // Check SP cost (2 SP)
         if (!SkillManager.Instance.SpendPlayerSP(player, 2))
-        {
+        { 
             Debug.LogWarning("[SoulRequiem] Not enough SP to cast.");
             return;
         }
@@ -71,6 +71,61 @@ public class RoyalBishop : Pieces
         }
         
         Debug.Log("[SoulRequiem] Skill activated - diagonal range plates generated!");
+    }
+
+    // Divinity Passive - gains 1 turn invulnerability when capturing pieces
+    public void DivinityPassive(GameObject capturedPiece)
+    {
+        if (capturedPiece == null)
+        {
+            Debug.LogWarning("[Divinity] Captured piece is null!");
+            return;
+        }
+
+        string player = chessman != null ? chessman.GetPlayer() : "white"; // Default to white for royal bishops
+
+        // Check if Divinity is on cooldown (10 turns, shared across all Royal Bishops)
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "DivinityPassive"))
+        {
+            Debug.Log($"[Divinity] Passive is on cooldown for {player} - cannot gain invulnerability");
+            return;
+        }
+
+        // Get game reference
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[Divinity] Cannot find Game component!");
+            return;
+        }
+
+        // Add 1-turn invulnerability (starts next turn)
+        Chessman royalBishopCm = GetComponent<Chessman>();
+        if (royalBishopCm != null && royalBishopCm.statusManager != null)
+        {
+            int currentTurn = game.turns;
+            int invulnerabilityEndTurn = currentTurn + 1; // 1 turn invulnerability starting next turn
+            royalBishopCm.statusManager.AddStatus(StatusType.Invulnerable, invulnerabilityEndTurn);
+            
+            Debug.Log($"[Divinity] {player} Royal Bishop gained 1-turn invulnerability (until turn {invulnerabilityEndTurn}) for capturing {capturedPiece.name}");
+            
+            // Start 10-turn cooldown (shared across all Royal Bishops for this player)
+            if (CooldownManager.Instance != null)
+            {
+                CooldownManager.Instance.StartCooldown(player, "DivinityPassive", CooldownManager.CooldownType.TurnBased, 10);
+                Debug.Log($"[Divinity] 10-turn cooldown started for {player} Royal Bishops");
+            }
+            
+            // Log skill usage
+            if (SkillTracker.Instance != null)
+            {
+                SkillTracker.Instance.LogSkillUsage(player, "ROYAL BISHOP", "DIVINITY PASSIVE", 0); // 0 SP cost since it's passive
+            }
+        }
+        else
+        {
+            Debug.LogError("[Divinity] Cannot find Chessman or StatusManager component on Royal Bishop!");
+        }
     }
     
     // Generate diagonal range plates for wraith pawn summoning

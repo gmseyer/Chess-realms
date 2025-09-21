@@ -104,10 +104,64 @@ public float spPanelFadeDuration = 0.3f; // fade in/out duration
             blackSkillPoints += amount;
 
         Debug.Log($"[SkillManager] {player} gained {amount} SP. Now: {GetPlayerSP(player)}");
-        UpdateSPUI();
+        
+        // Update text first
+        UpdateSPText();
+        
+        // Trigger SP gain animation (this will handle gem opacity)
+        StartCoroutine(AnimateSPGain(player, amount));
     }
 
-    // ✅ Cooldown handling
+    // Animate SP gain with a special effect
+    private System.Collections.IEnumerator AnimateSPGain(string player, int amountGained)
+    {
+        List<Image> gems = (player == "white") ? whiteGems : blackGems;
+        int currentSP = GetPlayerSP(player);
+        
+        // Animate the newly gained gems with a special effect
+        for (int i = currentSP - amountGained; i < currentSP && i < gems.Count; i++)
+        {
+            if (gems[i] != null)
+            {
+                // Flash effect for gained SP
+                StartCoroutine(FlashGem(gems[i]));
+            }
+        }
+        
+        // Wait for animation to complete, then update gem opacity
+        yield return new WaitForSeconds(0.5f); // Wait for flash animation
+        
+        // Update gem opacity to final state
+        UpdateGemOpacity(player);
+    }
+
+    // Flash animation for SP gain
+    private System.Collections.IEnumerator FlashGem(Image gem)
+    {
+        if (gem == null) yield break;
+        
+        Color originalColor = gem.color;
+        Color flashColor = new Color(1f, 1f, 0f, 1f); // Bright yellow flash
+        
+        // Flash bright yellow
+        gem.color = flashColor;
+        yield return new WaitForSeconds(0.1f);
+        
+        // Fade back to original color
+        float timer = 0f;
+        float duration = 0.3f;
+        
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            gem.color = Color.Lerp(flashColor, originalColor, timer / duration); 
+            yield return null;
+        }
+        
+        gem.color = originalColor;
+    }
+
+    // ✅ Cooldown handling 
     public bool IsSkillOnCooldown(string player, SkillType skill)
     {
         if (cooldowns[player].ContainsKey(skill))
@@ -124,16 +178,19 @@ public float spPanelFadeDuration = 0.3f; // fade in/out duration
 
     // ✅ Updates UI live
     private void UpdateSPUI()
-{
-    if (whiteSPText != null)
-        whiteSPText.text = $"White SP: {whiteSkillPoints}";
-    if (blackSPText != null)
-        blackSPText.text = $"Black SP: {blackSkillPoints}";
+    {
+        UpdateSPText();
+        UpdateGemOpacity("white");
+        UpdateGemOpacity("black");
+    }
 
-    // Update gems for visual feedback
-    UpdateGemOpacity("white");
-    UpdateGemOpacity("black");
-}
+    private void UpdateSPText()
+    {
+        if (whiteSPText != null)
+            whiteSPText.text = $"White SP: {whiteSkillPoints}";
+        if (blackSPText != null)
+            blackSPText.text = $"Black SP: {blackSkillPoints}";
+    }
 
 
 

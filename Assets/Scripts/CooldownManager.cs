@@ -120,7 +120,7 @@ public class CooldownManager : MonoBehaviour
             cooldowns[player].Clear();
             Debug.Log($"[CooldownManager] Reset all cooldowns for {player}");
         }
-    }
+    } 
 
     /// <summary>
     /// Reset all cooldowns for all players

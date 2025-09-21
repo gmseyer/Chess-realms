@@ -1660,6 +1660,81 @@ MonoBehaviour:
     onActivate:
       m_PersistentCalls:
         m_Calls: []
+  - skillName: DIVINITY
+    skillType: PASSIVE
+    spCost: 0
+    cooldown: 5
+    duration: 0
+    limitation: MUST CAPTURE ENEMY PIECES.
+    icon: {fileID: 21300000, guid: 877668208ccae554981678a580cf45a6, type: 3}
+    effect: Each time the Royal Bishop captures a piece afterward, gains 1 turn of
+      invulnerability
+    onActivate:
+      m_PersistentCalls:
+        m_Calls: []
+  - skillName: SOUL REQUIEM
+    skillType: 'ACTIVE '
+    spCost: 2
+    cooldown: 12
+    duration: 0
+    limitation: CAN ONLY SUMMON ON ROYAL BISHOP'S RANGE
+    icon: {fileID: 21300000, guid: 400fdf3f4b5ba6844b8bd498a6255426, type: 3}
+    effect: SUMMON 2 WRAITH PAWNS ON ANY BISHOP DIRECTION.
+    onActivate:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1242441358}
+          m_TargetAssemblyTypeName: RoyalBishop, Assembly-CSharp
+          m_MethodName: SoulRequiem
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - skillName: SANCTIFIED RUIN
+    skillType: 'ACTIVE '
+    spCost: 2
+    cooldown: 12
+    duration: 3
+    limitation: CAN ONLY SUMMON ON ROYAL BISHOP'S RANGE
+    icon: {fileID: 21300000, guid: 94f85fbc14d9d704280c53021ddf6f66, type: 3}
+    effect: "Create a Sacred Zone on a 3\xD73 area centered on a diagonal tile within
+      the Bishop\u2019s movement range"
+    onActivate:
+      m_PersistentCalls:
+        m_Calls: []
+  - skillName: DEATHBURST
+    skillType: PASSIVE
+    spCost: 0
+    cooldown: 0
+    duration: 5
+    limitation: ONLY EXPLODES WHEN CAPTURED, DOES NOT TRIGGER WHEN DYING IN OTHER
+      WAY
+    icon: {fileID: 21300000, guid: 3fc233746ab298f40b1eac8de519a7bc, type: 3}
+    effect: 'Wraith Pawn explodes in a 3x3 area when captured by any enemy pieces.
+
+
+      Destroys
+      any pawn in the area.'
+    onActivate:
+      m_PersistentCalls:
+        m_Calls: []
+  - skillName: SOULBOUND CATALYST
+    skillType: PASSIVE
+    spCost: 0
+    cooldown: 5
+    duration: 0
+    limitation: 
+    icon: {fileID: 21300000, guid: 76a70f43672ad794687a743ceb0cc52c, type: 3}
+    effect: When a Wraith Pawn captures a minor enemy pieces (rook, knight,bishop)
+      the player gains 1 SP. Capturing Major pieces gives 2 SP
+    onActivate:
+      m_PersistentCalls:
+        m_Calls: []
   skillNameText: {fileID: 354717656}
   spCostText: {fileID: 712606975}
   cooldownText: {fileID: 1160215722}
@@ -4036,7 +4111,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 36
+          m_IntArgument: 41
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -7434,12 +7509,12 @@ GameObject:
   m_Component:
   - component: {fileID: 289329350}
   m_Layer: 5
-  m_Name: wraitPawnPanel
+  m_Name: wraithPawnPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &289329350
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16653,7 +16728,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 38
+          m_IntArgument: 39
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -17237,7 +17312,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 35
+          m_IntArgument: 42
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -22173,7 +22248,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 37
+          m_IntArgument: 40
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -25067,6 +25142,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1111225412}
   m_CullTransparentMesh: 1
+--- !u!1 &1114203947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1114203949}
+  - component: {fileID: 1114203948}
+  m_Layer: 5
+  m_Name: wraithPawnScript
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1114203948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114203947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce5224aedcdf22149b21c13f2ab4c41c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &1114203949
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1114203947}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 90}
+  m_LocalScale: {x: 0.007026315, y: 0.007026315, z: 0.007026315}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -263.9306, y: 1.8824797e+9}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1129827730
 GameObject:
   m_ObjectHideFlags: 0
@@ -27196,6 +27319,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1238580342}
   m_CullTransparentMesh: 1
+--- !u!1 &1242441357
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1242441359}
+  - component: {fileID: 1242441358}
+  m_Layer: 5
+  m_Name: RoyalBishopScript
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1242441358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1242441357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d35b91a32b8c3d4eb09bc08703a181a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movePlatePrefab: {fileID: 0}
+--- !u!224 &1242441359
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1242441357}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 90}
+  m_LocalScale: {x: 0.007026315, y: 0.007026315, z: 0.007026315}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -1.8544595, y: 13226896}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1245162044
 GameObject:
   m_ObjectHideFlags: 0
@@ -28192,9 +28364,9 @@ RectTransform:
   m_Father: {fileID: 367819338}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.02496, y: 0.000091553}
-  m_SizeDelta: {x: 880.65, y: 1699}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -219.97504, y: 0.000091553}
+  m_SizeDelta: {x: 440.65002, y: 1699}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1282381628
 MonoBehaviour:
@@ -30816,7 +30988,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 8
+          m_IntArgument: 43
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -32837,6 +33009,7 @@ MonoBehaviour:
   whiteArchBishopPanel: {fileID: 1620012382}
   whiteRoyalRookPanel: {fileID: 851369872}
   whiteRoyalBishopPanel: {fileID: 457520622}
+  whiteWraithPawnPanel: {fileID: 289329349}
   rookSPText: {fileID: 0}
   fortifyButton: {fileID: 0}
   selectedPiece: {fileID: 0}
@@ -45054,6 +45227,7 @@ MonoBehaviour:
   white_elemental_bishop: {fileID: 21300000, guid: 61d2c75d5d05f3f4bb1b2750fca98e6f,
     type: 3}
   white_arch_bishop: {fileID: 21300000, guid: 80595f560b1427e4aaf468daa9974fc1, type: 3}
+  white_wraith_pawn: {fileID: 0}
   white_royal_pawn: {fileID: 21300000, guid: 831bab5e114e9c14eabb1793ecf69336, type: 3}
   white_royal_rook: {fileID: 0}
   white_royal_bishop: {fileID: 0}
@@ -46989,6 +47163,8 @@ SceneRoots:
   - {fileID: 1206980337}
   - {fileID: 1841563199}
   - {fileID: 1013008863}
+  - {fileID: 1114203949}
+  - {fileID: 1242441359}
   - {fileID: 1396465291}
   - {fileID: 72916003}
   - {fileID: 1895310620}

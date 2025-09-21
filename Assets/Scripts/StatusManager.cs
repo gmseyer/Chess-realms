@@ -24,7 +24,7 @@ public class StatusManager : MonoBehaviour
     }
 
     private List<Status> activeStatuses = new List<Status>();
-    
+     
     // Soulbrand stack tracking
     private int soulbrandStacks = 0;
 

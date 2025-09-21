@@ -429,7 +429,7 @@ public class Bishop : Pieces
             selectedBishop = selectedPiece.GetComponent<Bishop>();
         }
         
-        if (selectedBishop == null)
+        if (selectedBishop == null) 
         {
             Debug.LogError("[WraithformAscension] No selected Bishop found!");
             return;
@@ -460,6 +460,16 @@ public class Bishop : Pieces
         }
         
         Debug.Log("[WraithformAscension] Skill activated successfully!");
+                 Chessman[] allPieces = FindObjectsOfType<Chessman>();
+            
+foreach (Chessman piece in allPieces)
+{
+    piece.UpdateVisualStatus();
+    foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+}
+
+   
     }
 
     // Ethereal movement method - can pass through any piece but only land on empty tiles
@@ -596,6 +606,8 @@ public class Bishop : Pieces
         {
             sr.color = Color.cyan;
         }
+
+    
     }
 
 }

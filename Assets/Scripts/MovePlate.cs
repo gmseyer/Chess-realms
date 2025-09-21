@@ -197,6 +197,30 @@ public class MovePlate : MonoBehaviour
                     Destroy(cp);
                 }
 
+                // ----------------- SoulboundCatalyst Passive Check -----------------
+                // Check if the attacking piece is a WraithPawn and trigger SoulboundCatalyst
+                if (reference != null && reference.name.ToLower().Contains("wraith_pawn"))
+                {
+                    WraithPawn attackingWraithPawn = reference.GetComponent<WraithPawn>();
+                    if (attackingWraithPawn != null && cp != null)
+                    {
+                        Debug.Log($"[MovePlate] WraithPawn {reference.name} captured {cp.name} - triggering SoulboundCatalyst");
+                        attackingWraithPawn.SoulboundCatalyst(cp);
+                    }
+                }
+
+                // ----------------- Divinity Passive Check -----------------
+                // Check if the attacking piece is a Royal Bishop and trigger Divinity passive
+                if (reference != null && reference.name.ToLower().Contains("royal_bishop"))
+                {
+                    RoyalBishop attackingRoyalBishop = reference.GetComponent<RoyalBishop>();
+                    if (attackingRoyalBishop != null && cp != null)
+                    {
+                        Debug.Log($"[MovePlate] Royal Bishop {reference.name} captured {cp.name} - triggering Divinity passive");
+                        attackingRoyalBishop.DivinityPassive(cp);
+                    }
+                }
+
             }
         }
 
