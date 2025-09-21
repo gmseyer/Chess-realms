@@ -70,9 +70,9 @@ public class Bishop : Pieces
             Destroy(plate);
 
         // ✅ Spawn ELEMENTAL BISHOP plates (bottom 3-4 ranks)
-        for (int x = 0; x < 8; x++)
+        for (int x = 4; x < 8; x++)
         {
-            for (int y = 0; y < 2; y++)
+            for (int y = 0; y < 4; y++)
             {
                 if (game.GetPosition(x, y) == null)
                 {
@@ -83,9 +83,9 @@ public class Bishop : Pieces
         }
 
         // ✅ Spawn ARCHBISHOP plates (bottom 1-2 ranks)
-        for (int x = 0; x < 8; x++)
+        for (int x = 0; x < 4; x++)
         {
-            for (int y = 2; y < 4; y++)
+            for (int y = 0; y < 4; y++)
             {
                 if (game.GetPosition(x, y) == null)
                 {

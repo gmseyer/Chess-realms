@@ -548,8 +548,20 @@ if (game != null)
                 case "white_queen":
                     LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);
                     LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
-                case "black_king": SurroundMovePlate(); break;
-                case "white_king": SurroundMovePlate(); break;
+                case "black_king": 
+                case "white_king":
+                    // Use King's Last Stand passive system
+                    King kingComponent = GetComponent<King>();
+                    if (kingComponent != null)
+                    {
+                        kingComponent.ForceGenerateLastStandMovePlates();
+                    }
+                    else
+                    {
+                        // Fallback to normal movement if King component not found
+                        SurroundMovePlate();
+                    }
+                    break;
             }
         }
     } // END OF INITIATEMOVEPLATES

@@ -203,6 +203,7 @@ private void UpdateLatestMoveUI(string latestMove)
             }
         }
 
+
         if (name.Contains("knight"))
         {
             if (obj.GetComponent<Knight>() == null)
@@ -224,6 +225,19 @@ private void UpdateLatestMoveUI(string latestMove)
          q.movePlatePrefab = movePlatePrefabReference;
         }
         cm.Activate();
+        
+        // Add King component after Chessman is fully activated
+        if (name.Contains("king"))
+        {
+            if (obj.GetComponent<King>() == null)
+            {
+                King kingComponent = obj.AddComponent<King>();
+                // ✅ assign prefab from a central reference
+                kingComponent.movePlatePrefab = movePlatePrefabReference;
+                Debug.Log($"[Game] King component added for {name} at ({x},{y})");
+            }
+        }
+        
         return obj;
     }
 
@@ -256,6 +270,23 @@ foreach (WraithPawn wraithPawn in wraithPawns)
         catch (System.Exception e)
         {
             Debug.LogError($"[Game] Error notifying WraithPawn of turn change: {e.Message}");
+        }
+    }
+}
+
+// Update King Last Stand movement when pawn counts change
+King[] kings = FindObjectsOfType<King>();
+foreach (King king in kings)
+{
+    if (king != null && king.gameObject != null)
+    {
+        try
+        {
+            king.UpdateLastStandMovement();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[Game] Error updating King Last Stand movement: {e.Message}");
         }
     }
 }
