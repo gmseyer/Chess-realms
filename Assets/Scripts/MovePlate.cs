@@ -154,7 +154,23 @@ public class MovePlate : MonoBehaviour
                 }
                 // --ARCHBISHOP SOULBINDING CONQUEST END -------------------------------------
 
-                Destroy(cp);
+                // ---------- WRAITH PAWN EXPLOSION CHECK ----------
+                bool isWraithPawn = cp.name.ToLower().Contains("wraith_pawn");
+                if (isWraithPawn)
+                {
+                    WraithPawn wraithPawn = cp.GetComponent<WraithPawn>();
+                    if (wraithPawn != null)
+                    {
+                        wraithPawn.OnCaptured(); // This will trigger explosion and destroy the piece
+                        // Don't return early - continue with normal capture flow
+                    }
+                }
+
+                // Only destroy the piece if it's not a wraith pawn (wraith pawn destroys itself in explosion)
+                if (!isWraithPawn)
+                {
+                    Destroy(cp);
+                }
 
                 // ---------- QUEEN DESTROYED LOG ----------
                 if (cp.name.ToLower().Contains("queen"))
@@ -172,6 +188,14 @@ public class MovePlate : MonoBehaviour
                     return; // IMPORTANT: stop further processing so the player can click momentum tile
                 }
 
+                // ----------------- Wraith Pawn Cleanup -----------------
+                // If we captured a wraith pawn, destroy it now after the move is complete
+                if (isWraithPawn && cp != null)
+                {
+                    Debug.Log($"[MovePlate] Cleaning up wraith pawn {cp.name} after move completion");
+                    controller.GetComponent<Game>().SetPositionEmpty(matrixX, matrixY);
+                    Destroy(cp);
+                }
 
             }
         }

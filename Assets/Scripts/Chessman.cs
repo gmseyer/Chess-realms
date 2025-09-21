@@ -29,6 +29,7 @@ public class Chessman : MonoBehaviour
     //summoned units
     public Sprite white_elemental_bishop;
     public Sprite white_arch_bishop;
+    public Sprite white_wraith_pawn;
 
     //Royal Units
     public Sprite white_royal_pawn;
@@ -73,6 +74,7 @@ public static class ChessNotation
         if (pieceName.Contains("elemental_bishop")) return "EB";
         if (pieceName.Contains("royal_bishop")) return "RB";
         if (pieceName.Contains("royal_rook")) return "RR";
+        if (pieceName.Contains("wraith_pawn")) return "WP";
         if (pieceName.Contains("arch")) return "AB";
         if (pieceName.Contains("pawn")) return "P";
         if (pieceName.Contains("knight")) return "N";
@@ -314,6 +316,7 @@ if (game != null)
                 //Summoned Units
                 case "white_elemental_bishop": this.GetComponent<SpriteRenderer>().sprite = white_elemental_bishop; player = "white"; break;
                 case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
+                case "white_wraith_pawn": this.GetComponent<SpriteRenderer>().sprite = white_wraith_pawn; player = "white"; break;
                 //Royal Units
                 case "white_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = white_royal_pawn; player = "white"; break;
                 case "white_royal_rook": this.GetComponent<SpriteRenderer>().sprite = white_royal_rook; player = "white"; break;
@@ -378,6 +381,7 @@ if (game != null)
             UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
             UIManager.Instance.whiteRoyalRookPanel?.SetActive(false);
             UIManager.Instance.whiteRoyalBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteWraithPawnPanel?.SetActive(false);
         }
 
         // Get reference to Game controller
@@ -398,7 +402,9 @@ if (game != null)
         // ✅ Select the correct panel for this piece
         if (UIManager.Instance != null)
         {
-            if (name.Contains("pawn"))
+            if (name.Contains("wraith_pawn"))
+                panelForThisPiece = UIManager.Instance.whiteWraithPawnPanel;
+            else if (name.Contains("pawn"))
                 panelForThisPiece = UIManager.Instance.pawnPanel;
             else if (name.Contains("elemental_bishop"))
                 panelForThisPiece = UIManager.Instance.whiteElementalBishopPanel;
@@ -463,7 +469,7 @@ if (game != null)
             }
         }
 
-        else if (this.name.StartsWith("white_pawn"))
+        else if (this.name.StartsWith("white_pawn")|| this.name.StartsWith("white_wraith_pawn"))
         {
             PawnMovePlate(xBoard, yBoard + 1);
             if (yBoard == 1 && game.GetPosition(xBoard, yBoard + 1) == null && game.GetPosition(xBoard, yBoard + 2) == null)

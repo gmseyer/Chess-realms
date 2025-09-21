@@ -15,7 +15,7 @@ public class CooldownManager : MonoBehaviour
         OncePerBattle,  // Can only be used once per battle
         UsesPerBattle   // Can be used X times per battle
     }
- 
+  
 
     // Storage for cooldowns
     private Dictionary<string, Dictionary<string, CooldownData>> cooldowns = 
@@ -114,7 +114,7 @@ public class CooldownManager : MonoBehaviour
     /// </summary>
     /// <param name="player">Player to reset cooldowns for</param>
     public void ResetPlayerCooldowns(string player)
-    {
+    { 
         if (cooldowns.ContainsKey(player))
         {
             cooldowns[player].Clear();

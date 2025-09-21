@@ -116,6 +116,7 @@ MonoBehaviour:
   white_elemental_bishop: {fileID: 21300000, guid: 61d2c75d5d05f3f4bb1b2750fca98e6f,
     type: 3}
   white_arch_bishop: {fileID: 21300000, guid: 80595f560b1427e4aaf468daa9974fc1, type: 3}
+  white_wraith_pawn: {fileID: 21300000, guid: 3187ba6aeef17ec4bb954d9c36918863, type: 3}
   white_royal_pawn: {fileID: 21300000, guid: 831bab5e114e9c14eabb1793ecf69336, type: 3}
   white_royal_rook: {fileID: 21300000, guid: 17a66e22237524e4da663eff3054834b, type: 3}
   white_royal_bishop: {fileID: 21300000, guid: 2a6fb0a8e20f1734d82ce5555f89ac49, type: 3}

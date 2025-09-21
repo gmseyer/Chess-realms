@@ -91,7 +91,7 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
             
-            
+           
 
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -194,6 +194,15 @@ private void UpdateLatestMoveUI(string latestMove)
             }
         }
 
+        if (name.Contains("wraith_pawn"))
+        {
+            if (obj.GetComponent<WraithPawn>() == null)
+            {
+                WraithPawn wp = obj.AddComponent<WraithPawn>();
+                Debug.Log($"[Game] WraithPawn component added for {name} at ({x},{y})");
+            }
+        }
+
         if (name.Contains("knight"))
         {
             if (obj.GetComponent<Knight>() == null)
@@ -232,6 +241,23 @@ Chessman[] allPieces = FindObjectsOfType<Chessman>();
 foreach (Chessman piece in allPieces)
 {
     piece.UpdateVisualStatus();
+}
+
+// Notify WraithPawns of turn change
+WraithPawn[] wraithPawns = FindObjectsOfType<WraithPawn>();
+foreach (WraithPawn wraithPawn in wraithPawns)
+{
+    if (wraithPawn != null && wraithPawn.gameObject != null)
+    {
+        try
+        {
+            wraithPawn.OnTurnChanged();
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[Game] Error notifying WraithPawn of turn change: {e.Message}");
+        }
+    }
 }
     // Update the Turn UI with player
     if(TurnUI.Instance != null)

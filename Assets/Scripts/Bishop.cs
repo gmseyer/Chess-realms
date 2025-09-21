@@ -510,11 +510,10 @@ public class Bishop : Pieces
         }
         
         Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
-        int x = chessman.GetXBoard();
-        int y = chessman.GetYBoard();
-        
-        // List to track enemies passed through
-        List<GameObject> passedEnemies = new List<GameObject>();
+        int startX = chessman.GetXBoard();
+        int startY = chessman.GetYBoard();
+        int x = startX;
+        int y = startY;
         
         while (game.PositionOnBoard(x + xIncrement, y + yIncrement))
         {
@@ -525,22 +524,54 @@ public class Bishop : Pieces
             if (target == null)
             {
                 // Empty tile - can land here
+                // Calculate enemies passed through on the actual path to this destination
+                List<GameObject> passedEnemies = GetEnemiesOnPath(startX, startY, x, y, xIncrement, yIncrement);
                 EtherealMovePlateSpawn(x, y, passedEnemies);
             }
             else
             {
-                // Occupied tile - check if it's an enemy
-                Chessman targetCm = target.GetComponent<Chessman>();
-                if (targetCm != null && targetCm.GetPlayer() != chessman.GetPlayer())
-                {
-                    // Enemy piece - add to passed enemies list
-                    passedEnemies.Add(target);
-                    Debug.Log($"[EtherealMovement] Bishop passed through enemy: {target.name}");
-                }
-                // Continue to next tile to check for empty destination
+                // Occupied tile - continue to next tile to check for empty destination
                 continue;
             }
         }
+    }
+    
+    // Helper method to get enemies on the actual path between start and destination
+    private List<GameObject> GetEnemiesOnPath(int startX, int startY, int destX, int destY, int xIncrement, int yIncrement)
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        List<GameObject> passedEnemies = new List<GameObject>();
+        
+        // Walk along the path from start to destination
+        int currentX = startX + xIncrement;
+        int currentY = startY + yIncrement;
+        
+        while (currentX != destX || currentY != destY)
+        {
+            GameObject target = game.GetPosition(currentX, currentY);
+            if (target != null)
+            {
+                Chessman targetCm = target.GetComponent<Chessman>();
+                if (targetCm != null && targetCm.GetPlayer() != chessman.GetPlayer())
+                {
+                    // Check if enemy is royalty (king or queen)
+                    if (!target.name.ToLower().Contains("king") && !target.name.ToLower().Contains("queen"))
+                    {
+                        passedEnemies.Add(target);
+                        Debug.Log($"[EtherealMovement] Bishop will pass through enemy: {target.name} at ({currentX},{currentY})");
+                    }
+                    else
+                    {
+                        Debug.Log($"[EtherealMovement] Bishop cannot affect royalty: {target.name} at ({currentX},{currentY})");
+                    }
+                }
+            }
+            
+            currentX += xIncrement;
+            currentY += yIncrement;
+        }
+        
+        return passedEnemies;
     }
 
     // Helper method to spawn ethereal move plates
