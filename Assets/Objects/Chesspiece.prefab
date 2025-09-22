@@ -117,13 +117,18 @@ MonoBehaviour:
     type: 3}
   white_arch_bishop: {fileID: 21300000, guid: 12d31b4a300464b4e81566b4b83f665d, type: 3}
   white_wraith_pawn: {fileID: 21300000, guid: 280292e22ac3de441ad6d9a5fcc346d8, type: 3}
-  white_royal_pawn: {fileID: 21300000, guid: 831bab5e114e9c14eabb1793ecf69336, type: 3}
+  white_spectral_herald: {fileID: 21300000, guid: 611053d671400464bba1f1fbce20bb4d,
+    type: 3}
+  black_spectral_herald: {fileID: 0}
+  white_royal_pawn: {fileID: 21300000, guid: e49e9ba30cb274a45a29916dd7439982, type: 3}
   white_royal_rook: {fileID: 21300000, guid: c4b84692b38901b4c8ef0d311ee1b0c6, type: 3}
   white_royal_bishop: {fileID: 21300000, guid: 571c0534e058aa34fb3db1797a8e8dcc, type: 3}
+  black_royal_pawn: {fileID: 21300000, guid: a0baf92df7864ef40887df0d257977bc, type: 3}
   tile_lava: {fileID: 21300000, guid: c3325f64fe60e644cadcc359786dbc22, type: 3}
   tile_ice: {fileID: 21300000, guid: 2d48b0d93f2b0e14db5a16dc30ec0f2e, type: 3}
   tile_earth: {fileID: 21300000, guid: acfe533064b32024eb4cf57e8f7066c1, type: 3}
   celestial_pillar: {fileID: 21300000, guid: db16fdd018d95bd458c443664d4ae83d, type: 3}
+  tile_sanctuary: {fileID: 21300000, guid: b8e4dce0fea1310438a8d7d05ad98be9, type: 3}
   fortifyActive: 0
   isInvulnerable: 0
   invulnerableUntilTurn: -1

@@ -14,7 +14,7 @@ public class CelestialOrbMarker : MonoBehaviour
 
     public int GetX() { return x; }
     public int GetY() { return y; }
-
+ 
     private void OnMouseUp()
     {
         Debug.Log($"[CelestialOrbMarker] Celestial Orb clicked at ({x},{y})");

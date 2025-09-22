@@ -166,6 +166,9 @@ public class MovePlate : MonoBehaviour
                     }
                 }
 
+                // Check for Sacred Zone SP gain before destroying piece
+                CheckSacredZoneSPGain(cp.GetComponent<Chessman>(), matrixX, matrixY);
+
                 // Only destroy the piece if it's not a wraith pawn (wraith pawn destroys itself in explosion)
                 if (!isWraithPawn)
                 {
@@ -518,5 +521,26 @@ public class MovePlate : MonoBehaviour
         Destroy(piece.gameObject);
         
         Debug.Log($"[Tile_Lava] {piece.name} destroyed by lava!");
+    }
+
+    private void CheckSacredZoneSPGain(Chessman capturedPiece, int x, int y)
+    {
+        Game game = controller.GetComponent<Game>();
+        if (game == null) return;
+
+        // Check if the captured piece is an allied piece (white)
+        if (capturedPiece.GetPlayer() != "white") return;
+
+        // Find sanctuary markers at this position
+        SanctuaryMarker[] allSanctuaryMarkers = FindObjectsOfType<SanctuaryMarker>();
+        foreach (SanctuaryMarker marker in allSanctuaryMarkers)
+        {
+            if (marker.GetX() == x && marker.GetY() == y && marker.IsActive())
+            {
+                // This piece died on an active sanctuary marker
+                marker.OnPieceDeath(capturedPiece);
+                break; // Only one marker per position
+            }
+        }
     }   
 }

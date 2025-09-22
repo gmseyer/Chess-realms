@@ -18,6 +18,8 @@ public class UIManager : MonoBehaviour
     public GameObject whiteRoyalRookPanel;
     public GameObject whiteRoyalBishopPanel;
     public GameObject whiteWraithPawnPanel;
+    public GameObject whiteRoyalPawnPanel;
+    public GameObject whiteSpectralHeraldPanel;
 
 
 

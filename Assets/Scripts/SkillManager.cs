@@ -62,7 +62,7 @@ public float spPanelFadeDuration = 0.3f; // fade in/out duration
     }
 
     public bool SpendPlayerSP(string player, int amount)
-{
+{ 
     if (player == "white")
     { 
         if (whiteSkillPoints >= amount)

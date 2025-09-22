@@ -91,7 +91,7 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
             
-           Create("white_royal_rook",3,3),
+           
 
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -203,6 +203,24 @@ private void UpdateLatestMoveUI(string latestMove)
             }
         }
 
+        if (name.Contains("pawn") && !name.Contains("wraith_pawn") && !name.Contains("royal_pawn"))
+        {
+            if (obj.GetComponent<Pawn>() == null)
+            {
+                Pawn pawn = obj.AddComponent<Pawn>();
+                Debug.Log($"[Game] Pawn component added for {name} at ({x},{y})");
+            }
+        }
+
+        if (name.Contains("royal_pawn"))
+        {
+            if (obj.GetComponent<RoyalAcolyte>() == null)
+            {
+                RoyalAcolyte royalAcolyte = obj.AddComponent<RoyalAcolyte>();
+                Debug.Log($"[Game] RoyalAcolyte component added for {name} at ({x},{y})");
+            }
+        }
+
 
         if (name.Contains("knight"))
         {
@@ -295,10 +313,19 @@ foreach (King king in kings)
         TurnUI.Instance.UpdateTurn(turns, currentPlayer);
 
     // Elemental Bishop cleanup
-
     ElementalBishop eb = FindObjectOfType<ElementalBishop>();
     if(eb != null)
         eb.CheckAndDestroyExpiredTiles();
+
+    // Sanctuary Marker cleanup
+    SanctuaryMarker[] allSanctuaryMarkers = FindObjectsOfType<SanctuaryMarker>();
+    foreach (SanctuaryMarker marker in allSanctuaryMarkers)
+    {
+        if (marker != null)
+        {
+            marker.CheckExpiration();
+        }
+    }
 }
 
 

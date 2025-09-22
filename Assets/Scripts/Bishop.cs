@@ -85,7 +85,7 @@ public class Bishop : Pieces
         // ✅ Spawn ARCHBISHOP plates (bottom 1-2 ranks)
         for (int x = 0; x < 4; x++)
         {
-            for (int y = 0; y < 4; y++)
+            for (int y = 0; y < 4; y++) 
             {
                 if (game.GetPosition(x, y) == null)
                 {

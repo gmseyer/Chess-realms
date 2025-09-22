@@ -31,16 +31,23 @@ public class Chessman : MonoBehaviour
     public Sprite white_arch_bishop;
     public Sprite white_wraith_pawn;
 
+    public Sprite white_spectral_herald;
+    public Sprite black_spectral_herald;
+
     //Royal Units
     public Sprite white_royal_pawn;
     public Sprite white_royal_rook;
     public Sprite white_royal_bishop;
+
+    public Sprite black_royal_pawn;
 
     //Elemental Tiles
     public Sprite tile_lava;
     public Sprite tile_ice;
     public Sprite tile_earth;
     public Sprite celestial_pillar;
+
+    public Sprite tile_sanctuary;
 
     [HideInInspector] public bool fortifyActive = false; 
     [HideInInspector] public bool isInvulnerable = false;        
@@ -70,7 +77,9 @@ public static class ChessNotation
     }
     
     public static string GetPieceNotation(string pieceName)
-    {
+    {   
+        if (pieceName.Contains("royal_pawn")) return "RP";
+        if (pieceName.Contains("spectral_herald")) return "SH";
         if (pieceName.Contains("elemental_bishop")) return "EB";
         if (pieceName.Contains("royal_bishop")) return "RB";
         if (pieceName.Contains("royal_rook")) return "RR";
@@ -317,14 +326,18 @@ if (game != null)
                 case "white_elemental_bishop": this.GetComponent<SpriteRenderer>().sprite = white_elemental_bishop; player = "white"; break;
                 case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
                 case "white_wraith_pawn": this.GetComponent<SpriteRenderer>().sprite = white_wraith_pawn; player = "white"; break;
+                case "white_spectral_herald": this.GetComponent<SpriteRenderer>().sprite = white_spectral_herald; player = "white"; break;
+                case "black_spectral_herald": this.GetComponent<SpriteRenderer>().sprite = black_spectral_herald; player = "black"; break;
                 //Royal Units
                 case "white_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = white_royal_pawn; player = "white"; break;
                 case "white_royal_rook": this.GetComponent<SpriteRenderer>().sprite = white_royal_rook; player = "white"; break;
                 case "white_royal_bishop": this.GetComponent<SpriteRenderer>().sprite = white_royal_bishop; player = "white"; break;
+                case "black_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = black_royal_pawn; player = "black"; break;
                 //Elemental Tiles
                 case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
                 case "tile_earth": this.GetComponent<SpriteRenderer>().sprite = tile_earth; player = "neutral"; break;
+                case "tile_sanctuary": this.GetComponent<SpriteRenderer>().sprite = tile_sanctuary; player = "neutral"; break;
                 case "celestial_pillar": this.GetComponent<SpriteRenderer>().sprite = celestial_pillar; player = "neutral"; break;
             }
         }
@@ -382,6 +395,8 @@ if (game != null)
             UIManager.Instance.whiteRoyalRookPanel?.SetActive(false);
             UIManager.Instance.whiteRoyalBishopPanel?.SetActive(false);
             UIManager.Instance.whiteWraithPawnPanel?.SetActive(false);
+            UIManager.Instance.whiteRoyalPawnPanel?.SetActive(false);
+            UIManager.Instance.whiteSpectralHeraldPanel?.SetActive(false);
         }
 
         // Get reference to Game controller
@@ -404,6 +419,10 @@ if (game != null)
         {
             if (name.Contains("wraith_pawn"))
                 panelForThisPiece = UIManager.Instance.whiteWraithPawnPanel;
+            else if (name.Contains("spectral_herald"))
+                panelForThisPiece = UIManager.Instance.whiteSpectralHeraldPanel;
+            else if (name.Contains("royal_pawn"))
+                panelForThisPiece = UIManager.Instance.whiteRoyalPawnPanel;
             else if (name.Contains("pawn"))
                 panelForThisPiece = UIManager.Instance.pawnPanel;
             else if (name.Contains("elemental_bishop"))
@@ -459,26 +478,56 @@ if (game != null)
 
         if (this.name.StartsWith("black_pawn"))
         {
-            PawnMovePlate(xBoard, yBoard - 1);
-            if (yBoard == 6 && game.GetPosition(xBoard, yBoard - 1) == null && game.GetPosition(xBoard, yBoard - 2) == null)
+            // Check for Radiant Presence passive
+            if (HasAlliedRoyalPawn("black"))
             {
-                if (game.PositionOnBoard(xBoard, yBoard - 2) && game.GetPosition(xBoard, yBoard - 2) == null)
+                Debug.Log($"[Radiant Presence] {this.name} gains Crown Step - King-style movement!");
+                SurroundMovePlate(); // King-style movement (8 directions)
+            }
+            else
+            {
+                // Normal pawn movement
+                PawnMovePlate(xBoard, yBoard - 1);
+                if (yBoard == 6 && game.GetPosition(xBoard, yBoard - 1) == null && game.GetPosition(xBoard, yBoard - 2) == null)
                 {
-                    MovePlateSpawn(xBoard, yBoard - 2);
+                    if (game.PositionOnBoard(xBoard, yBoard - 2) && game.GetPosition(xBoard, yBoard - 2) == null)
+                    {
+                        MovePlateSpawn(xBoard, yBoard - 2);
+                    }
                 }
             }
         }
 
         else if (this.name.StartsWith("white_pawn")|| this.name.StartsWith("white_wraith_pawn"))
         {
-            PawnMovePlate(xBoard, yBoard + 1);
-            if (yBoard == 1 && game.GetPosition(xBoard, yBoard + 1) == null && game.GetPosition(xBoard, yBoard + 2) == null)
+            // Check for Radiant Presence passive
+            if (HasAlliedRoyalPawn("white"))
             {
-                if (game.PositionOnBoard(xBoard, yBoard + 2) && game.GetPosition(xBoard, yBoard + 2) == null)
+                Debug.Log($"[Radiant Presence] {this.name} gains Crown Step - King-style movement!");
+                SurroundMovePlate(); // King-style movement (8 directions)
+            }
+            else
+            {
+                // Normal pawn movement
+                PawnMovePlate(xBoard, yBoard + 1);
+                if (yBoard == 1 && game.GetPosition(xBoard, yBoard + 1) == null && game.GetPosition(xBoard, yBoard + 2) == null)
                 {
-                    MovePlateSpawn(xBoard, yBoard + 2);
+                    if (game.PositionOnBoard(xBoard, yBoard + 2) && game.GetPosition(xBoard, yBoard + 2) == null)
+                    {
+                        MovePlateSpawn(xBoard, yBoard + 2);
+                    }
                 }
             }
+        }
+        else if (this.name.StartsWith("white_royal_pawn")){
+            // Royal pawns always have Crown Step (King-style movement)
+            Debug.Log($"[Radiant Presence] {this.name} has Crown Step - King-style movement!");
+            SurroundMovePlate(); // King-style movement (8 directions)
+        }
+        else if (this.name.StartsWith("black_royal_pawn")){
+            // Royal pawns always have Crown Step (King-style movement)
+            Debug.Log($"[Radiant Presence] {this.name} has Crown Step - King-style movement!");
+            SurroundMovePlate(); // King-style movement (8 directions)
         }
 
         else
@@ -487,6 +536,8 @@ if (game != null)
             {
                 case "black_rook":
                 case "white_rook":
+                case "white_spectral_herald":
+                case "black_spectral_herald":
                     if (fortifyActive)
                         SurroundMovePlate();
                     else
@@ -678,6 +729,26 @@ if (game != null)
         PointMovePlate(xBoard + 1, yBoard + 0);
         PointMovePlate(xBoard + 1, yBoard - 1);
         PointMovePlate(xBoard + 1, yBoard + 1);
+    }
+
+    // Check if there's an allied royal pawn on the board (for Radiant Presence passive)
+    private bool HasAlliedRoyalPawn(string player)
+    {
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        
+        foreach (Chessman piece in allPieces)
+        {
+            if (piece != null && piece.GetPlayer() == player)
+            {
+                string pieceName = piece.name.ToLower();
+                if (pieceName.Contains("royal_pawn"))
+                {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
     public void LunarLeapMovePlate()

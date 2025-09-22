@@ -54,6 +54,9 @@ public class RoyalBishop : Pieces
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
         
+        // Set the current skill for RequiemPlate to handle
+        RequiemPlate.SetCurrentSkill("SoulRequiem");
+        
         // Generate diagonal range plates (cast range)
         selectedRoyalBishop.GenerateSoulRequiemPlates();
         
@@ -71,6 +74,65 @@ public class RoyalBishop : Pieces
         }
         
         Debug.Log("[SoulRequiem] Skill activated - diagonal range plates generated!");
+    }
+
+    // SanctifiedRuin Skill - Create a Sacred Zone on a 3×3 area centered on a diagonal tile
+    public void SanctifiedRuin()
+    {
+        string player = "white"; // Royal Bishop is always white
+        
+        // Check cooldown (24 turns)
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "SanctifiedRuin"))
+        {
+            Debug.LogWarning("[SanctifiedRuin] Skill is on cooldown - cannot use.");
+            return;
+        }
+        
+        // Check SP cost (2 SP)
+        if (!SkillManager.Instance.SpendPlayerSP(player, 2))
+        { 
+            Debug.LogWarning("[SanctifiedRuin] Not enough SP to cast.");
+            return;
+        }
+        
+        // Get the selected Royal Bishop (following existing Bishop pattern)
+        RoyalBishop selectedRoyalBishop = null;
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
+        {
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedRoyalBishop = selectedPiece.GetComponent<RoyalBishop>();
+        }
+        
+        if (selectedRoyalBishop == null)
+        {
+            Debug.LogError("[SanctifiedRuin] No selected Royal Bishop found!");
+            return;
+        }
+        
+        // Remove existing move plates
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+        
+        // Set the current skill for RequiemPlate to handle
+        RequiemPlate.SetCurrentSkill("SanctifiedRuin");
+        
+        // Generate diagonal range plates (cast range) - reuse SoulRequiem logic
+        selectedRoyalBishop.GenerateSoulRequiemPlates();
+        
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, "ROYAL BISHOP", "SANCTIFIED RUIN", 2);
+        }
+        
+        // Start cooldown (24 turns)
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "SanctifiedRuin", CooldownManager.CooldownType.TurnBased, 24);
+            Debug.Log("[SanctifiedRuin] Skill activated - now on cooldown for 24 turns!");
+        }
+        
+        Debug.Log("[SanctifiedRuin] Skill activated - diagonal range plates generated for zone selection!");
     }
 
     // Divinity Passive - gains 1 turn invulnerability when capturing pieces

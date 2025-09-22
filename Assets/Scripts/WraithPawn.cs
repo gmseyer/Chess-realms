@@ -35,7 +35,7 @@ public class WraithPawn : MonoBehaviour
         
         // Ensure Chessman reference is set
         if (chessman == null)
-        {
+        { 
             chessman = GetComponent<Chessman>();
             if (chessman == null)
             {
