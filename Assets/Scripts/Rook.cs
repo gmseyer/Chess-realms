@@ -268,11 +268,54 @@ public void royalRook()
 {
     Debug.Log("[Royal Rook] Promotion skill activated!");
     
+    // Check SP requirement BEFORE summoning orbs
+    // Get the selected piece from UIManager (same pattern as other Rook methods)
+    GameObject selectedPiece = UIManager.Instance.selectedPiece;
+    if (selectedPiece == null)
+    {
+        Debug.LogError("[Royal Rook] No piece selected!");
+        return;
+    }
+    
+    if (!selectedPiece.name.Contains("rook"))
+    {
+        Debug.LogError("[Royal Rook] Selected piece is not a rook!");
+        return;
+    }
+    
+    Chessman rookCm = selectedPiece.GetComponent<Chessman>();
+    if (rookCm == null)
+    {
+        Debug.LogError("[Royal Rook] Selected rook has no Chessman component!");
+        return;
+    }
+    
+    string player = rookCm.GetPlayer();
+    if (SkillManager.Instance != null)
+    {
+        if (!SkillManager.Instance.SpendPlayerSP(player, 2))
+        {
+            Debug.LogWarning($"[Royal Rook] Insufficient SP! Need 2 SP, but only have {SkillManager.Instance.GetPlayerSP(player)} SP available.");
+            return;
+        }
+        else
+        {
+            Debug.Log($"[Royal Rook] Successfully spent 2 SP. Remaining SP: {SkillManager.Instance.GetPlayerSP(player)}");
+        }
+    }
+    else
+    {
+        Debug.LogError("[Royal Rook] SkillManager instance not found - cannot check SP!");
+        return;
+    }
+    
     // Clear any existing celestial orbs
     ClearCelestialOrbs();
+         
     
     Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
-    
+
+      
     // Get all empty tiles on the board
     List<Vector2Int> emptyTiles = new List<Vector2Int>();
     
@@ -320,7 +363,7 @@ public void royalRook()
     }
     
     Debug.Log($"[Royal Rook] Spawned 3 Celestial Orbs on tiles: {string.Join(", ", selectedTiles)}");
-    
+   
     // End the Rook's turn
     
     
@@ -336,12 +379,14 @@ public void royalRook()
         UIManager.Instance.kingPanel?.SetActive(false);
         UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
         UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
+    
     }
     
     Debug.Log("[Royal Rook] Ending turn after casting skill");
     game.NextTurn();
    foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
            Destroy(plate); 
+    
 }
 
 private GameObject SpawnCelestialOrb(Game game, int x, int y)

@@ -25,7 +25,7 @@ public class StatusManager : MonoBehaviour
 
     private List<Status> activeStatuses = new List<Status>();
      
-    // Soulbrand stack tracking
+    // Soulbrand stack tracking   
     private int soulbrandStacks = 0;
 
     public void AddStatus(StatusType type, int expiresOnTurn)

@@ -118,8 +118,18 @@ public class King : MonoBehaviour
 
         int currentPawnCount = CountAlliedPawns();
         string player = chessman.GetPlayer();
+        int currentTurn = game.turns;
         
-        Debug.Log($"[King] {player} King - {currentPawnCount} allied pawns remaining, generating Last Stand movement");
+        // Last Stand only activates on turn 25 or above
+        if (currentTurn < 25) 
+        {
+            // Use normal King movement before turn 25
+            SurroundMovePlate();
+            Debug.Log($"[King] {player} King using normal movement (turn {currentTurn} < 25)");
+            return;
+        }
+        
+        Debug.Log($"[King] {player} King - {currentPawnCount} allied pawns remaining, generating Last Stand movement (turn {currentTurn})");
         
         // Clear existing move plates first
         chessman.DestroyMovePlates();

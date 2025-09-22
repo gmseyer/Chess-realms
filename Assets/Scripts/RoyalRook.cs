@@ -48,7 +48,7 @@ public class RoyalRook : MonoBehaviour
         return false;
     }
 
-    // Generate Queen-like move plates when Celestial Synergy is active
+    // Generate Queen-like move plates when Celestial Synergy is active 
     public void GenerateCelestialSynergyMovePlates()
     {
         if (game == null) return;

@@ -91,7 +91,7 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
             
-           
+           Create("white_royal_rook",3,3),
 
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -116,7 +116,7 @@ private void UpdateLatestMoveUI(string latestMove)
         {
             SetPosition(playerBlack[i]);
             SetPosition(playerWhite[i]);
-            SetPosition(playerNeutral[i]);
+            //SetPosition(playerNeutral[i]); index out of bounds error
         }
     }
 

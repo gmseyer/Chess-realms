@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.61, y: 2.61, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -101,29 +101,29 @@ MonoBehaviour:
   controller: {fileID: 0}
   movePlate: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
     type: 3}
-  black_queen: {fileID: 21300000, guid: 815d1272350ed474fa30d14ae7ca13b0, type: 3}
-  black_knight: {fileID: 21300000, guid: a1f14d99584a32845bff5722f459abc3, type: 3}
-  black_bishop: {fileID: 21300000, guid: 9b6975579503d444a83355c7dba7e161, type: 3}
-  black_king: {fileID: 21300000, guid: e805a97877d4c8a4ca5ad67ee61f2d37, type: 3}
-  black_rook: {fileID: 21300000, guid: 177d305ed1420934394f941f72171fd2, type: 3}
-  black_pawn: {fileID: 21300000, guid: 58629f84b4009054595cf4b9fb9ba154, type: 3}
-  white_queen: {fileID: 21300000, guid: 55814193347751f47bca417f134824b0, type: 3}
-  white_knight: {fileID: 21300000, guid: b3b9b8dbf382cc04687d6bb9db9af578, type: 3}
-  white_bishop: {fileID: 21300000, guid: 412efd093287a2e498954c11f4c6bb54, type: 3}
-  white_king: {fileID: 21300000, guid: 2648b481cac0d574fb94e5c49b2b2130, type: 3}
-  white_rook: {fileID: 21300000, guid: fa0a2ff3626721748bf657c7c6022e11, type: 3}
-  white_pawn: {fileID: 21300000, guid: da81633aa03645145ae1b41587366583, type: 3}
-  white_elemental_bishop: {fileID: 21300000, guid: 61d2c75d5d05f3f4bb1b2750fca98e6f,
+  black_queen: {fileID: 21300000, guid: 6deaf296dfefdfb4e89dd0aaa8fa8852, type: 3}
+  black_knight: {fileID: 21300000, guid: df64ce9bf4fb47444a6bf29cc45476be, type: 3}
+  black_bishop: {fileID: 21300000, guid: 08c88febd910a85448095f89f5fefae1, type: 3}
+  black_king: {fileID: 21300000, guid: 83fdbb1e5a012994abd2e6bae05faa97, type: 3}
+  black_rook: {fileID: 21300000, guid: 6c3fd1e5b68c219409169dc7caebc81e, type: 3}
+  black_pawn: {fileID: 21300000, guid: 5ece267d40e6d6d448619c0367169edd, type: 3}
+  white_queen: {fileID: 21300000, guid: 5c6d52eb9f586b14a8d2e648f5c9e9a6, type: 3}
+  white_knight: {fileID: 21300000, guid: 2483144b6d17fb64c8954b4ded613701, type: 3}
+  white_bishop: {fileID: 21300000, guid: 3776dbe1d23dd634bbefe4d438ec528b, type: 3}
+  white_king: {fileID: 21300000, guid: 51a67f71a0bc19041a6de3fb8ff7ff7d, type: 3}
+  white_rook: {fileID: 21300000, guid: 8085c07e694a76b4f985ec42716c8ff5, type: 3}
+  white_pawn: {fileID: 21300000, guid: 5b28ea24f37ca75419e2067b0d0ecc54, type: 3}
+  white_elemental_bishop: {fileID: 21300000, guid: 5c3eaec4625c06e40926652eb2b71b0c,
     type: 3}
-  white_arch_bishop: {fileID: 21300000, guid: 80595f560b1427e4aaf468daa9974fc1, type: 3}
-  white_wraith_pawn: {fileID: 21300000, guid: 3187ba6aeef17ec4bb954d9c36918863, type: 3}
+  white_arch_bishop: {fileID: 21300000, guid: 12d31b4a300464b4e81566b4b83f665d, type: 3}
+  white_wraith_pawn: {fileID: 21300000, guid: 280292e22ac3de441ad6d9a5fcc346d8, type: 3}
   white_royal_pawn: {fileID: 21300000, guid: 831bab5e114e9c14eabb1793ecf69336, type: 3}
-  white_royal_rook: {fileID: 21300000, guid: 17a66e22237524e4da663eff3054834b, type: 3}
-  white_royal_bishop: {fileID: 21300000, guid: 2a6fb0a8e20f1734d82ce5555f89ac49, type: 3}
-  tile_lava: {fileID: 21300000, guid: f0c2abfac604f1345864039cd1e5dd5c, type: 3}
-  tile_ice: {fileID: 21300000, guid: 263aa9c96d379b14c9805d6aa62510e2, type: 3}
-  tile_earth: {fileID: 21300000, guid: bbfd5c64bda093e4a839e1433b8b1b71, type: 3}
-  celestial_pillar: {fileID: 21300000, guid: 0a2cb42e2cb1fba4c889ea65508732cb, type: 3}
+  white_royal_rook: {fileID: 21300000, guid: c4b84692b38901b4c8ef0d311ee1b0c6, type: 3}
+  white_royal_bishop: {fileID: 21300000, guid: 571c0534e058aa34fb3db1797a8e8dcc, type: 3}
+  tile_lava: {fileID: 21300000, guid: c3325f64fe60e644cadcc359786dbc22, type: 3}
+  tile_ice: {fileID: 21300000, guid: 2d48b0d93f2b0e14db5a16dc30ec0f2e, type: 3}
+  tile_earth: {fileID: 21300000, guid: acfe533064b32024eb4cf57e8f7066c1, type: 3}
+  celestial_pillar: {fileID: 21300000, guid: db16fdd018d95bd458c443664d4ae83d, type: 3}
   fortifyActive: 0
   isInvulnerable: 0
   invulnerableUntilTurn: -1
@@ -173,5 +173,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.2, y: 0.2}
+  m_Size: {x: 4.7, y: 4.7}
   m_EdgeRadius: 0

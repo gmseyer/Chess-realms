@@ -40,7 +40,7 @@ public class Archbishop : MonoBehaviour
             Destroy(plate);
 
         game.NextTurn();
-        // Update visual status of all pieces on the board immediately
+        // Update visual status of all pieces on the board immediately 
 Chessman[] allPieces = FindObjectsOfType<Chessman>();
 foreach (Chessman piece in allPieces)
 {
