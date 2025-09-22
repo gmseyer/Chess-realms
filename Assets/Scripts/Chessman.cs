@@ -39,6 +39,9 @@ public class Chessman : MonoBehaviour
     public Sprite white_royal_rook;
     public Sprite white_royal_bishop;
 
+    public Sprite white_chronomagus;
+    public Sprite black_chronomagus;
+
     public Sprite black_royal_pawn;
 
     //Elemental Tiles
@@ -78,6 +81,7 @@ public static class ChessNotation
     
     public static string GetPieceNotation(string pieceName)
     {   
+        if (pieceName.Contains("chronomagus")) return "CM";
         if (pieceName.Contains("royal_pawn")) return "RP";
         if (pieceName.Contains("spectral_herald")) return "SH";
         if (pieceName.Contains("elemental_bishop")) return "EB";
@@ -333,6 +337,8 @@ if (game != null)
                 case "white_royal_rook": this.GetComponent<SpriteRenderer>().sprite = white_royal_rook; player = "white"; break;
                 case "white_royal_bishop": this.GetComponent<SpriteRenderer>().sprite = white_royal_bishop; player = "white"; break;
                 case "black_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = black_royal_pawn; player = "black"; break;
+                case "white_chronomagus": this.GetComponent<SpriteRenderer>().sprite = white_chronomagus; player = "white"; break;
+                case "black_chronomagus": this.GetComponent<SpriteRenderer>().sprite = black_chronomagus; player = "black"; break;
                 //Elemental Tiles
                 case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
@@ -397,6 +403,7 @@ if (game != null)
             UIManager.Instance.whiteWraithPawnPanel?.SetActive(false);
             UIManager.Instance.whiteRoyalPawnPanel?.SetActive(false);
             UIManager.Instance.whiteSpectralHeraldPanel?.SetActive(false);
+            UIManager.Instance.whiteChronomagusPanel?.SetActive(false);
         }
 
         // Get reference to Game controller
@@ -419,6 +426,13 @@ if (game != null)
         {
             if (name.Contains("wraith_pawn"))
                 panelForThisPiece = UIManager.Instance.whiteWraithPawnPanel;
+            else if (name.Contains("chronomagus"))
+            {
+                if (name.Contains("white"))
+                    panelForThisPiece = UIManager.Instance.whiteChronomagusPanel;
+                else if (name.Contains("black"))
+                    panelForThisPiece = UIManager.Instance.blackChronomagusPanel;
+            }
             else if (name.Contains("spectral_herald"))
                 panelForThisPiece = UIManager.Instance.whiteSpectralHeraldPanel;
             else if (name.Contains("royal_pawn"))
@@ -593,6 +607,8 @@ if (game != null)
                 case "white_elemental_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_arch_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_royal_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case "white_chronomagus": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case "black_chronomagus": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "black_queen":
                     LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);
                     LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;

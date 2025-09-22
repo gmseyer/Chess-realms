@@ -20,6 +20,8 @@ public class UIManager : MonoBehaviour
     public GameObject whiteWraithPawnPanel;
     public GameObject whiteRoyalPawnPanel;
     public GameObject whiteSpectralHeraldPanel;
+    public GameObject whiteChronomagusPanel;
+    public GameObject blackChronomagusPanel;
 
 
 
@@ -53,6 +55,7 @@ public Button fortifyButton;
         if (pieceName.Contains("rook")) return rookPanel;
         if (pieceName.Contains("queen")) return queenPanel;
         if (pieceName.Contains("king")) return kingPanel;
+        if (pieceName.Contains("chronomagus")) return whiteChronomagusPanel;
         
         
 

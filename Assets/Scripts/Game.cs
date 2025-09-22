@@ -90,7 +90,6 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
-            
            
 
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
@@ -326,6 +325,9 @@ foreach (King king in kings)
             marker.CheckExpiration();
         }
     }
+
+    // Chronomagus corner positioning check
+    Chronomagus.CheckCornerPositioning();
 }
 
 
