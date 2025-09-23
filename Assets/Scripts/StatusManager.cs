@@ -69,7 +69,7 @@ public class StatusManager : MonoBehaviour
         // Check for expired ethereal status on Bishop before auto-removal
         if (type == StatusType.Ethereal && gameObject.name.Contains("bishop") && !gameObject.name.Contains("royal"))
         {
-            Debug.Log($"[StatusManager] HasStatus check on {gameObject.name}: hadEthereal={hadEthereal}, etherealExpired={etherealExpired}, currentTurn={currentTurn}");
+           
             
             if (hadEthereal && etherealExpired)
             {

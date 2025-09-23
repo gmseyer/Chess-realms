@@ -9,7 +9,7 @@ public class ChronomagusSkillButton : MonoBehaviour
         {
             Debug.LogError("[ChronomagusSkillButton] UIManager.Instance is null.");
             return;
-        }
+        } 
 
         GameObject selected = UIManager.Instance.selectedPiece;
         if (selected == null)

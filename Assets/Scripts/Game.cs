@@ -90,7 +90,7 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
-           
+           Create("white_chronomagus", 2, 3),
 
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -107,8 +107,16 @@ private void UpdateLatestMoveUI(string latestMove)
             };
 
         playerNeutral = new GameObject[] {
-
+            
         };
+
+        // Debug: Check thunder tile creation
+        GameObject thunderTile = GetPosition(2, 3);
+        if (thunderTile != null)
+        {
+            Chessman thunderChessman = thunderTile.GetComponent<Chessman>();
+            Debug.Log($"[Game] Thunder tile created at (2,3): {thunderTile.name}, Player: {thunderChessman?.GetPlayer()}");
+        }
 
         //Set all piece positions on the positions board
         for (int i = 0; i < playerBlack.Length; i++)
@@ -128,7 +136,7 @@ private void UpdateLatestMoveUI(string latestMove)
         cm.name = name;
         cm.SetXBoard(x);
         cm.SetYBoard(y);
-
+ 
 
         cm.SetCoords();
         SetPosition(obj);
@@ -138,7 +146,10 @@ private void UpdateLatestMoveUI(string latestMove)
         else if (name.StartsWith("black"))
         cm.SetPlayer("black");
         else if (name.StartsWith("tile"))
-        cm.SetPlayer("neutral");
+        {
+            cm.SetPlayer("neutral");
+            Debug.Log($"[Game] {name} set to neutral player via StartsWith('tile')");
+        }
 
         else if (name == "tile_earth")
         {
@@ -146,13 +157,18 @@ private void UpdateLatestMoveUI(string latestMove)
         cm.statusManager.AddStatus(StatusType.Invulnerable, 999); // never expires
         cm.statusManager.AddStatus(StatusType.SolidBlock, 999);   // blocks movement
         }
+        else if (name == "tile_thunder")
+        {
+            cm.SetPlayer("neutral");          // neutral tile
+            Debug.Log($"[Game] {name} set to neutral player via specific case");
+        }
         else if (name == "celestial_pillar")
         {
         cm.SetPlayer("neutral");          // neutral tile
         cm.statusManager.AddStatus(StatusType.Invulnerable, 999); // never expires
         cm.statusManager.AddStatus(StatusType.SolidBlock, 999);   // blocks movement
         }   
-
+        
         if (name.Contains("bishop"))
         {
             if (obj.GetComponent<Bishop>() == null)
@@ -328,6 +344,12 @@ foreach (King king in kings)
 
     // Chronomagus corner positioning check
     Chronomagus.CheckCornerPositioning();
+
+    // Singularity Manager turn processing
+    if (SingularityManager.Instance != null)
+    {
+        SingularityManager.Instance.OnTurnStart();
+    }
 }
 
 

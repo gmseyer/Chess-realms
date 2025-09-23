@@ -8,6 +8,7 @@ public class Chronomagus : MonoBehaviour
     private static bool isCountdownActive = false;
     private static string countdownPlayer = ""; // Which player initiated the countdown
     
+    public GameObject movePlatePrefab;
     private Game game;
 
     private void Awake()
@@ -206,4 +207,267 @@ public class Chronomagus : MonoBehaviour
         
         Debug.Log($"[Chronomagus] Created summon tile at ({x},{y})");
     }
+
+    // Prismatic Convergence skill
+
+    // Unstable Nexus skill
+    public void UnstableNexus()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[Chronomagus] Game not found!");
+            return;
+        }
+
+        int currentTurn = game.GetTurnCount();
+        string currentPlayer = game.GetCurrentPlayer();
+
+        // Check SP cost
+        if (!SkillManager.Instance.SpendPlayerSP(currentPlayer, 2))
+        {
+            Debug.LogWarning("[Chronomagus] Not enough Skill Points for Unstable Nexus!");
+            return;
+        }
+
+        // Check cooldown
+        if (unstableNexusCooldown > currentTurn)
+        {
+            Debug.LogWarning($"[Chronomagus] Unstable Nexus on cooldown until turn {unstableNexusCooldown}!");
+            return;
+        }
+
+        // Set cooldown
+        unstableNexusCooldown = currentTurn + 20;
+
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(currentPlayer, "CHRONOMAGUS", "Unstable Nexus", 2);
+        }
+
+        // Find all empty tiles on the board
+        List<Vector2Int> emptyTiles = new List<Vector2Int>();
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                if (game.GetPosition(x, y) == null)
+                {
+                    emptyTiles.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+
+        // Check if we have enough empty tiles
+        int tilesToCreate = Mathf.Min(9, emptyTiles.Count);
+        if (tilesToCreate == 0)
+        {
+            Debug.LogWarning("[Chronomagus] No empty tiles available for Unstable Nexus!");
+            return;
+        }
+
+        // Shuffle the empty tiles list
+        for (int i = 0; i < emptyTiles.Count; i++)
+        {
+            Vector2Int temp = emptyTiles[i];
+            int randomIndex = Random.Range(i, emptyTiles.Count);
+            emptyTiles[i] = emptyTiles[randomIndex];
+            emptyTiles[randomIndex] = temp;
+        }
+
+        // Define element types
+        string[] elementTypes = { "tile_lava", "tile_thunder", "tile_ice", "celestial_pillar" };
+        int[] elementCounts = { 0, 0, 0, 0 }; // Track count for each element
+        int maxPerElement = 3;
+
+        // Create elemental tiles
+        for (int i = 0; i < tilesToCreate; i++)
+        {
+            Vector2Int tilePos = emptyTiles[i];
+            
+            // Choose random element type
+            string elementType;
+            do
+            {
+                int randomElement = Random.Range(0, elementTypes.Length);
+                elementType = elementTypes[randomElement];
+            } while (elementCounts[System.Array.IndexOf(elementTypes, elementType)] >= maxPerElement);
+
+            // Increment count for this element
+            elementCounts[System.Array.IndexOf(elementTypes, elementType)]++;
+
+            // Create the elemental tile
+            GameObject elementalTile = game.Create(elementType, tilePos.x, tilePos.y);
+            if (elementalTile != null)
+            {
+                Debug.Log($"[Chronomagus] Created {elementType} at ({tilePos.x},{tilePos.y})");
+                
+                // Register tile for expiration (3 turns)
+                RegisterElementalTile(elementalTile, currentTurn + 3);
+            }
+        }
+
+        Debug.Log($"[Chronomagus] Unstable Nexus activated! Created {tilesToCreate} elemental tiles (cooldown until turn {unstableNexusCooldown})");
+        
+
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+        // End turn
+        game.NextTurn();
+
+
+    }
+
+    // Register elemental tile for expiration
+    private void RegisterElementalTile(GameObject tile, int expirationTurn)
+    {
+        // Add a component to track expiration
+        ElementalTileExpiration expiration = tile.AddComponent<ElementalTileExpiration>();
+        expiration.SetExpirationTurn(expirationTurn);
+    }
+
+    // Cooldown tracking
+    private int unstableNexusCooldown = 0;
+
+    // Check if Unstable Nexus is available
+    public bool IsUnstableNexusAvailable()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null) return false;
+        
+        int currentTurn = game.GetTurnCount();
+        return unstableNexusCooldown <= currentTurn;
+    }
+
+    // Get cooldown text for UI
+    public string GetUnstableNexusCooldownText()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null) return "N/A";
+        
+        int currentTurn = game.GetTurnCount();
+        int turnsLeft = unstableNexusCooldown - currentTurn;
+        
+        if (turnsLeft <= 0)
+            return "Ready";
+        else
+            return $"{turnsLeft} turns";
+    }
+
+    // Singularity skill
+    public void Singularity()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[Chronomagus] Game not found!");
+            return;
+        }
+
+        int currentTurn = game.GetTurnCount();
+        string currentPlayer = game.GetCurrentPlayer();
+
+        // Check SP cost
+        if (!SkillManager.Instance.SpendPlayerSP(currentPlayer, 2))
+        {
+            Debug.LogWarning("[Chronomagus] Not enough Skill Points for Singularity!");
+            return;
+        }
+
+        // Check once-per-battle cooldown
+        if (singularityUsed)
+        {
+            Debug.LogWarning("[Chronomagus] Singularity already used this battle!");
+            return;
+        }
+
+        // Set once-per-battle flag
+        singularityUsed = true;
+
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(currentPlayer, "CHRONOMAGUS", "Singularity", 2);
+        }
+
+        // Generate move plates on all pieces (allies and enemies) except kings
+        GenerateSingularityTargetPlates(game);
+
+        Debug.Log("[Chronomagus] Singularity activated! Choose a target piece (except kings).");
+    }
+
+    // Generate move plates for target selection
+    private void GenerateSingularityTargetPlates(Game game)
+    {
+        // Clear existing move plates
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+
+        // Generate plates on all pieces except kings
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null)
+                {
+                    Chessman pieceChessman = piece.GetComponent<Chessman>();
+                    if (pieceChessman != null)
+                    {
+                        string pieceName = piece.name;
+                        // Only allow pieces that start with "white" or "black" and are not kings
+                        if ((pieceName.StartsWith("white") || pieceName.StartsWith("black")) && 
+                            !pieceName.Contains("king"))
+                        {
+                            SpawnSingularityTargetPlate(game, x, y, pieceName);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Spawn target selection plate
+    private void SpawnSingularityTargetPlate(Game game, int x, int y, string targetPieceName)
+    {
+        float fx = x * 0.57f - 1.98f;
+        float fy = y * 0.56f - 1.95f;
+
+        GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+
+        // Remove default MovePlate script
+        MovePlate oldScript = mp.GetComponent<MovePlate>();
+        if (oldScript != null) Destroy(oldScript);
+
+        // Add SingularityTargetPlate script
+        SingularityTargetPlate plate = mp.AddComponent<SingularityTargetPlate>();
+        plate.Setup(game, x, y, targetPieceName);
+
+        // Make target plates visually distinct (purple)
+        SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.color = Color.magenta;
+        }
+    }
+
+    // Once-per-battle tracking
+    private bool singularityUsed = false;
+
+    // Check if Singularity is available
+    public bool IsSingularityAvailable()
+    {
+        return !singularityUsed;
+    }
+
+    // Get cooldown text for UI
+    public string GetSingularityCooldownText()
+    {
+        if (singularityUsed)
+            return "Used";
+        else
+            return "Ready";
+    }
+
 }

@@ -123,7 +123,7 @@ public class CooldownManager : MonoBehaviour
     } 
 
     /// <summary>
-    /// Reset all cooldowns for all players
+    /// Reset all cooldowns for all players 
     /// </summary>
     public void ResetAllCooldowns()
     {

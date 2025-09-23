@@ -89,7 +89,7 @@ foreach (Chessman piece in allPieces)
         {
             Debug.LogError("[Eternity Pierce] No piece selected!");
             return;
-        }
+        } 
 
         Chessman archbishopCm = selectedPiece.GetComponent<Chessman>();
         if (archbishopCm == null)

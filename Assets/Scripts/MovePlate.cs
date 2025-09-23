@@ -15,6 +15,10 @@ public class MovePlate : MonoBehaviour
 
     //false: movement, true: attacking
     public bool attack = false;
+    
+    // Castling properties
+    private bool isCastling = false;
+    private string castlingType = "";
 
     public void Start()
     {
@@ -23,6 +27,21 @@ public class MovePlate : MonoBehaviour
             //Set to red
             gameObject.GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
         }
+        else if (isCastling)
+        {
+            //Set to blue for castling
+            gameObject.GetComponent<SpriteRenderer>().color = new Color(0.0f, 0.0f, 1.0f, 1.0f);
+        }
+    }
+
+    public void SetCastling(bool castling)
+    {
+        isCastling = castling;
+    }
+
+    public void SetCastlingType(string type)
+    {
+        castlingType = type;
     }
 
     public void OnMouseUp()
@@ -224,30 +243,69 @@ public class MovePlate : MonoBehaviour
                     }
                 }
 
+                // ----------------- Move Attacker to Captured Position -----------------
+                controller.GetComponent<Game>().SetPositionEmpty(
+                    movingPiece.GetXBoard(),
+                    movingPiece.GetYBoard()
+                );
+
+                movingPiece.SetXBoard(matrixX);
+                movingPiece.SetYBoard(matrixY);
+                movingPiece.SetCoords();
+
+                controller.GetComponent<Game>().SetPosition(reference);
+
+                // Mark piece as moved (for castling tracking)
+                movingPiece.SetHasMoved(true);
+
+                // ----------------- Check Thunder Tile Effect AFTER Attack -----------------
+                bool attackThunderEffectTriggered = CheckTileThunderEffect(movingPiece, matrixX, matrixY);
+
+                // Clean up (skip if thunder effect triggered)
+                if (!attackThunderEffectTriggered)
+                {
+                    movingPiece.DestroyMovePlates();
+                    movingPiece.ClearFortify();
+                    movingPiece.CheckMoveTiles_End();
+                    controller.GetComponent<Game>().NextTurn();
+                }
+
+                return; // Stop processing after attack
             }
+        }
+
+        // ----------------- Handle Castling -----------------
+        if (isCastling)
+        {
+            HandleCastling(movingPiece);
+            return; // Stop processing after castling
         }
 
         // ----------------- Tile Effects Check (BEFORE moving) -----------------
         bool iceEffectTriggered = CheckTileIceEffect(movingPiece, matrixX, matrixY);
         bool lavaEffectTriggered = CheckTileLavaEffect(movingPiece, matrixX, matrixY);
+        bool thunderEffectTriggered = CheckTileThunderEffect(movingPiece, matrixX, matrixY);
 
         // ----------------- Move Chessman (skip if tile effects triggered) -----------------
-        if (!iceEffectTriggered && !lavaEffectTriggered)
+        if (!iceEffectTriggered && !lavaEffectTriggered && !thunderEffectTriggered)
         {
-        controller.GetComponent<Game>().SetPositionEmpty(
-            movingPiece.GetXBoard(),
-            movingPiece.GetYBoard()
-        );
+            controller.GetComponent<Game>().SetPositionEmpty(
+                movingPiece.GetXBoard(),
+                movingPiece.GetYBoard()
+            );
 
-        movingPiece.SetXBoard(matrixX);
-        movingPiece.SetYBoard(matrixY);
-        movingPiece.SetCoords();
+            movingPiece.SetXBoard(matrixX);
+            movingPiece.SetYBoard(matrixY);
+            movingPiece.SetCoords();
 
-        controller.GetComponent<Game>().SetPosition(reference);
+            controller.GetComponent<Game>().SetPosition(reference);
 
-        movingPiece.DestroyMovePlates();
-        movingPiece.ClearFortify();
-        movingPiece.CheckMoveTiles_End();
+            // Mark piece as moved (for castling tracking)
+            movingPiece.SetHasMoved(true);
+
+            movingPiece.DestroyMovePlates();
+            movingPiece.ClearFortify();
+            movingPiece.CheckMoveTiles_End();
         }
 
         // ----------------- Lunar Leap Check -----------------
@@ -338,7 +396,12 @@ public class MovePlate : MonoBehaviour
                 
                 // Just destroy the ice tile (no random movement)
                 DestroyIceTile(game, x, y);
-                
+                 game.SetPositionEmpty(movingPiece.GetXBoard(), movingPiece.GetYBoard());
+            movingPiece.SetXBoard(x);
+            movingPiece.SetYBoard(y);
+            movingPiece.SetCoords();
+            game.SetPosition(movingPiece.gameObject);
+            
                 // Clean up and end turn
                 movingPiece.DestroyMovePlates();
                 movingPiece.ClearFortify();
@@ -408,6 +471,11 @@ public class MovePlate : MonoBehaviour
             
             // Just destroy the lava tile (no piece destruction)
             DestroyLavaTile(game, x, y);
+             game.SetPositionEmpty(movingPiece.GetXBoard(), movingPiece.GetYBoard());
+            movingPiece.SetXBoard(x);
+            movingPiece.SetYBoard(y);
+            movingPiece.SetCoords();
+            game.SetPosition(movingPiece.gameObject);
             
             // Clean up and end turn
             movingPiece.DestroyMovePlates();
@@ -434,6 +502,99 @@ public class MovePlate : MonoBehaviour
     
     return false; // No lava effect
 }
+
+    private bool CheckTileThunderEffect(Chessman movingPiece, int x, int y)
+    {
+        Game game = controller.GetComponent<Game>();
+        
+        // Check if there's a tile_thunder at the destination
+        GameObject tileAtPosition = game.GetPosition(x, y);
+        if (tileAtPosition != null && tileAtPosition.name == "tile_thunder")
+        {
+            // Check if it's an immune piece (Kings, Elemental Bishop, Chronomagus)
+            if (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "white_king" || 
+                movingPiece.name == "black_king" || movingPiece.name == "white_chronomagus" || 
+                movingPiece.name == "black_chronomagus")
+            {
+                Debug.Log($"[Tile_Thunder] {movingPiece.name} is immune to thunder - tile disappears!");
+                
+                // Just destroy the thunder tile (no stun effect)
+                DestroyThunderTile(game, x, y);
+                 game.SetPositionEmpty(movingPiece.GetXBoard(), movingPiece.GetYBoard());
+            movingPiece.SetXBoard(x);
+            movingPiece.SetYBoard(y);
+            movingPiece.SetCoords();
+            game.SetPosition(movingPiece.gameObject);
+            
+                // Clean up and end turn
+                movingPiece.DestroyMovePlates();
+                movingPiece.ClearFortify();
+                movingPiece.CheckMoveTiles_End();
+                //game.NextTurn(); REMOVED CAUSING DOUBLE TURN ENDING
+                
+                return true; // Effect triggered, skip normal cleanup
+            }
+            
+            // Apply stun effect to the piece (at original position)
+            ApplyThunderStun(movingPiece, game);
+            
+            // Move the stunned piece to the thunder tile position
+           
+            // Destroy the thunder tile (one-use effect)
+            DestroyThunderTile(game, x, y);
+             game.SetPositionEmpty(movingPiece.GetXBoard(), movingPiece.GetYBoard());
+            movingPiece.SetXBoard(x);
+            movingPiece.SetYBoard(y);
+            movingPiece.SetCoords();
+            game.SetPosition(movingPiece.gameObject);
+            
+            
+            // Clean up and end turn
+            movingPiece.DestroyMovePlates(); 
+            movingPiece.ClearFortify();
+            movingPiece.CheckMoveTiles_End();
+
+            //game.NextTurn();
+            
+            return true; // Effect triggered, skip normal cleanup
+        }
+        
+        return false; // No thunder effect
+    }
+
+    private void ApplyThunderStun(Chessman movingPiece, Game game)
+    {
+        int currentTurn = game.GetTurnCount();
+        int stunDuration = 2; // Stun for 2 turns
+        
+        // Apply stunned status using StatusManager
+        StatusManager statusManager = movingPiece.GetComponent<StatusManager>();
+        if (statusManager != null)
+        {
+            statusManager.AddStatus(StatusType.Stunned, currentTurn + stunDuration);
+            Debug.Log($"[Tile_Thunder] {movingPiece.name} stunned for {stunDuration} turns (until turn {currentTurn + stunDuration})");
+        }
+        else
+        {
+            Debug.LogError($"[Tile_Thunder] StatusManager not found on {movingPiece.name}!");
+        }
+    }
+
+    private void DestroyThunderTile(Game game, int x, int y)
+    {
+        // Get the thunder tile at the position
+        GameObject thunderTile = game.GetPosition(x, y);
+        if (thunderTile != null && thunderTile.name == "tile_thunder")
+        {
+            // Clear the position in the game board
+            game.SetPositionEmpty(x, y);
+            
+            // Destroy the GameObject
+            Destroy(thunderTile);
+            
+            Debug.Log($"[Tile_Thunder] Thunder tile destroyed at ({x},{y}) - one-use effect consumed!");
+        }
+    }
     
     private List<Vector2Int> FindEmptyTilesAround(Game game, int centerX, int centerY)
     {
@@ -542,5 +703,82 @@ public class MovePlate : MonoBehaviour
                 break; // Only one marker per position
             }
         }
-    }   
+    }
+
+    private void HandleCastling(Chessman movingPiece)
+    {
+        Game game = controller.GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[MovePlate] Game component not found for castling!");
+            return;
+        }
+
+        string player = movingPiece.GetPlayer();
+        int kingX = movingPiece.GetXBoard();
+        int kingY = movingPiece.GetYBoard();
+
+        Debug.Log($"[MovePlate] Executing {castlingType} castling for {player} King");
+
+        if (castlingType == "kingside")
+        {
+            // King-side castling: King moves 2 right, Rook moves to King's left
+            GameObject rightRook = game.GetPosition(7, kingY);
+            if (rightRook != null)
+            {
+                // Move King
+                game.SetPositionEmpty(kingX, kingY);
+                movingPiece.SetXBoard(kingX + 2);
+                movingPiece.SetYBoard(kingY);
+                movingPiece.SetCoords();
+                game.SetPosition(movingPiece.gameObject);
+
+                // Move Rook
+                game.SetPositionEmpty(7, kingY);
+                Chessman rookChessman = rightRook.GetComponent<Chessman>();
+                rookChessman.SetXBoard(kingX + 1);
+                rookChessman.SetYBoard(kingY);
+                rookChessman.SetCoords();
+                game.SetPosition(rightRook);
+
+                // Mark both pieces as moved
+                movingPiece.SetHasMoved(true);
+                rookChessman.SetHasMoved(true);
+
+                Debug.Log($"[MovePlate] King-side castling completed - King at ({kingX + 2},{kingY}), Rook at ({kingX + 1},{kingY})");
+            }
+        }
+        else if (castlingType == "queenside")
+        {
+            // Queen-side castling: King moves 2 left, Rook moves to King's right
+            GameObject leftRook = game.GetPosition(0, kingY);
+            if (leftRook != null)
+            {
+                // Move King
+                game.SetPositionEmpty(kingX, kingY);
+                movingPiece.SetXBoard(kingX - 2);
+                movingPiece.SetYBoard(kingY);
+                movingPiece.SetCoords();
+                game.SetPosition(movingPiece.gameObject);
+
+                // Move Rook
+                game.SetPositionEmpty(0, kingY);
+                Chessman rookChessman = leftRook.GetComponent<Chessman>();
+                rookChessman.SetXBoard(kingX - 1);
+                rookChessman.SetYBoard(kingY);
+                rookChessman.SetCoords();
+                game.SetPosition(leftRook);
+
+                // Mark both pieces as moved
+                movingPiece.SetHasMoved(true);
+                rookChessman.SetHasMoved(true);
+
+                Debug.Log($"[MovePlate] Queen-side castling completed - King at ({kingX - 2},{kingY}), Rook at ({kingX - 1},{kingY})");
+            }
+        }
+
+        // Clean up move plates and end turn
+        movingPiece.DestroyMovePlates();
+        game.NextTurn();
+    }
 }

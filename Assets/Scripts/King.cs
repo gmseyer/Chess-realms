@@ -123,9 +123,10 @@ public class King : MonoBehaviour
         // Last Stand only activates on turn 25 or above
         if (currentTurn < 25) 
         {
-            // Use normal King movement before turn 25
+            // Use normal King movement + castling before turn 25
             SurroundMovePlate();
-            Debug.Log($"[King] {player} King using normal movement (turn {currentTurn} < 25)");
+            GenerateCastlingMoves();
+            Debug.Log($"[King] {player} King using normal movement + castling (turn {currentTurn} < 25)");
             return;
         }
         
@@ -194,7 +195,7 @@ public class King : MonoBehaviour
         LineMovePlate(1, 1, maxRange);   // Up-Right
         LineMovePlate(-1, -1, maxRange); // Down-Left
         LineMovePlate(-1, 1, maxRange);  // Up-Left
-        LineMovePlate(1, -1, maxRange);  // Down-Right 
+        LineMovePlate(1, -1, maxRange);  // Down-Right  
     }
 
     // Modified LineMovePlate with range limit (copied from Chessman.cs)
@@ -373,5 +374,164 @@ public class King : MonoBehaviour
     public int GetCurrentPawnCount()
     {
         return CountAlliedPawns();
+    }
+
+    // Generate castling move plates
+    private void GenerateCastlingMoves()
+    {
+        if (chessman == null || game == null)
+        {
+            Debug.LogError("[King] Missing references for castling!");
+            return;
+        }
+
+        string player = chessman.GetPlayer();
+        int x = chessman.GetXBoard();
+        int y = chessman.GetYBoard();
+
+        // Check if King has moved
+        if (chessman.GetHasMoved())
+        {
+            Debug.Log($"[King] {player} King has moved - castling not available");
+            return;
+        }
+
+        // Check if King is in check
+        if (IsKingInCheck())
+        {
+            Debug.Log($"[King] {player} King is in check - castling not available");
+            return;
+        }
+
+        // Check King-side castling (right side)
+        if (CanCastleKingSide())
+        {
+            CreateCastlingMovePlate(x + 2, y, "kingside");
+            Debug.Log($"[King] {player} King-side castling available");
+        }
+
+        // Check Queen-side castling (left side)
+        if (CanCastleQueenSide())
+        {
+            CreateCastlingMovePlate(x - 2, y, "queenside");
+            Debug.Log($"[King] {player} Queen-side castling available");
+        }
+    }
+
+    private bool CanCastleKingSide()
+    {
+        string player = chessman.GetPlayer();
+        int x = chessman.GetXBoard();
+        int y = chessman.GetYBoard();
+
+        // Check if right rook exists and hasn't moved
+        GameObject rightRook = game.GetPosition(7, y);
+        if (rightRook == null) return false;
+
+        Chessman rookChessman = rightRook.GetComponent<Chessman>();
+        if (rookChessman == null || rookChessman.GetPlayer() != player || rookChessman.GetHasMoved())
+            return false;
+
+        // Check if squares between King and Rook are empty
+        if (game.GetPosition(x + 1, y) != null || game.GetPosition(x + 2, y) != null)
+            return false;
+
+        // Check if King would move through check
+        if (IsSquareUnderAttack(x + 1, y) || IsSquareUnderAttack(x + 2, y))
+            return false;
+
+        return true;
+    }
+
+    private bool CanCastleQueenSide()
+    {
+        string player = chessman.GetPlayer();
+        int x = chessman.GetXBoard();
+        int y = chessman.GetYBoard();
+
+        // Check if left rook exists and hasn't moved
+        GameObject leftRook = game.GetPosition(0, y);
+        if (leftRook == null) return false;
+
+        Chessman rookChessman = leftRook.GetComponent<Chessman>();
+        if (rookChessman == null || rookChessman.GetPlayer() != player || rookChessman.GetHasMoved())
+            return false;
+
+        // Check if squares between King and Rook are empty
+        if (game.GetPosition(x - 1, y) != null || game.GetPosition(x - 2, y) != null || game.GetPosition(x - 3, y) != null)
+            return false;
+
+        // Check if King would move through check
+        if (IsSquareUnderAttack(x - 1, y) || IsSquareUnderAttack(x - 2, y))
+            return false;
+
+        return true;
+    }
+
+    private bool IsKingInCheck()
+    {
+        // Simple check detection - check if any enemy piece can attack the King
+        string player = chessman.GetPlayer();
+        int x = chessman.GetXBoard();
+        int y = chessman.GetYBoard();
+
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        foreach (Chessman piece in allPieces)
+        {
+            if (piece != null && piece.GetPlayer() != player)
+            {
+                if (CanPieceAttackSquare(piece, x, y))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private bool IsSquareUnderAttack(int x, int y)
+    {
+        string player = chessman.GetPlayer();
+
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        foreach (Chessman piece in allPieces)
+        {
+            if (piece != null && piece.GetPlayer() != player)
+            {
+                if (CanPieceAttackSquare(piece, x, y))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private bool CanPieceAttackSquare(Chessman piece, int targetX, int targetY)
+    {
+        // This is a simplified version - in a full implementation, you'd check each piece type's attack pattern
+        // For now, we'll use a basic distance check for most pieces
+        int pieceX = piece.GetXBoard();
+        int pieceY = piece.GetYBoard();
+
+        // Basic attack range check (this is simplified - real chess has complex rules)
+        int distance = Mathf.Abs(pieceX - targetX) + Mathf.Abs(pieceY - targetY);
+        return distance == 1; // Adjacent squares
+    }
+
+    private void CreateCastlingMovePlate(int x, int y, string castlingType)
+    {
+        float fx = x * 0.57f - 1.98f;
+        float fy = y * 0.56f - 1.95f;
+
+        GameObject mp = Instantiate(chessman.movePlate, new Vector3(fx, fy, -3f), Quaternion.identity);
+        MovePlate movePlateScript = mp.GetComponent<MovePlate>();
+        if (movePlateScript != null)
+        {
+            // Set special properties for castling
+            movePlateScript.SetCastling(true);
+            movePlateScript.SetCastlingType(castlingType);
+            
+            // Set the reference to the King (this is crucial!)
+            movePlateScript.SetReference(chessman.gameObject);
+        }
+
+        Debug.Log($"[King] Created {castlingType} castling move plate at ({x},{y})");
     }
 }

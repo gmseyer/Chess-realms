@@ -14,6 +14,7 @@ public class Chessman : MonoBehaviour
     // Add these fields inside the Chessman class
     private bool wasAttack = false;
     private string lastMoveNotation = "";
+    private bool hasMoved = false; // Track if piece has moved (for castling)
  
     // Position for this Chesspiece on the Board
     protected int xBoard = -1;
@@ -48,6 +49,7 @@ public class Chessman : MonoBehaviour
     public Sprite tile_lava;
     public Sprite tile_ice;
     public Sprite tile_earth;
+    public Sprite tile_thunder;
     public Sprite celestial_pillar;
 
     public Sprite tile_sanctuary;
@@ -267,6 +269,16 @@ if (game != null)
         return player;
     }
 
+    public bool GetHasMoved()
+    {
+        return hasMoved;
+    }
+
+    public void SetHasMoved(bool moved)
+    {
+        hasMoved = moved;
+    }
+
      public void SetPlayer(string p)
     {
         player = p;
@@ -343,6 +355,7 @@ if (game != null)
                 case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
                 case "tile_earth": this.GetComponent<SpriteRenderer>().sprite = tile_earth; player = "neutral"; break;
+                case "tile_thunder": this.GetComponent<SpriteRenderer>().sprite = tile_thunder; player = "neutral"; break;
                 case "tile_sanctuary": this.GetComponent<SpriteRenderer>().sprite = tile_sanctuary; player = "neutral"; break;
                 case "celestial_pillar": this.GetComponent<SpriteRenderer>().sprite = celestial_pillar; player = "neutral"; break;
             }
@@ -380,6 +393,11 @@ if (game != null)
             statusManager.AddStatus(StatusType.Invulnerable, 99); // immovable tile status
             Debug.Log($"{name} is a special tileeee.");
 
+        }
+        else if (this.name == "tile_thunder")
+        {
+            statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
+            Debug.Log($"{name} is a special tile.");
         }
         UpdateVisualStatus();
     }
@@ -678,6 +696,17 @@ if (game != null)
                             break; // stop movement
                         }
                     }
+                    if(targetCm.name == "celestial_pillar"){
+                        if(this.name == "white_chronomagus" || this.name == "black_chronomagus"){
+                             x += xIncrement;
+                            y += yIncrement;
+                            continue; // pass through and continue
+                        }
+                        else{
+                            Debug.Log($"{targetCm.name} is a celestial pillar. Cannot move here.");
+                           break; // stop movement
+                        }
+                     }
 
                     // Special tile like lava/ice: can land and pass
                     if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
@@ -812,7 +841,7 @@ if (game != null)
                 if (targetCm.name == "tile_earth")
                 {
                     // Check if this is an Elemental Bishop (can pass through boulders)
-                    if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king")
+                    if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                     {
                         Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
@@ -823,6 +852,8 @@ if (game != null)
                         return; // cannot land or pass
                     }
                 }
+                     
+
 
                 // Special tile like lava/ice → can land
                 if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
@@ -884,7 +915,7 @@ if (game != null)
                     if (targetCm.name == "tile_earth")
                     {
                         // Check if this is an Elemental Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king")
+                        if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
@@ -936,7 +967,7 @@ if (game != null)
                     if (targetCm.name == "tile_earth")
                     {
                         // Check if this is an Elemental Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king")
+                        if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
