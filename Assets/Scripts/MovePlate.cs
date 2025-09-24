@@ -173,6 +173,64 @@ public class MovePlate : MonoBehaviour
                 }
                 // --ARCHBISHOP SOULBINDING CONQUEST END -------------------------------------
 
+                // ----------------- CHRONOMAGUS SOULBINDING CONQUEST SECTION -----------------
+                // Check if the attacking piece is a Chronomagus
+                if (movingPiece.name.Contains("chronomagus"))
+                {
+                    Debug.Log($"[MovePlate] Chronomagus {movingPiece.name} captured {cp.name} - checking Soulbinding Conquest!");
+                    
+                    // Check if Chronomagus Soulbinding Conquest can be triggered (not already used)
+                    if (Chronomagus.IsChronomagusSoulbindingAvailable())
+                    {
+                        // Trigger Chronomagus Soulbinding Conquest passive
+                        Chronomagus.TriggerChronomagusSoulbindingConquest(cp.name);
+                        
+                        // Check if the skill was actually triggered
+                        if (Chronomagus.IsChronomagusSoulbindingAvailable() == false) // If it's now used, it was triggered
+                        {
+                            // Don't end turn yet - spawn summon plates instead
+                            movingPiece.DestroyMovePlates();
+                            movingPiece.ClearFortify();
+                            movingPiece.CheckMoveTiles_End();
+                            
+                            // Spawn summon plates
+                            Chronomagus chronomagus = movingPiece.GetComponent<Chronomagus>();
+                            if (chronomagus != null)
+                            {
+                                chronomagus.SpawnChronomagusSoulbindingSummonPlates();
+                            }
+                            
+                            // Hide UI panels
+                            if (UIManager.Instance != null)
+                            {
+                                UIManager.Instance.pawnPanel?.SetActive(false);
+                                UIManager.Instance.knightPanel?.SetActive(false);
+                                UIManager.Instance.bishopPanel?.SetActive(false);
+                                UIManager.Instance.rookPanel?.SetActive(false);
+                                UIManager.Instance.queenPanel?.SetActive(false);
+                                UIManager.Instance.kingPanel?.SetActive(false);
+                                UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
+                                UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
+                            }
+                            if (SkillManagerTMP.Instance != null)
+                            {
+                                SkillManagerTMP.Instance.skillPanel?.SetActive(false);
+                            }
+                            
+                            return; // Stop processing - don't call NextTurn() yet
+                        }
+                        else
+                        {
+                            Debug.Log($"[MovePlate] Chronomagus Soulbinding Conquest not triggered for {cp.name} - invalid piece type");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("[MovePlate] Chronomagus Soulbinding Conquest already used this battle - normal capture.");
+                    }
+                }
+                // --CHRONOMAGUS SOULBINDING CONQUEST END -------------------------------------
+
                 // ---------- WRAITH PAWN EXPLOSION CHECK ----------
                 bool isWraithPawn = cp.name.ToLower().Contains("wraith_pawn");
                 if (isWraithPawn)
@@ -187,6 +245,9 @@ public class MovePlate : MonoBehaviour
 
                 // Check for Sacred Zone SP gain before destroying piece
                 CheckSacredZoneSPGain(cp.GetComponent<Chessman>(), matrixX, matrixY);
+
+                // Check for bounty SP gain before destroying piece
+                CheckBountySPGain(cp.GetComponent<Chessman>(), movingPiece);
 
                 // Only destroy the piece if it's not a wraith pawn (wraith pawn destroys itself in explosion)
                 if (!isWraithPawn)
@@ -260,6 +321,18 @@ public class MovePlate : MonoBehaviour
 
                 // ----------------- Check Thunder Tile Effect AFTER Attack -----------------
                 bool attackThunderEffectTriggered = CheckTileThunderEffect(movingPiece, matrixX, matrixY);
+
+                // ----------------- Temporal Anchor Passive Check -----------------
+                // Check if the captured piece was allied to a Chronomagus
+                if (!attackThunderEffectTriggered)
+                {
+                    Debug.Log("[MovePlate] Calling CheckTemporalAnchorPassive...");
+                    CheckTemporalAnchorPassive(cp, reference);
+                }
+                else
+                {
+                    Debug.Log("[MovePlate] Skipping Temporal Anchor check due to thunder effect");
+                }
 
                 // Clean up (skip if thunder effect triggered)
                 if (!attackThunderEffectTriggered)
@@ -705,6 +778,26 @@ public class MovePlate : MonoBehaviour
         }
     }
 
+    private void CheckBountySPGain(Chessman capturedPiece, Chessman attacker)
+    {
+        Game game = controller.GetComponent<Game>();
+        if (game == null) return;
+
+        // Check if the captured piece has bounty status
+        if (capturedPiece.statusManager.HasBounty(game.turns))
+        {
+            int bountyValue = capturedPiece.statusManager.GetBountyValue(game.turns);
+            string attackerPlayer = attacker.GetPlayer();
+            
+            // Grant SP to the attacker's player
+            if (SkillManager.Instance != null)
+            {
+                SkillManager.Instance.AddPlayerSP(attackerPlayer, bountyValue);
+                Debug.Log($"[Bounty] {attacker.name} captured {capturedPiece.name} with bounty {bountyValue} SP! {attackerPlayer} gained {bountyValue} SP.");
+            }
+        }
+    }
+
     private void HandleCastling(Chessman movingPiece)
     {
         Game game = controller.GetComponent<Game>();
@@ -780,5 +873,83 @@ public class MovePlate : MonoBehaviour
         // Clean up move plates and end turn
         movingPiece.DestroyMovePlates();
         game.NextTurn();
+    }
+
+    // Check Temporal Anchor passive
+    private void CheckTemporalAnchorPassive(GameObject capturedPiece, GameObject attacker)
+    {
+        Debug.Log($"[MovePlate] CheckTemporalAnchorPassive called - Captured: {capturedPiece?.name}, Attacker: {attacker?.name}");
+        
+        if (capturedPiece == null || attacker == null) 
+        {
+            Debug.Log("[MovePlate] Temporal Anchor check failed - null pieces");
+            return;
+        }
+
+        // Get the captured piece's player
+        Chessman capturedChessman = capturedPiece.GetComponent<Chessman>();
+        if (capturedChessman == null) 
+        {
+            Debug.Log("[MovePlate] Temporal Anchor check failed - no Chessman on captured piece");
+            return;
+        }
+
+        string capturedPlayer = capturedChessman.GetPlayer();
+        if (string.IsNullOrEmpty(capturedPlayer)) 
+        {
+            Debug.Log("[MovePlate] Temporal Anchor check failed - no player on captured piece");
+            return;
+        }
+
+        Debug.Log($"[MovePlate] Captured piece player: {capturedPlayer}");
+
+        // Find all Chronomagus pieces of the same player as the captured piece
+        Chronomagus[] allChronomagus = FindObjectsOfType<Chronomagus>();
+        Debug.Log($"[MovePlate] Found {allChronomagus.Length} Chronomagus pieces on board");
+        
+        foreach (Chronomagus chronomagus in allChronomagus)
+        {
+            Debug.Log($"[MovePlate] Processing Chronomagus: {chronomagus?.name}");
+            
+            if (chronomagus == null) 
+            {
+                Debug.Log("[MovePlate] Chronomagus is null, skipping");
+                continue;
+            }
+
+            Chessman chronomagusChessman = chronomagus.GetComponent<Chessman>();
+            if (chronomagusChessman == null) 
+            {
+                Debug.Log($"[MovePlate] No Chessman component on {chronomagus.name}, skipping");
+                continue;
+            }
+
+            string chronomagusPlayer = chronomagusChessman.GetPlayer();
+            Debug.Log($"[MovePlate] Checking Chronomagus {chronomagus.name} (player: {chronomagusPlayer})");
+
+            // Check if this Chronomagus is allied to the captured piece
+            if (chronomagusPlayer == capturedPlayer)
+            {
+                Debug.Log($"[MovePlate] Found allied Chronomagus! Checking if Temporal Anchor is available...");
+                
+                // Check if Temporal Anchor is available
+                if (chronomagus.IsTemporalAnchorAvailable())
+                {
+                    Debug.Log($"[MovePlate] Temporal Anchor triggered! {capturedPiece.name} was captured by {attacker.name}");
+                    chronomagus.TriggerTemporalAnchor(attacker);
+                    return; // Only trigger once per capture
+                }
+                else
+                {
+                    Debug.Log($"[MovePlate] Temporal Anchor on cooldown for {chronomagus.name}");
+                }
+            }
+            else
+            {
+                Debug.Log($"[MovePlate] Chronomagus {chronomagus.name} (player: {chronomagusPlayer}) is not allied to captured piece (player: {capturedPlayer})");
+            }
+        }
+        
+        Debug.Log("[MovePlate] No allied Chronomagus found or Temporal Anchor not available");
     }
 }

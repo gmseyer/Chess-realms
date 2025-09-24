@@ -33,8 +33,8 @@ private List<string> moveHistory = new List<string>();
 
     //Game Ending
     private bool gameOver = false;
-    public int whiteSkillPoints = 4;
-    public int blackSkillPoints = 4;
+    public int whiteSkillPoints = 0;
+    public int blackSkillPoints = 0;
     public GameObject movePlatePrefabReference; 
     
     public string restrictedToPawnsPlayer = null;   // "white" / "black" 
@@ -90,7 +90,7 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
-           Create("white_chronomagus", 2, 3),
+          
 
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -223,6 +223,8 @@ private void UpdateLatestMoveUI(string latestMove)
             if (obj.GetComponent<Pawn>() == null)
             {
                 Pawn pawn = obj.AddComponent<Pawn>();
+                // ✅ assign prefab from a central reference
+                pawn.movePlatePrefab = movePlatePrefabReference;
                 Debug.Log($"[Game] Pawn component added for {name} at ({x},{y})");
             }
         }
@@ -236,6 +238,15 @@ private void UpdateLatestMoveUI(string latestMove)
             }
         }
 
+        if (name.Contains("chronomagus"))
+        {
+            if (obj.GetComponent<Chronomagus>() == null)
+            {
+                Chronomagus chronomagus = obj.AddComponent<Chronomagus>();
+                chronomagus.movePlatePrefab = movePlatePrefabReference;
+                Debug.Log($"[Game] Chronomagus component added for {name} at ({x},{y})");
+            }
+        }
 
         if (name.Contains("knight"))
         {
@@ -283,6 +294,7 @@ private void UpdateLatestMoveUI(string latestMove)
     ClearExpiredRestrictions();
     ResetAllPieceTurnFlags();
     ClearExpiredStatuses();
+
     // Update visual status of all pieces on the board immediately
 Chessman[] allPieces = FindObjectsOfType<Chessman>();
 foreach (Chessman piece in allPieces)
@@ -316,6 +328,8 @@ foreach (King king in kings)
         try
         {
             king.UpdateLastStandMovement();
+            // Also update Monarch Shield passive
+            king.UpdateMonarchShield();
         }
         catch (System.Exception e)
         {
@@ -326,6 +340,12 @@ foreach (King king in kings)
     // Update the Turn UI with player
     if(TurnUI.Instance != null)
         TurnUI.Instance.UpdateTurn(turns, currentPlayer);
+
+    // Passive SP Gain System (check after turn counter updates)
+    if (SkillManager.Instance != null)
+    {
+        SkillManager.Instance.CheckPassiveSPGain();
+    }
 
     // Elemental Bishop cleanup
     ElementalBishop eb = FindObjectOfType<ElementalBishop>();
@@ -350,6 +370,9 @@ foreach (King king in kings)
     {
         SingularityManager.Instance.OnTurnStart();
     }
+
+    
+    
 }
 
 

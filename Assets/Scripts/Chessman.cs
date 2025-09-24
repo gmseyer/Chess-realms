@@ -143,6 +143,8 @@ public static class ChessNotation
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         bool isTemporalShifted = game.IsPlayerRestrictedToPawns(player) && !name.Contains("pawn");
         bool isEthereal = statusManager.HasStatus(StatusType.Ethereal, game.turns);
+        bool hasBounty = statusManager.HasBounty(game.turns);
+        bool hasKingMovement = statusManager.HasStatus(StatusType.KingMovement, game.turns);
         
         if (sr != null)
         {
@@ -151,7 +153,7 @@ public static class ChessNotation
     // Store original color if not already stored
     if (originalColor == Color.clear)
         originalColor = sr.color;
-    // Set to yellow
+    // Set to magenta for Stunned
     sr.color = Color.magenta;
 }
 else if (isEthereal)
@@ -169,6 +171,22 @@ else if (isTemporalShifted)
         originalColor = sr.color;
     // Set to magenta for Temporal Shift
     sr.color = Color.magenta;
+}
+        else if (hasBounty)
+{
+    // Store original color if not already stored
+    if (originalColor == Color.clear)
+        originalColor = sr.color;
+    // Set to yellow for Bounty
+    sr.color = Color.yellow;
+}
+else if (hasKingMovement)
+{
+    // Store original color if not already stored
+    if (originalColor == Color.clear)
+        originalColor = sr.color;
+    // Set to cyan for King Movement
+    sr.color = Color.cyan;
 }
 else
 {
@@ -510,8 +528,14 @@ if (game != null)
 
         if (this.name.StartsWith("black_pawn"))
         {
+            // Check for King Movement status (Russian Roulette effect)
+            if (statusManager.HasStatus(StatusType.KingMovement, game.turns))
+            {
+                Debug.Log($"[King Movement] {this.name} gains King-style movement from Russian Roulette!");
+                SurroundMovePlate(); // King-style movement (8 directions)
+            }
             // Check for Radiant Presence passive
-            if (HasAlliedRoyalPawn("black"))
+            else if (HasAlliedRoyalPawn("black"))
             {
                 Debug.Log($"[Radiant Presence] {this.name} gains Crown Step - King-style movement!");
                 SurroundMovePlate(); // King-style movement (8 directions)
@@ -532,8 +556,14 @@ if (game != null)
 
         else if (this.name.StartsWith("white_pawn")|| this.name.StartsWith("white_wraith_pawn"))
         {
+            // Check for King Movement status (Russian Roulette effect)
+            if (statusManager.HasStatus(StatusType.KingMovement, game.turns))
+            {
+                Debug.Log($"[King Movement] {this.name} gains King-style movement from Russian Roulette!");
+                SurroundMovePlate(); // King-style movement (8 directions)
+            }
             // Check for Radiant Presence passive
-            if (HasAlliedRoyalPawn("white"))
+            else if (HasAlliedRoyalPawn("white"))
             {
                 Debug.Log($"[Radiant Presence] {this.name} gains Crown Step - King-style movement!");
                 SurroundMovePlate(); // King-style movement (8 directions)
@@ -654,11 +684,15 @@ if (game != null)
 
     public void DestroyMovePlates()
     {   UpdateVisualStatus();
-        //Destroy old MovePlates
+        //Destroy old MovePlates (but not Russian Roulette target plates)
         GameObject[] movePlates = GameObject.FindGameObjectsWithTag("MovePlate");
         for (int i = 0; i < movePlates.Length; i++)
         {
-            Destroy(movePlates[i]); //Be careful with this function "Destroy" it is asynchronous
+            // Don't destroy plates that have RussianRouletteTargetPlate component
+            if (movePlates[i] != null && movePlates[i].GetComponent<RussianRouletteTargetPlate>() == null)
+            {
+                Destroy(movePlates[i]); //Be careful with this function "Destroy" it is asynchronous
+            }
         }
     }
 
@@ -1045,6 +1079,13 @@ if (game != null)
         mpScript.attack = true;
         mpScript.SetReference(gameObject);
         mpScript.SetCoords(matrixX, matrixY);
+    }
+
+    // King Movement function for Russian Roulette
+    public void ActivateKingMovement()
+    {
+        Debug.Log($"[King Movement] {gameObject.name} activated King Movement from Russian Roulette!");
+        // The status is already added in the Pawn script, this is just for activation logging
     }
 
 }

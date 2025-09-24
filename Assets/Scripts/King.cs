@@ -7,6 +7,11 @@ public class King : MonoBehaviour
     private Chessman chessman;
     private Game game;
     private int lastPawnCount = -1; // Track last known pawn count for optimization
+    
+    // Monarch Shield passive variables
+    private int monarchShieldCooldown = 0; // 8-turn cooldown between shield activations
+    private bool hasMonarchShield = false; // Whether King currently has Monarch Shield active
+    private int monarchShieldExpiresOnTurn = -1; // Turn when Monarch Shield expires
 
     private void Awake()
     {
@@ -21,7 +26,7 @@ public class King : MonoBehaviour
     }
 
     private void Start()
-    {
+    {  
         // Ensure Chessman reference is set
         if (chessman == null)
         {
@@ -374,6 +379,132 @@ public class King : MonoBehaviour
     public int GetCurrentPawnCount()
     {
         return CountAlliedPawns();
+    }
+
+    // Count all pieces for the King's player
+    private int CountAlliedPieces()
+    {
+        if (game == null || chessman == null) return 0;
+        
+        string player = chessman.GetPlayer();
+        int pieceCount = 0;
+        
+        // Count all pieces for the current player
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null)
+                {
+                    Chessman pieceCm = piece.GetComponent<Chessman>();
+                    if (pieceCm != null && pieceCm.GetPlayer() == player)
+                    {
+                        pieceCount++;
+                    }
+                }
+            }
+        }
+        
+        return pieceCount;
+    }
+
+    // Count all pieces for the opponent
+    private int CountEnemyPieces()
+    {
+        if (game == null || chessman == null) return 0;
+        
+        string player = chessman.GetPlayer();
+        string enemyPlayer = (player == "white") ? "black" : "white";
+        int pieceCount = 0;
+        
+        // Count all pieces for the enemy player
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null)
+                {
+                    Chessman pieceCm = piece.GetComponent<Chessman>();
+                    if (pieceCm != null && pieceCm.GetPlayer() == enemyPlayer)
+                    {
+                        pieceCount++;
+                    }
+                }
+            }
+        }
+        
+        return pieceCount;
+    }
+
+    // Check if King has fewer pieces than opponent
+    private bool HasFewerPiecesThanOpponent()
+    {
+        int alliedPieces = CountAlliedPieces();
+        int enemyPieces = CountEnemyPieces();
+        
+        Debug.Log($"[King] {chessman.GetPlayer()} King: {alliedPieces} pieces vs {enemyPieces} enemy pieces");
+        return alliedPieces < enemyPieces;
+    }
+
+    // Activate Monarch Shield (2-turn invulnerability)
+    private void ActivateMonarchShield()
+    {
+        if (chessman == null || game == null) return;
+        
+        hasMonarchShield = true;
+        monarchShieldExpiresOnTurn = game.turns + 2; // 2-turn duration
+        
+        // Add invulnerable status using StatusManager
+        StatusManager statusManager = chessman.GetComponent<StatusManager>();
+        if (statusManager != null)
+        {
+            statusManager.AddStatus(StatusType.Invulnerable, monarchShieldExpiresOnTurn);
+        }
+        
+        // Also set the Chessman invulnerable flag for compatibility
+        chessman.isInvulnerable = true;
+        chessman.invulnerableUntilTurn = monarchShieldExpiresOnTurn;
+        
+        Debug.Log($"[King] {chessman.GetPlayer()} King activated Monarch Shield until turn {monarchShieldExpiresOnTurn}");
+    }
+
+    // Check and update Monarch Shield passive
+    public void UpdateMonarchShield()
+    {
+        if (chessman == null || game == null) return;
+        
+        int currentTurn = game.turns;
+        string player = chessman.GetPlayer();
+        
+        // Only activate after turn 40
+        if (currentTurn < 40) return;
+        
+        // Decrease cooldown
+        if (monarchShieldCooldown > 0)
+        {
+            monarchShieldCooldown--;
+        }
+        
+        // Check if Monarch Shield expired
+        if (hasMonarchShield && currentTurn >= monarchShieldExpiresOnTurn)
+        {
+            hasMonarchShield = false;
+            monarchShieldExpiresOnTurn = -1;
+            Debug.Log($"[King] {player} King Monarch Shield expired at turn {currentTurn}");
+        }
+        
+        // Check if we can activate Monarch Shield
+        if (monarchShieldCooldown <= 0 && !hasMonarchShield)
+        {
+            if (HasFewerPiecesThanOpponent())
+            {
+                ActivateMonarchShield();
+                monarchShieldCooldown = 8; // 8-turn cooldown
+                Debug.Log($"[King] {player} King Monarch Shield activated! Cooldown: 8 turns");
+            }
+        }
     }
 
     // Generate castling move plates

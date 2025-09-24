@@ -454,6 +454,10 @@ public class Chronomagus : MonoBehaviour
 
     // Once-per-battle tracking
     private bool singularityUsed = false;
+    
+    // Soulbinding Conquest tracking (separate from Archbishop)
+    private static bool chronomagusSoulbindingUsed = false;
+    private static string chronomagusCapturedPieceName = "";
 
     // Check if Singularity is available
     public bool IsSingularityAvailable()
@@ -465,6 +469,176 @@ public class Chronomagus : MonoBehaviour
     public string GetSingularityCooldownText()
     {
         if (singularityUsed)
+            return "Used";
+        else
+            return "Ready";
+    }
+
+    // Temporal Anchor passive
+    private int temporalAnchorCooldown = 0;
+
+    // Check if Temporal Anchor is available
+    public bool IsTemporalAnchorAvailable()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null) return false;
+        
+        int currentTurn = game.GetTurnCount();
+        return temporalAnchorCooldown <= currentTurn;
+    }
+
+    // Trigger Temporal Anchor passive
+    public void TriggerTemporalAnchor(GameObject attacker)
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null) return;
+
+        // Check if Temporal Anchor is available
+        if (!IsTemporalAnchorAvailable())
+        {
+            Debug.Log("[Chronomagus] Temporal Anchor on cooldown - cannot trigger");
+            return;
+        }
+
+        // Check if attacker is a King (Kings cannot trigger Temporal Anchor)
+        if (attacker.name.Contains("king"))
+        {
+            Debug.Log("[Chronomagus] Temporal Anchor cannot affect Kings - passive not triggered");
+            return;
+        }
+
+        // Apply 2-turn stun to the attacker
+        Chessman attackerChessman = attacker.GetComponent<Chessman>();
+        if (attackerChessman != null)
+        {
+            StatusManager statusManager = attacker.GetComponent<StatusManager>();
+            if (statusManager != null)
+            {
+                int currentTurn = game.GetTurnCount();
+                int stunDuration = 2;
+                statusManager.AddStatus(StatusType.Stunned, currentTurn + stunDuration);
+                
+                Debug.Log($"[Chronomagus] Temporal Anchor triggered! {attacker.name} stunned for {stunDuration} turns (until turn {currentTurn + stunDuration})");
+                
+                // Set cooldown
+                temporalAnchorCooldown = currentTurn + 20;
+            }
+            else
+            {
+                Debug.LogError($"[Chronomagus] StatusManager not found on {attacker.name}!");
+            }
+        }
+        else
+        {
+            Debug.LogError($"[Chronomagus] Chessman component not found on {attacker.name}!");
+        }
+    }
+
+    // Get cooldown text for UI
+    public string GetTemporalAnchorCooldownText()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null) return "N/A";
+        
+        int currentTurn = game.GetTurnCount();
+        int turnsLeft = temporalAnchorCooldown - currentTurn;
+        
+        if (turnsLeft <= 0)
+            return "Ready";
+        else
+            return $"{turnsLeft} turns";
+    }
+
+    // Soulbinding Conquest passive skill (separate from Archbishop)
+    public static void TriggerChronomagusSoulbindingConquest(string capturedPiece)
+    {
+        // Check if already used this battle
+        if (chronomagusSoulbindingUsed)
+        {
+            Debug.LogWarning("[Chronomagus Soulbinding Conquest] Already used this battle — skill blocked.");
+            return;
+        }
+
+        // Check if captured piece is valid for summoning
+        if (!IsValidPieceForChronomagusSummoning(capturedPiece))
+        {
+            Debug.Log($"[Chronomagus Soulbinding Conquest] {capturedPiece} is not valid for summoning.");
+            return;
+        }
+
+        // Store the captured piece name and mark as used
+        chronomagusCapturedPieceName = capturedPiece;
+        chronomagusSoulbindingUsed = true;
+
+        Debug.Log($"[Chronomagus Soulbinding Conquest] Captured {capturedPiece} - summoning tiles will be created!");
+    }
+
+    private static bool IsValidPieceForChronomagusSummoning(string pieceName)
+    {
+        return pieceName.Contains("pawn") || 
+               pieceName.Contains("knight") || 
+               pieceName.Contains("rook") || 
+               pieceName.Contains("bishop");
+    }
+
+    // Spawn summon plates for Chronomagus Soulbinding Conquest
+    public void SpawnChronomagusSoulbindingSummonPlates()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null) return;
+
+        // Generate summon tiles on player's side (bottom 3-4 ranks for white, top 3-4 ranks for black)
+        string currentPlayer = game.GetCurrentPlayer();
+        int startY = (currentPlayer == "white") ? 0 : 4;
+        int endY = (currentPlayer == "white") ? 4 : 8;
+
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = startY; y < endY; y++)
+            {
+                if (game.GetPosition(x, y) == null)
+                {
+                    SpawnChronomagusSoulbindingPlate(game, x, y);
+                }
+            }
+        }
+
+        Debug.Log("[Chronomagus Soulbinding Conquest] Summon plates created on player's side!");
+    }
+
+    private void SpawnChronomagusSoulbindingPlate(Game game, int x, int y)
+    {
+        float fx = x * 0.57f - 1.98f;
+        float fy = y * 0.56f - 1.95f;
+
+        GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+
+        // Remove default MovePlate script
+        MovePlate oldScript = mp.GetComponent<MovePlate>();
+        if (oldScript != null) Destroy(oldScript);
+
+        // Add SoulbindingSummonPlate script (reuse existing one)
+        SoulbindingSummonPlate plate = mp.AddComponent<SoulbindingSummonPlate>();
+        plate.Setup(game, x, y, chronomagusCapturedPieceName);
+
+        // Make summon plates visually distinct (green)
+        SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.color = Color.green;
+        }
+    }
+
+    // Check if Chronomagus Soulbinding Conquest is available
+    public static bool IsChronomagusSoulbindingAvailable()
+    {
+        return !chronomagusSoulbindingUsed;
+    }
+
+    // Get cooldown text for UI
+    public string GetChronomagusSoulbindingCooldownText()
+    {
+        if (chronomagusSoulbindingUsed)
             return "Used";
         else
             return "Ready";

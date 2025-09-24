@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class ElementalTileExpiration : MonoBehaviour
 {
+
+    //for chronomagus tiles only
+
+    
     private int expirationTurn;
     private Game game;
 

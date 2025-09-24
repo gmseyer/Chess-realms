@@ -40,4 +40,9 @@ public class ChronomagusSkillButton : MonoBehaviour
         // Call the Chronomagus promotion
         chronomagus.ChronomagusPromotion();
     }
+
+    
+
+
+
 }

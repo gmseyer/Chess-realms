@@ -10,6 +10,8 @@ public enum StatusType
     Stunned,
     Ethereal,
     Soulbrand,
+    Bounty,
+    KingMovement,
 
     specialTile, //status for special tiles like lava
      SolidBlock //status for tile_earth
@@ -21,6 +23,7 @@ public class StatusManager : MonoBehaviour
     {
         public StatusType type;
         public int expiresOnTurn; // turn when this status ends
+        public int bountyValue; // SP value for bounty status
     }
 
     private List<Status> activeStatuses = new List<Status>();
@@ -30,8 +33,14 @@ public class StatusManager : MonoBehaviour
 
     public void AddStatus(StatusType type, int expiresOnTurn)
     {
-        activeStatuses.Add(new Status { type = type, expiresOnTurn = expiresOnTurn });
+        activeStatuses.Add(new Status { type = type, expiresOnTurn = expiresOnTurn, bountyValue = 0 });
         Debug.Log($"{gameObject.name} gained status {type} until turn {expiresOnTurn}");
+    }
+
+    public void AddBountyStatus(int bountyValue, int expiresOnTurn)
+    {
+        activeStatuses.Add(new Status { type = StatusType.Bounty, expiresOnTurn = expiresOnTurn, bountyValue = bountyValue });
+        Debug.Log($"{gameObject.name} gained bounty status with {bountyValue} SP until turn {expiresOnTurn}");
     }
 
     public void RemoveStatus(StatusType type)
@@ -146,6 +155,17 @@ public class StatusManager : MonoBehaviour
     {
         soulbrandStacks = 0;
         Debug.Log($"{gameObject.name} soulbrand stacks cleared");
+    }
+
+    public int GetBountyValue(int currentTurn)
+    {
+        Status bountyStatus = activeStatuses.Find(s => s.type == StatusType.Bounty && s.expiresOnTurn >= currentTurn);
+        return bountyStatus?.bountyValue ?? 0;
+    }
+
+    public bool HasBounty(int currentTurn)
+    {
+        return activeStatuses.Exists(s => s.type == StatusType.Bounty && s.expiresOnTurn >= currentTurn);
     }
 
 
