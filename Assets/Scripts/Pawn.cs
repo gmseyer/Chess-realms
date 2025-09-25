@@ -154,6 +154,13 @@ public class Pawn : MonoBehaviour
 
         string player = game.GetCurrentPlayer();
         
+        // Check if royal acolyte is on board - if so, disable pawn skills
+        if (global::RoyalAcolyte.IsRoyalAcolyteOnBoard(player))
+        {
+            Debug.Log($"[Pawn's Gambit] Cannot use - {player} royal acolyte is on the board! Pawn skills are disabled.");
+            return;
+        }
+        
         // Check if SkillManager is available
         if (SkillManager.Instance == null)
         {
@@ -180,6 +187,15 @@ public class Pawn : MonoBehaviour
         if (game == null)
         {
             Debug.LogError("[RussianRoulette] Missing Game reference!");
+            return;
+        }
+
+        string player = game.GetCurrentPlayer();
+        
+        // Check if royal acolyte is on board - if so, disable pawn skills
+        if (global::RoyalAcolyte.IsRoyalAcolyteOnBoard(player))
+        {
+            Debug.Log($"[Russian Roulette] Cannot use - {player} royal acolyte is on the board! Pawn skills are disabled.");
             return;
         }
 
@@ -218,8 +234,6 @@ public class Pawn : MonoBehaviour
             Debug.LogError("[RussianRoulette] Could not find a valid pawn to use Russian Roulette!");
             return;
         }
-
-        string player = game.GetCurrentPlayer();
         
         // Check if SkillManager is available
         if (SkillManager.Instance == null)

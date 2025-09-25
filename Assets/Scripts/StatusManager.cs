@@ -4,7 +4,7 @@ using UnityEngine;
 public enum StatusType
 {
     Invulnerable,
-    Ghost,
+    Summoned,
     Phase,
     Locked,
     Stunned,
@@ -35,12 +35,24 @@ public class StatusManager : MonoBehaviour
     {
         activeStatuses.Add(new Status { type = type, expiresOnTurn = expiresOnTurn, bountyValue = 0 });
         Debug.Log($"{gameObject.name} gained status {type} until turn {expiresOnTurn}");
+        
+        // Update status panel if this piece is selected
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece == gameObject)
+        {
+            UIManager.Instance.UpdateStatusPanel();
+        }
     }
 
     public void AddBountyStatus(int bountyValue, int expiresOnTurn)
     {
         activeStatuses.Add(new Status { type = StatusType.Bounty, expiresOnTurn = expiresOnTurn, bountyValue = bountyValue });
         Debug.Log($"{gameObject.name} gained bounty status with {bountyValue} SP until turn {expiresOnTurn}");
+        
+        // Update status panel if this piece is selected
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece == gameObject)
+        {
+            UIManager.Instance.UpdateStatusPanel();
+        }
     }
 
     public void RemoveStatus(StatusType type)
@@ -48,6 +60,12 @@ public class StatusManager : MonoBehaviour
         Debug.Log($"[StatusManager] RemoveStatus called on {gameObject.name} for status {type}");
         bool hadStatus = activeStatuses.Exists(s => s.type == type);
         activeStatuses.RemoveAll(s => s.type == type);
+        
+        // Update status panel if this piece is selected
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece == gameObject)
+        {
+            UIManager.Instance.UpdateStatusPanel();
+        }
         
         // Check if ethereal status was removed from a Bishop
         if (hadStatus && type == StatusType.Ethereal && gameObject.name.Contains("bishop") && !gameObject.name.Contains("royal"))

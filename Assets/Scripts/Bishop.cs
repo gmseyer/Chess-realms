@@ -470,7 +470,7 @@ foreach (Chessman piece in allPieces)
 }
 
    
-    }
+    } 
 
     // Ethereal movement method - can pass through any piece but only land on empty tiles
     public void GenerateEtherealMovePlates()

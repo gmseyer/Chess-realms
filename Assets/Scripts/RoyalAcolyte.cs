@@ -11,6 +11,20 @@ public class RoyalAcolyte : MonoBehaviour
         game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
     }
 
+    // Check if any royal acolyte of the specified player is on the board
+    public static bool IsRoyalAcolyteOnBoard(string player)
+    {
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        foreach (Chessman piece in allPieces)
+        {
+            if (piece != null && piece.name.Contains("royal_pawn") && piece.GetPlayer() == player)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Echo() - Summons Spectral Herald after royal pawn promotion
     public void Echo()
     {

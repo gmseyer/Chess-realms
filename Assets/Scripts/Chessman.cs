@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //cd /c/Users/acer/Downloads/Chess_App-master/Chess_App-master
+
  
-public class Chessman : MonoBehaviour
+public class Chessman : MonoBehaviour 
 {
     //References 
     public GameObject controller;
@@ -440,24 +441,16 @@ if (game != null)
             UIManager.Instance.whiteRoyalPawnPanel?.SetActive(false);
             UIManager.Instance.whiteSpectralHeraldPanel?.SetActive(false);
             UIManager.Instance.whiteChronomagusPanel?.SetActive(false);
+            
+            // Hide status panel when hiding all panels
+            UIManager.Instance.HideStatusPanel();
         }
 
         // Get reference to Game controller
         var game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
         string currentPlayer = game.GetCurrentPlayer();
 
-        // ✅ Check turn before proceeding
-        bool isWhitePiece = name.StartsWith("white");
-        bool isBlackPiece = name.StartsWith("black");
-
-        if ((currentPlayer == "white" && !isWhitePiece) ||
-            (currentPlayer == "black" && !isBlackPiece))
-        {
-            Debug.Log($"It's {currentPlayer}'s turn. {name} cannot move!");
-            return; // ❌ Stop here - don't show panel or move plates
-        }
-
-        // ✅ Select the correct panel for this piece
+        // ✅ Select the correct panel for this piece (show panels regardless of turn)
         if (UIManager.Instance != null)
         {
             if (name.Contains("wraith_pawn"))
@@ -495,9 +488,24 @@ if (game != null)
                 panelForThisPiece = UIManager.Instance.kingPanel;
 
         }
-        // store selected piece for UI buttons
+        
+        // store selected piece for UI buttons and show panels
         if (UIManager.Instance != null) UIManager.Instance.selectedPiece = this.gameObject;
         panelForThisPiece?.SetActive(true);
+        
+        // Show status panel when piece panel opens (regardless of turn)
+        if (UIManager.Instance != null) UIManager.Instance.ShowStatusPanel();
+
+        // ✅ Check turn before proceeding with movement
+        bool isWhitePiece = name.StartsWith("white");
+        bool isBlackPiece = name.StartsWith("black");
+
+        if ((currentPlayer == "white" && !isWhitePiece) ||
+            (currentPlayer == "black" && !isBlackPiece))
+        {
+            Debug.Log($"It's {currentPlayer}'s turn. {name} cannot move!");
+            return; // ❌ Stop here - don't show move plates, but panels are already shown
+        }
 
         DestroyMovePlates(); // ✅ Remove old move plates
         InitiateMovePlates(); // ✅ Create new move plates (only if it's this piece's turn)
@@ -951,12 +959,12 @@ if (game != null)
                         // Check if this is an Elemental Bishop (can pass through boulders)
                         if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                         {
-                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                          //  Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
                         }
                         else
                         {
-                            Debug.Log($"{targetCm.name} is a solid block. Pawn cannot move forward.");
+                           // Debug.Log($"{targetCm.name} is a solid block. Pawn cannot move forward.");
                             break; // stop movement
                         }
                     }
@@ -964,19 +972,19 @@ if (game != null)
                     // Special tile → can land and continue checking
                     if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
                     {
-                        Debug.Log($"{targetCm.name} is a special tile. Pawn can land here.");
+                       // Debug.Log($"{targetCm.name} is a special tile. Pawn can land here.");
                         MovePlateSpawn(xBoard, currentY);
                         continue;
                     }
 
                     // Other pieces
-                    Debug.Log($"{targetCm.name} is blocking pawn forward movement. Stop.");
+                  //  Debug.Log($"{targetCm.name} is blocking pawn forward movement. Stop.");
                     break;
                 }
             }
             else
             {
-                Debug.Log($"Empty tile at ({xBoard},{currentY}). MovePlateSpawn activated for pawn forward.");
+               // Debug.Log($"Empty tile at ({xBoard},{currentY}). MovePlateSpawn activated for pawn forward.");
                 MovePlateSpawn(xBoard, currentY);
             }
         }

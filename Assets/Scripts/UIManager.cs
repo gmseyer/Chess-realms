@@ -23,6 +23,23 @@ public class UIManager : MonoBehaviour
     public GameObject whiteChronomagusPanel;
     public GameObject blackChronomagusPanel;
 
+    // Status Panel
+    public GameObject statusPanel;
+    public Transform statusIconParent; // Parent object to hold status sprites
+
+    // Status Sprites
+    public Sprite invulnerableSprite;
+    public Sprite summonedSprite;
+    public Sprite phaseSprite;
+    public Sprite lockedSprite;
+    public Sprite stunnedSprite;
+    public Sprite etherealSprite;
+    public Sprite soulbrandSprite;
+    public Sprite bountySprite;
+    public Sprite kingMovementSprite;
+    public Sprite specialTileSprite;
+    public Sprite solidBlockSprite;
+
 
 
 
@@ -116,6 +133,152 @@ public Button fortifyButton;
             // rookSPText.text = game.GetPlayerSP(game.GetCurrentPlayer()).ToString();
             if (rookSPText != null) rookSPText.text = owner + " SP: " + ownerSP;
         }
+    }
+
+    // Status Panel Management
+    public void UpdateStatusPanel()
+    {
+        // Clear existing status icons
+        ClearStatusIcons();
+
+        // If no piece selected, don't update (panel visibility is controlled by piece panels)
+        if (selectedPiece == null)
+        {
+            return;
+        }
+
+        // Get the selected piece's status manager
+        Chessman chessman = selectedPiece.GetComponent<Chessman>();
+        if (chessman == null || chessman.statusManager == null)
+        {
+            return;
+        }
+
+        // Get current turn
+        Game game = GameObject.FindGameObjectWithTag("GameController")?.GetComponent<Game>();
+        if (game == null)
+        {
+            return;
+        }
+
+        // Check each status type and create icons for active ones
+        StatusType[] allStatusTypes = {
+            StatusType.Invulnerable, StatusType.Summoned, StatusType.Phase, StatusType.Locked,
+            StatusType.Stunned, StatusType.Ethereal, StatusType.Soulbrand, StatusType.Bounty,
+            StatusType.KingMovement, StatusType.specialTile, StatusType.SolidBlock
+        };
+
+        foreach (StatusType statusType in allStatusTypes)
+        {
+            if (chessman.statusManager.HasStatus(statusType, game.turns))
+            {
+                CreateStatusIcon(statusType);
+            }
+        }
+    }
+
+    private void ClearStatusIcons()
+    {
+        if (statusIconParent == null) return;
+
+        // Destroy all existing status icons
+        foreach (Transform child in statusIconParent)
+        {
+            if (child != null)
+                Destroy(child.gameObject);
+        }
+    }
+
+    private void CreateStatusIcon(StatusType statusType)
+    {
+        if (statusIconParent == null) return;
+
+        // Get the appropriate sprite for this status
+        Sprite statusSprite = GetStatusSprite(statusType);
+        if (statusSprite == null) return;
+
+        // Create a new GameObject for the status icon
+        GameObject statusIcon = new GameObject($"StatusIcon_{statusType}");
+        statusIcon.transform.SetParent(statusIconParent, false);
+
+        // Add Image component
+        Image image = statusIcon.AddComponent<Image>();
+        image.sprite = statusSprite;
+        image.preserveAspect = true;
+
+        // Set size (you can adjust this as needed)
+        RectTransform rectTransform = statusIcon.GetComponent<RectTransform>();
+        rectTransform.sizeDelta = new Vector2(50, 50); // 50x50 pixels
+    }
+
+    private Sprite GetStatusSprite(StatusType statusType)
+    {
+        switch (statusType)
+        {
+            case StatusType.Invulnerable: return invulnerableSprite;
+            case StatusType.Summoned: return summonedSprite;
+            case StatusType.Phase: return phaseSprite;
+            case StatusType.Locked: return lockedSprite;
+            case StatusType.Stunned: return stunnedSprite;
+            case StatusType.Ethereal: return etherealSprite;
+            case StatusType.Soulbrand: return soulbrandSprite;
+            case StatusType.Bounty: return bountySprite;
+            case StatusType.KingMovement: return kingMovementSprite;
+            case StatusType.specialTile: return specialTileSprite;
+            case StatusType.SolidBlock: return solidBlockSprite;
+            default: return null;
+        }
+    }
+
+    // Helper method to show status panel (called when any piece panel opens)
+    public void ShowStatusPanel()
+    {
+        if (statusPanel != null)
+        {
+            statusPanel.SetActive(true);
+            UpdateStatusPanel(); // Update the status icons
+        }
+    }
+
+    // Helper method to hide status panel (called when any piece panel closes)
+    public void HideStatusPanel()
+    {
+        if (statusPanel != null)
+        {
+            statusPanel.SetActive(false);
+        }
+    }
+
+    // Test method to manually add statuses for testing
+    [ContextMenu("Test Status Panel")]
+    public void TestStatusPanel()
+    {
+        if (selectedPiece == null)
+        {
+            Debug.Log("[Status Panel Test] No piece selected. Please select a piece first.");
+            return;
+        }
+
+        Chessman chessman = selectedPiece.GetComponent<Chessman>();
+        if (chessman == null || chessman.statusManager == null)
+        {
+            Debug.Log("[Status Panel Test] No Chessman or StatusManager found on selected piece.");
+            return;
+        }
+
+        Game game = GameObject.FindGameObjectWithTag("GameController")?.GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.Log("[Status Panel Test] Game controller not found.");
+            return;
+        }
+
+        // Add some test statuses
+        chessman.statusManager.AddStatus(StatusType.Invulnerable, game.turns + 5);
+        chessman.statusManager.AddStatus(StatusType.Stunned, game.turns + 3);
+        chessman.statusManager.AddBountyStatus(2, game.turns + 10);
+        
+        Debug.Log("[Status Panel Test] Added test statuses to selected piece. Check the status panel!");
     }
 
 

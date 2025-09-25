@@ -13,7 +13,7 @@ public class Archbishop : MonoBehaviour
     private void Start() 
     {
         game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
-    }
+    } 
 
     public void TemporalShiftButton()
     {

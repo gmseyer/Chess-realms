@@ -179,6 +179,19 @@ private void UpdateLatestMoveUI(string latestMove)
             }
         }
 
+        if (name.Contains("elemental_bishop"))
+        {
+            if (obj.GetComponent<ElementalBishop>() == null)
+            {
+                ElementalBishop eb = obj.AddComponent<ElementalBishop>();
+                // ✅ assign prefab from a central reference
+                eb.movePlatePrefab = movePlatePrefabReference;
+            }
+            // ✅ Add Summoned status to ElementalBishop (permanent, never expires)
+            cm.statusManager.AddStatus(StatusType.Summoned, 999);
+            Debug.Log($"[Game] {name} marked as Summoned (ElementalBishop)");
+        }
+
         if (name.Contains("arch_bishop"))
         {
             if (obj.GetComponent<Archbishop>() == null)
@@ -187,6 +200,9 @@ private void UpdateLatestMoveUI(string latestMove)
                 // ✅ assign prefab from a central reference
                 ab.movePlatePrefab = movePlatePrefabReference;
             }
+            // ✅ Add Summoned status to Archbishop (permanent, never expires)
+            cm.statusManager.AddStatus(StatusType.Summoned, 999);
+            Debug.Log($"[Game] {name} marked as Summoned (Archbishop)");
         }
 
         if (name.Contains("royal_rook"))
@@ -214,8 +230,10 @@ private void UpdateLatestMoveUI(string latestMove)
             if (obj.GetComponent<WraithPawn>() == null)
             {
                 WraithPawn wp = obj.AddComponent<WraithPawn>();
-                Debug.Log($"[Game] WraithPawn component added for {name} at ({x},{y})");
+                cm.statusManager.AddStatus(StatusType.Summoned, 999);
+               // Debug.Log($"[Game] WraithPawn component added for {name} at ({x},{y})");
             }
+            
         }
 
         if (name.Contains("pawn") && !name.Contains("wraith_pawn") && !name.Contains("royal_pawn"))
@@ -225,7 +243,7 @@ private void UpdateLatestMoveUI(string latestMove)
                 Pawn pawn = obj.AddComponent<Pawn>();
                 // ✅ assign prefab from a central reference
                 pawn.movePlatePrefab = movePlatePrefabReference;
-                Debug.Log($"[Game] Pawn component added for {name} at ({x},{y})");
+               // Debug.Log($"[Game] Pawn component added for {name} at ({x},{y})");
             }
         }
 
@@ -234,7 +252,7 @@ private void UpdateLatestMoveUI(string latestMove)
             if (obj.GetComponent<RoyalAcolyte>() == null)
             {
                 RoyalAcolyte royalAcolyte = obj.AddComponent<RoyalAcolyte>();
-                Debug.Log($"[Game] RoyalAcolyte component added for {name} at ({x},{y})");
+                //Debug.Log($"[Game] RoyalAcolyte component added for {name} at ({x},{y})");
             }
         }
 
@@ -244,8 +262,10 @@ private void UpdateLatestMoveUI(string latestMove)
             {
                 Chronomagus chronomagus = obj.AddComponent<Chronomagus>();
                 chronomagus.movePlatePrefab = movePlatePrefabReference;
-                Debug.Log($"[Game] Chronomagus component added for {name} at ({x},{y})");
+                 cm.statusManager.AddStatus(StatusType.Summoned, 999);
+                //Debug.Log($"[Game] Chronomagus component added for {name} at ({x},{y})");
             }
+           
         }
 
         if (name.Contains("knight"))
@@ -278,7 +298,7 @@ private void UpdateLatestMoveUI(string latestMove)
                 King kingComponent = obj.AddComponent<King>();
                 // ✅ assign prefab from a central reference
                 kingComponent.movePlatePrefab = movePlatePrefabReference;
-                Debug.Log($"[Game] King component added for {name} at ({x},{y})");
+              //  Debug.Log($"[Game] King component added for {name} at ({x},{y})");
             }
         }
         
@@ -300,6 +320,12 @@ Chessman[] allPieces = FindObjectsOfType<Chessman>();
 foreach (Chessman piece in allPieces)
 {
     piece.UpdateVisualStatus();
+}
+
+// Update status panel if a piece is selected
+if (UIManager.Instance != null)
+{
+    UIManager.Instance.UpdateStatusPanel();
 }
 
 // Notify WraithPawns of turn change

@@ -415,7 +415,12 @@ public class MovePlate : MonoBehaviour
             UIManager.Instance.kingPanel?.SetActive(false);
             UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
             UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
-
+            
+            // Hide status panel when hiding all panels
+            UIManager.Instance.HideStatusPanel();
+            
+            // Clear selected piece
+            UIManager.Instance.selectedPiece = null;
         }
         if (SkillManagerTMP.Instance != null)
         {
