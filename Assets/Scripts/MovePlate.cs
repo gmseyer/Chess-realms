@@ -56,6 +56,7 @@ public class MovePlate : MonoBehaviour
             GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
             if (cp != null)
             {
+                
                 Chessman targetCm = cp.GetComponent<Chessman>();
 
                 // Special check for bishop capture
@@ -78,6 +79,16 @@ public class MovePlate : MonoBehaviour
                     Debug.Log($"{targetCm.name} is invulnerable — attack cancelled.");
                     return;
                 }
+
+                // ✅ Check for ice marker attack FIRST (before any other processing)
+                if (CheckIceMarkerAttack(matrixX, matrixY, movingPiece, cp))
+                {
+                    return; // Stop processing if ice marker attack was handled
+                }
+                
+                // ✅ Check for fire marker attack (tracked piece captured)
+                CheckFireMarkerAttack(matrixX, matrixY, movingPiece, cp);
+
                 // ----------------- QUEEN PASSIVE SECTION -----------------
                 // <-- NEW: debug log when queen is about to be taken -->
                 if (cp.name.ToLower().Contains("queen"))
@@ -957,4 +968,129 @@ public class MovePlate : MonoBehaviour
         
         Debug.Log("[MovePlate] No allied Chronomagus found or Temporal Anchor not available");
     }
-}
+
+    // ✅ Check for ice marker attack (tracked piece attacked - slide effect)
+    private bool CheckIceMarkerAttack(int x, int y, Chessman attacker, GameObject defender)
+    {
+        // Find ice marker at this position
+        Marker[] allMarkers = FindObjectsOfType<Marker>();
+        foreach (Marker marker in allMarkers)
+        {
+            if (marker.x == x && marker.y == y && marker.trackedPieceName == defender.name && marker.markerType == MarkerType.Ice)
+            {
+                Debug.Log($"[IceMarker] Tracked piece {marker.trackedPieceName} attacked at ({x},{y}) - handling slide effect");
+                
+                // 1. Mark as handled by attack to prevent move case
+                marker.wasHandledByAttack = true;
+                
+                // 2. Get the attacker's current position
+                int attackerX = attacker.GetXBoard();
+                int attackerY = attacker.GetYBoard();
+                
+                // 3. Find empty tiles around the defender (3x3 area)
+                List<Vector2Int> emptyTiles = new List<Vector2Int>();
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        int checkX = x + dx;
+                        int checkY = y + dy;
+                        
+                        // Check if position is valid and empty
+                        if (checkX >= 0 && checkX < 8 && checkY >= 0 && checkY < 8)
+                        {
+                            GameObject pieceAtPos = controller.GetComponent<Game>().GetPosition(checkX, checkY);
+                            if (pieceAtPos == null)
+                            {
+                                emptyTiles.Add(new Vector2Int(checkX, checkY));
+                            }
+                        }
+                    }
+                }
+                
+                // 4. If no empty tiles found, don't slide (attack fails)
+                if (emptyTiles.Count == 0)
+                {
+                    Debug.Log($"[IceMarker] No empty tiles around defender - attack fails");
+                    return false;
+                }
+                
+                // 5. Randomly select an empty tile
+                Vector2Int targetTile = emptyTiles[Random.Range(0, emptyTiles.Count)];
+                
+                // 6. Move attacker to the random empty tile
+                attacker.SetXBoard(targetTile.x);
+                attacker.SetYBoard(targetTile.y);
+                attacker.SetCoords();
+                
+                // 7. Update positions
+                Game game = controller.GetComponent<Game>();
+                game.SetPositionEmpty(attackerX, attackerY);
+                game.SetPositionAt(attacker.gameObject, targetTile.x, targetTile.y);
+                
+                // 8. Destroy the ice marker
+                Destroy(marker.gameObject);
+                
+                // 9. Clean up and end turn
+                attacker.DestroyMovePlates();
+                attacker.ClearFortify();
+                attacker.CheckMoveTiles_End();
+                game.NextTurn();
+                
+                Debug.Log($"[IceMarker] Attack case: Attacker slid to ({targetTile.x},{targetTile.y}), ice marker destroyed - turn ends");
+                return true; // Attack was handled
+            }
+        }
+        
+        return false; // No ice marker found, attack not handled
+    }
+
+    // ✅ Check for fire marker attack (tracked piece captured)
+    private void CheckFireMarkerAttack(int x, int y, Chessman attacker, GameObject defender)
+    {
+        // Find fire marker at this position
+        Marker[] allMarkers = FindObjectsOfType<Marker>();
+        foreach (Marker marker in allMarkers)
+        {
+            if (marker.x == x && marker.y == y && marker.trackedPieceName == defender.name && marker.markerType == MarkerType.Fire)
+            {
+                Debug.Log($"[FireMarker] Tracked piece {marker.trackedPieceName} captured at ({x},{y}) - handling attack case");
+                
+                // Mark as handled by attack to prevent double handling
+                marker.wasHandledByAttack = true;
+                
+                // 1. Convert fire marker to lava tile (tracked piece captured)
+                marker.ConvertToTile();
+                
+                // 2. Find the lava tile that was just created
+                GameObject lavaTile = controller.GetComponent<Game>().GetPosition(x, y);
+                if (lavaTile != null && lavaTile.name == "tile_lava")
+                {
+                    // 3. Destroy the lava tile immediately
+                    controller.GetComponent<Game>().SetPositionEmpty(x, y);
+                    Destroy(lavaTile);
+                    Debug.Log($"[FireMarker] Lava tile destroyed at ({x},{y})");
+                }
+                
+                // 4. Destroy both pieces
+                Destroy(attacker.gameObject);
+                Destroy(defender);
+                
+                // 5. Clear positions
+                Game game = controller.GetComponent<Game>();
+                game.SetPositionEmpty(attacker.GetXBoard(), attacker.GetYBoard());
+                game.SetPositionEmpty(x, y);
+                
+                // Clean up and end turn
+                attacker.DestroyMovePlates();
+                attacker.ClearFortify();
+                attacker.CheckMoveTiles_End();
+                
+                Debug.Log($"[FireMarker] Attack case: Both pieces destroyed, fire marker converted and destroyed - turn ends");
+                return; // Stop further processing
+            }
+        }
+    }
+
+
+} 

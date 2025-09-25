@@ -25,6 +25,9 @@ public class ElementalBishop : MonoBehaviour
 
     private List<ActiveTile> activeTiles = new List<ActiveTile>();
     public int tileDuration = 5; // ✅ configurable duration for tiles
+    
+    // ✅ Marker tracking (both fire and ice)
+    private List<Marker> activeMarkers = new List<Marker>();
 
      // Helper methods
     public void InfernalBrand() => CastSkill("tile_lava");
@@ -76,7 +79,7 @@ if (SkillTracker.Instance != null)
         skillCooldowns[tileName] = currentTurn + 5;
         UpdateCooldownUI();
 
-        // ✅ Spawn move plates
+        // ✅ Spawn move plates on BOTH empty and occupied tiles
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
 
@@ -84,8 +87,8 @@ if (SkillTracker.Instance != null)
         {
             for (int y = 0; y < 8; y++)
             {
-                if (game.GetPosition(x, y) == null)
-                    SpawnMovePlate(game, x, y, tileName);
+                // ✅ Spawn move plates on ALL tiles (empty and occupied)
+                SpawnMovePlate(game, x, y, tileName);
             }
         }
 
@@ -113,6 +116,16 @@ if (SkillTracker.Instance != null)
 
     private void SpawnMovePlate(Game game, int x, int y, string tileName)
     {
+        // ✅ Check if tile is occupied
+        GameObject pieceAtPosition = game.GetPosition(x, y);
+        if (pieceAtPosition != null)
+        {
+            // ✅ Tile is occupied - spawn move plate but with different behavior
+            SpawnOccupiedTileMovePlate(game, x, y, tileName);
+            return;
+        }
+
+        // ✅ Tile is empty - spawn normal move plate
         float fx = x * 0.57f - 1.98f;
         float fy = y * 0.56f - 1.95f;
 
@@ -122,6 +135,21 @@ if (SkillTracker.Instance != null)
         if (oldScript != null) Destroy(oldScript);
 
         mp.AddComponent<SkillEndTurnPlate>().Setup(game, x, y, tileName);
+    }
+
+    // ✅ New method for occupied tiles (fire markers)
+    private void SpawnOccupiedTileMovePlate(Game game, int x, int y, string tileName)
+    {
+        float fx = x * 0.57f - 1.98f;
+        float fy = y * 0.56f - 1.95f;
+
+        GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+
+        MovePlate oldScript = mp.GetComponent<MovePlate>();
+        if (oldScript != null) Destroy(oldScript);
+
+        // ✅ Add OccupiedTilePlate component (handles both fire and ice markers)
+        mp.AddComponent<OccupiedTilePlate>().Setup(game, x, y, tileName);
     }
 
    
@@ -138,6 +166,50 @@ public void RegisterTile(GameObject tile)
     activeTiles.Add(new ActiveTile { tileObject = tile, expireTurn = expireOn });
     Debug.Log($"[ElementalBishop] Registered {tile.name}, will expire on turn {expireOn}");
 }
+
+// ✅ Marker methods (both fire and ice)
+public void RegisterMarker(Marker marker)
+{
+    activeMarkers.Add(marker);
+    string markerTypeName = (marker.markerType == MarkerType.Fire) ? "fire" : "ice";
+    Debug.Log($"[ElementalBishop] Registered {markerTypeName} marker at ({marker.x},{marker.y})");
+}
+
+public void CheckMarkers()
+{
+    int currentTurn = game.GetTurnCount();
+    
+    for (int i = activeMarkers.Count - 1; i >= 0; i--)
+    {
+        Marker marker = activeMarkers[i];
+        if (marker == null)
+        {
+            activeMarkers.RemoveAt(i);
+            continue;
+        }
+        
+        // Check if marker has expired
+        if (marker.IsExpired(currentTurn))
+        {
+            string markerTypeName = (marker.markerType == MarkerType.Fire) ? "fire" : "ice";
+            Debug.Log($"[ElementalBishop] {markerTypeName} marker at ({marker.x},{marker.y}) expired");
+            Destroy(marker.gameObject);
+            activeMarkers.RemoveAt(i);
+            continue;
+        }
+        
+        // Check if tracked piece moved away from marker (NOT handled by attack case)
+        if (marker.HasTrackedPieceMovedAway() && !marker.wasHandledByAttack)
+        {
+            string markerTypeName = (marker.markerType == MarkerType.Fire) ? "fire" : "ice";
+            string tileName = (marker.markerType == MarkerType.Fire) ? "lava tile" : "ice tile";
+            Debug.Log($"[ElementalBishop] Tracked piece {marker.trackedPieceName} moved away from {markerTypeName} marker at ({marker.x},{marker.y}), converting to {tileName}");
+            marker.ConvertToTile();
+            activeMarkers.RemoveAt(i);
+        }
+    }
+}
+
 
 public void CheckAndDestroyExpiredTiles()
 {

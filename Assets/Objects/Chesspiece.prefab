@@ -131,6 +131,7 @@ MonoBehaviour:
   tile_earth: {fileID: 21300000, guid: acfe533064b32024eb4cf57e8f7066c1, type: 3}
   tile_thunder: {fileID: 21300000, guid: ffd24fcab9c865c478df5adb8721129c, type: 3}
   celestial_pillar: {fileID: 21300000, guid: db16fdd018d95bd458c443664d4ae83d, type: 3}
+  fire_marker: {fileID: 21300000, guid: c3325f64fe60e644cadcc359786dbc22, type: 3}
   tile_sanctuary: {fileID: 21300000, guid: b8e4dce0fea1310438a8d7d05ad98be9, type: 3}
   fortifyActive: 0
   isInvulnerable: 0

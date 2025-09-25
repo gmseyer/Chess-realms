@@ -376,7 +376,11 @@ foreach (King king in kings)
     // Elemental Bishop cleanup
     ElementalBishop eb = FindObjectOfType<ElementalBishop>();
     if(eb != null)
+    {
         eb.CheckAndDestroyExpiredTiles();
+        // ✅ Check fire markers every turn
+        eb.CheckMarkers();
+    }
 
     // Sanctuary Marker cleanup
     SanctuaryMarker[] allSanctuaryMarkers = FindObjectsOfType<SanctuaryMarker>();

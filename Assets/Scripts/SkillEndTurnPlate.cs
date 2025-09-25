@@ -12,7 +12,7 @@ public class SkillEndTurnPlate : MonoBehaviour
         game = g;
         x = tileX;
         y = tileY;
-        tileName = name;
+        tileName = name; 
     }
 
     private void OnMouseUp()

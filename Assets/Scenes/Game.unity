@@ -39924,6 +39924,7 @@ MonoBehaviour:
   movePlatePrefab: {fileID: 4427528937630144105, guid: 975cd21375dfdf440977be8479f87330,
     type: 3}
   turns: 0
+  fireMarkerSprite: {fileID: 21300000, guid: c3325f64fe60e644cadcc359786dbc22, type: 3}
   skillPoints: 3
   infernalBrandCooldownText: {fileID: 138240079}
   glacialPathCooldownText: {fileID: 12787348}
@@ -59238,6 +59239,7 @@ MonoBehaviour:
   tile_earth: {fileID: 21300000, guid: bbfd5c64bda093e4a839e1433b8b1b71, type: 3}
   tile_thunder: {fileID: 0}
   celestial_pillar: {fileID: 0}
+  fire_marker: {fileID: 0}
   tile_sanctuary: {fileID: 0}
   fortifyActive: 0
   isInvulnerable: 0
