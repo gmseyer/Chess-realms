@@ -274,12 +274,26 @@ public class MovePlate : MonoBehaviour
 
 
                 Knight attackerKnight = reference.GetComponent<Knight>();
-                if (attackerKnight != null && attackerKnight.IsMomentumReady())
+                if (attackerKnight != null)
                 {
-                    // prevent the usual NextTurn flow: spawn momentum teleport tiles and let player choose
-                    Knight.ActiveKnight = attackerKnight; // keep it selected (useful)
-                    attackerKnight.TriggerKnightsMomentum();
-                    return; // IMPORTANT: stop further processing so the player can click momentum tile
+                    // Check for Trial of Valor - add valor stack on capture
+                    attackerKnight.OnCaptureEnemy();
+                    
+                    // Check if knight promotion just happened (knight was destroyed)
+                    if (attackerKnight == null || !attackerKnight.gameObject.activeInHierarchy)
+                    {
+                        Debug.Log("[MovePlate] Knight promotion detected - skipping cleanup to preserve summon plates");
+                        return; // Skip cleanup to preserve Royal Knight summon plates
+                    }
+                    
+                    // Only check momentum if knight is still alive (promotion takes priority)
+                    if (attackerKnight.IsMomentumReady())
+                    {
+                        // prevent the usual NextTurn flow: spawn momentum teleport tiles and let player choose
+                        Knight.ActiveKnight = attackerKnight; // keep it selected (useful)
+                        attackerKnight.TriggerKnightsMomentum();
+                        return; // IMPORTANT: stop further processing so the player can click momentum tile
+                    }
                 }
 
                 // ----------------- Wraith Pawn Cleanup -----------------
@@ -426,6 +440,10 @@ public class MovePlate : MonoBehaviour
             UIManager.Instance.kingPanel?.SetActive(false);
             UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
             UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteRoyalKnightPanel?.SetActive(false);
+            UIManager.Instance.whiteRoyalPawnPanel?.SetActive(false);
+            UIManager.Instance.whiteSpectralHeraldPanel?.SetActive(false);
+            UIManager.Instance.whiteChronomagusPanel?.SetActive(false);
             
             // Hide status panel when hiding all panels
             UIManager.Instance.HideStatusPanel();

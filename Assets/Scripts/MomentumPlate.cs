@@ -5,20 +5,24 @@ public class MomentumPlate : MonoBehaviour
     private Game game;
     private int x, y;
     private Knight knight;
+    private bool isForPromotion = false;
 
-    public void Setup(Game g, int tileX, int tileY, Knight k)
+    public void Setup(Game g, int tileX, int tileY, Knight k, bool promotion = false)
     {
         game = g;
         x = tileX;
         y = tileY;
         knight = k;
+        isForPromotion = promotion;
     }
 
     private void OnMouseUp()
     {
         if (knight == null)
         {
-            Debug.LogError("[MomentumPlate] No knight reference!");
+            Debug.LogError("[MomentumPlate] No knight reference! Knight may have been destroyed for promotion.");
+            // Clean up this momentum plate since the knight is gone
+            Destroy(gameObject);
             return;
         }
 
@@ -32,8 +36,8 @@ public class MomentumPlate : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[MomentumPlate] Teleport clicked at ({x},{y}) for {knight.name}");
+        Debug.Log($"[MomentumPlate] Teleport clicked at ({x},{y}) for {knight.name} (promotion: {isForPromotion})");
         // Let the Knight handle the teleport + cooldown + turn end
-        knight.ExecuteMomentumTeleport(x, y);
+        knight.ExecuteMomentumTeleport(x, y, startCooldown: !isForPromotion);
     }
 }

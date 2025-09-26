@@ -61,22 +61,53 @@ public class OccupiedTilePlate : MonoBehaviour
         // Add sprite renderer for visual
         SpriteRenderer sr = marker.AddComponent<SpriteRenderer>();
         
-        // Create a simple colored square as fallback
-        Texture2D texture = new Texture2D(64, 64);
-        Color[] pixels = new Color[64 * 64];
-        Color markerColor = (markerType == MarkerType.Fire) ? Color.red : Color.blue;
-        for (int i = 0; i < pixels.Length; i++)
-        {
-            pixels[i] = markerColor;
-        }
-        texture.SetPixels(pixels);
-        texture.Apply();
+        // Try to load the appropriate marker sprite from Resources
+        Sprite markerSprite = null;
+        string spriteName = "";
         
-        Sprite fallbackSprite = Sprite.Create(texture, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f));
-        sr.sprite = fallbackSprite;
+        if (markerType == MarkerType.Fire)
+        {
+            markerSprite = Resources.Load<Sprite>("FireMarker");
+            spriteName = "FireMarker";
+        }
+        else if (markerType == MarkerType.Ice)
+        {
+            markerSprite = Resources.Load<Sprite>("IceMarker");
+            spriteName = "IceMarker";
+        }
+        else
+        {
+            markerSprite = Resources.Load<Sprite>("ElementalMarker");
+            spriteName = "ElementalMarker";
+        }
+        
+        if (markerSprite != null)
+        {
+            sr.sprite = markerSprite;
+            // Scale down to match fallback sprite size (64x64)
+            marker.transform.localScale = new Vector3(0.1f, 0.1f, 1f);
+            Debug.Log($"[OccupiedTilePlate] Using {spriteName} sprite for {markerTypeName} marker");
+        }
+        else
+        {
+            // Fallback to colored square if sprite not found
+            Debug.LogWarning($"[OccupiedTilePlate] {spriteName} sprite not found in Resources folder, using fallback");
+            Texture2D texture = new Texture2D(64, 64);
+            Color[] pixels = new Color[64 * 64];
+            Color markerColor = (markerType == MarkerType.Fire) ? Color.red : Color.blue;
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = markerColor;
+            }
+            texture.SetPixels(pixels);
+            texture.Apply();
+            
+            Sprite fallbackSprite = Sprite.Create(texture, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f));
+            sr.sprite = fallbackSprite;
+        }
         
         // Set color and transparency
-        sr.color = new Color(1f, 1f, 1f, 0.7f); // White with reduced transparency (preserves sprite colors)
+        sr.color = new Color(1f, 1f, 1f, 0.8f); // White with 80% opacity (preserves sprite colors)
         sr.sortingOrder = 1; // Above pieces
         
         // Register with ElementalBishop for tracking
@@ -86,6 +117,6 @@ public class OccupiedTilePlate : MonoBehaviour
             eb.RegisterMarker(markerScript);
         }
         
-        Debug.Log($"[OccupiedTilePlate] {markerTypeName} marker created at ({x},{y}) with {markerColor.ToString()} fallback sprite, expires on turn {expirationTurn}");
+        Debug.Log($"[OccupiedTilePlate] {markerTypeName} marker created at ({x},{y}), expires on turn {expirationTurn}");
     } 
 }

@@ -35,11 +35,15 @@ public class Chessman : MonoBehaviour
 
     public Sprite white_spectral_herald;
     public Sprite black_spectral_herald;
+    public Sprite white_mist_knight;
 
     //Royal Units
     public Sprite white_royal_pawn;
     public Sprite white_royal_rook;
     public Sprite white_royal_bishop;
+    public Sprite white_royal_knight;
+
+    
 
     public Sprite white_chronomagus;
     public Sprite black_chronomagus;
@@ -85,6 +89,7 @@ public static class ChessNotation
     public static string GetPieceNotation(string pieceName)
     {   
         if (pieceName.Contains("chronomagus")) return "CM";
+        if(pieceName.Contains("royal_knight")) return "RK";
         if (pieceName.Contains("royal_pawn")) return "RP";
         if (pieceName.Contains("spectral_herald")) return "SH";
         if (pieceName.Contains("elemental_bishop")) return "EB";
@@ -367,6 +372,7 @@ if (game != null)
                 case "white_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = white_royal_pawn; player = "white"; break;
                 case "white_royal_rook": this.GetComponent<SpriteRenderer>().sprite = white_royal_rook; player = "white"; break;
                 case "white_royal_bishop": this.GetComponent<SpriteRenderer>().sprite = white_royal_bishop; player = "white"; break;
+                case "white_royal_knight": this.GetComponent<SpriteRenderer>().sprite = white_royal_knight; player = "white"; break;
                 case "black_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = black_royal_pawn; player = "black"; break;
                 case "white_chronomagus": this.GetComponent<SpriteRenderer>().sprite = white_chronomagus; player = "white"; break;
                 case "black_chronomagus": this.GetComponent<SpriteRenderer>().sprite = black_chronomagus; player = "black"; break;
@@ -441,6 +447,7 @@ if (game != null)
             UIManager.Instance.whiteRoyalPawnPanel?.SetActive(false);
             UIManager.Instance.whiteSpectralHeraldPanel?.SetActive(false);
             UIManager.Instance.whiteChronomagusPanel?.SetActive(false);
+            UIManager.Instance.whiteRoyalKnightPanel?.SetActive(false);
             
             // Hide status panel when hiding all panels
             UIManager.Instance.HideStatusPanel();
@@ -462,6 +469,8 @@ if (game != null)
                 else if (name.Contains("black"))
                     panelForThisPiece = UIManager.Instance.blackChronomagusPanel;
             }
+            else if (name.Contains("royal_knight"))
+                panelForThisPiece = UIManager.Instance.whiteRoyalKnightPanel;
             else if (name.Contains("spectral_herald"))
                 panelForThisPiece = UIManager.Instance.whiteSpectralHeraldPanel;
             else if (name.Contains("royal_pawn"))
@@ -637,6 +646,7 @@ if (game != null)
 
                 case "black_knight": LMovePlate(); break;
                 case "white_knight": LMovePlate(); break;
+                case "white_royal_knight": LMovePlate(); break;
                 case "black_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_bishop": 
                     // Check for Ethereal status
@@ -692,12 +702,14 @@ if (game != null)
 
     public void DestroyMovePlates()
     {   UpdateVisualStatus();
-        //Destroy old MovePlates (but not Russian Roulette target plates)
+        //Destroy old MovePlates (but not Russian Roulette target plates or Royal Knight summon plates)
         GameObject[] movePlates = GameObject.FindGameObjectsWithTag("MovePlate");
         for (int i = 0; i < movePlates.Length; i++)
         {
-            // Don't destroy plates that have RussianRouletteTargetPlate component
-            if (movePlates[i] != null && movePlates[i].GetComponent<RussianRouletteTargetPlate>() == null)
+            // Don't destroy plates that have RussianRouletteTargetPlate or RoyalKnightSummonPlate components
+            if (movePlates[i] != null && 
+                movePlates[i].GetComponent<RussianRouletteTargetPlate>() == null &&
+                movePlates[i].GetComponent<RoyalKnightSummonPlate>() == null)
             {
                 Destroy(movePlates[i]); //Be careful with this function "Destroy" it is asynchronous
             }

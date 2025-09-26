@@ -184,7 +184,7 @@ public class Pawn : MonoBehaviour
     // Russian Roulette skill - public method for UI button
     public void RussianRoulette()
     {
-        if (game == null)
+        if (game == null) 
         {
             Debug.LogError("[RussianRoulette] Missing Game reference!");
             return;

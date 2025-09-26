@@ -34,7 +34,7 @@ public class ChronomagusSummonPlate : MonoBehaviour
         // Clean up all summon plates
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
-
+ 
         // End the turn
         game.NextTurn();
         
