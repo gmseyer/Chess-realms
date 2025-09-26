@@ -365,13 +365,17 @@ public class MovePlate : MonoBehaviour
                     movingPiece.DestroyMovePlates();
                     movingPiece.ClearFortify();
                     movingPiece.CheckMoveTiles_End();
+                    
+                    // Check for check before ending turn
+                    controller.GetComponent<Game>().CheckForCheck();
+                    
                     controller.GetComponent<Game>().NextTurn();
                 }
 
                 return; // Stop processing after attack
             }
         }
-
+    
         // ----------------- Handle Castling -----------------
         if (isCastling)
         {
@@ -413,6 +417,10 @@ public class MovePlate : MonoBehaviour
             knightComponent.CanDoubleMove = false;
 
             Debug.Log("[LunarLeap] Knight finished Lunar Leap — turn ends.");
+            
+            // Check for check before ending turn
+            controller.GetComponent<Game>().CheckForCheck();
+            
             controller.GetComponent<Game>().NextTurn();
         }
         else
@@ -426,6 +434,10 @@ public class MovePlate : MonoBehaviour
             }
             
             // Normal turn ending
+            
+            // Check for check before ending turn
+            controller.GetComponent<Game>().CheckForCheck();
+            
             controller.GetComponent<Game>().NextTurn();
         }
 
@@ -906,6 +918,10 @@ public class MovePlate : MonoBehaviour
 
         // Clean up move plates and end turn
         movingPiece.DestroyMovePlates();
+        
+        // Check for check before ending turn
+        game.CheckForCheck();
+        
         game.NextTurn();
     }
 
@@ -1053,6 +1069,10 @@ public class MovePlate : MonoBehaviour
                 attacker.DestroyMovePlates();
                 attacker.ClearFortify();
                 attacker.CheckMoveTiles_End();
+                
+                // Check for check before ending turn
+                game.CheckForCheck();
+                
                 game.NextTurn();
                 
                 Debug.Log($"[IceMarker] Attack case: Attacker slid to ({targetTile.x},{targetTile.y}), ice marker destroyed - turn ends");

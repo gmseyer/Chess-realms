@@ -35,7 +35,11 @@ private List<string> moveHistory = new List<string>();
     private bool gameOver = false;
     public int whiteSkillPoints = 0;
     public int blackSkillPoints = 0;
-    public GameObject movePlatePrefabReference; 
+    public GameObject movePlatePrefabReference;
+    
+    // Check detection system
+    public bool whiteKingInCheck = false;
+    public bool blackKingInCheck = false; 
     
     public string restrictedToPawnsPlayer = null;   // "white" / "black" 
     public int restrictionExpiresOnTurn = -1;       // until (inclusive) this turn
@@ -307,6 +311,10 @@ private void UpdateLatestMoveUI(string latestMove)
 
     public void NextTurn()
 {
+    // Reset check status at the beginning of each turn
+    whiteKingInCheck = false;
+    blackKingInCheck = false;
+    
     // Switch player
     currentPlayer = (currentPlayer == "white") ? "black" : "white";
     turns++;
@@ -577,5 +585,174 @@ public void SetPositionAt(GameObject obj, int x, int y)
             }
             return false;
         }
+    }
+    
+    // Check if any piece can attack any king (for both normal check and pinned piece check)
+    public void CheckForCheck()
+    {
+        Debug.Log($"[CheckDetection] Checking for check - Current player: {currentPlayer}");
+        
+        // Find all pieces on the board
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        
+        // Check if any piece can attack any king
+        foreach (Chessman piece in allPieces)
+        {
+            if (piece == null || piece.name.Contains("tile_") || piece.name.Contains("celestial_pillar")) continue;
+            
+            string piecePlayer = piece.GetPlayer();
+            if (piecePlayer == "neutral") continue;
+            
+            // Check if this piece can attack the enemy king
+            if (CanPieceAttackEnemyKing(piece))
+            {
+                Debug.Log($"[CheckDetection] {piece.name} can attack enemy king - CHECK DETECTED!");
+                
+                // Set the appropriate king as being in check
+                if (piecePlayer == "white")
+                {
+                    blackKingInCheck = true;
+                    Debug.Log("[CheckDetection] Black king is in check!");
+                }
+                else if (piecePlayer == "black")
+                {
+                    whiteKingInCheck = true;
+                    Debug.Log("[CheckDetection] White king is in check!");
+                }
+                // Don't break - continue checking for other checks
+            }
+        }
+    }
+    
+    // Check if a piece can attack the enemy king
+    private bool CanPieceAttackEnemyKing(Chessman piece)
+    {
+        string piecePlayer = piece.GetPlayer();
+        string enemyKingName = (piecePlayer == "white") ? "black_king" : "white_king";
+        
+        // Find the enemy king
+        GameObject enemyKing = null;
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject pieceAtPos = GetPosition(x, y);
+                if (pieceAtPos != null && pieceAtPos.name.Contains(enemyKingName))
+                {
+                    enemyKing = pieceAtPos;
+                    break;
+                }
+            }
+            if (enemyKing != null) break;
+        }
+        
+        if (enemyKing == null) return false;
+        
+        Chessman enemyKingCm = enemyKing.GetComponent<Chessman>();
+        if (enemyKingCm == null) return false;
+        
+        int kingX = enemyKingCm.GetXBoard();
+        int kingY = enemyKingCm.GetYBoard();
+        
+        // Check if this piece can attack the king's position using existing MovePlateAttackSpawn logic
+        return CanPieceAttackPosition(piece, kingX, kingY);
+    }
+    
+    // Check if a piece can attack a specific position using existing MovePlateAttackSpawn logic
+    private bool CanPieceAttackPosition(Chessman piece, int targetX, int targetY)
+    {
+        int pieceX = piece.GetXBoard();
+        int pieceY = piece.GetYBoard();
+        string pieceName = piece.name.ToLower();
+        
+        // Use the same logic as MovePlateAttackSpawn in Chessman.cs
+        
+        if (pieceName.Contains("pawn"))
+        {
+            // Pawns attack diagonally (no blocking check needed - adjacent only)
+            int direction = piece.GetPlayer() == "white" ? 1 : -1;
+            int attackY = pieceY + direction;
+            return (targetX == pieceX + 1 || targetX == pieceX - 1) && targetY == attackY;
+        }
+        else if (pieceName.Contains("rook"))
+        {
+            // Rooks attack horizontally and vertically - check for blocking pieces
+            if (targetX == pieceX || targetY == pieceY)
+            {
+                if (targetX == pieceX && targetY == pieceY) return false; // Same position
+                return !IsPathBlocked(pieceX, pieceY, targetX, targetY);
+            }
+            return false;
+        }
+        else if (pieceName.Contains("bishop"))
+        {
+            // Bishops attack diagonally - check for blocking pieces
+            int deltaX = Mathf.Abs(targetX - pieceX);
+            int deltaY = Mathf.Abs(targetY - pieceY);
+            if (deltaX == deltaY && deltaX > 0)
+            {
+                return !IsPathBlocked(pieceX, pieceY, targetX, targetY);
+            }
+            return false;
+        }
+        else if (pieceName.Contains("queen"))
+        {
+            // Queens attack like rook + bishop - check for blocking pieces
+            int deltaX = Mathf.Abs(targetX - pieceX);
+            int deltaY = Mathf.Abs(targetY - pieceY);
+            if ((targetX == pieceX || targetY == pieceY || deltaX == deltaY) && !(targetX == pieceX && targetY == pieceY))
+            {
+                return !IsPathBlocked(pieceX, pieceY, targetX, targetY);
+            }
+            return false;
+        }
+        else if (pieceName.Contains("king"))
+        {
+            // Kings attack adjacent squares (no blocking check needed - adjacent only)
+            int deltaX = Mathf.Abs(targetX - pieceX);
+            int deltaY = Mathf.Abs(targetY - pieceY);
+            return deltaX <= 1 && deltaY <= 1 && !(deltaX == 0 && deltaY == 0);
+        }
+        else if (pieceName.Contains("knight"))
+        {
+            // Knights attack in L-shape (no blocking check needed - jumps over pieces)
+            int deltaX = Mathf.Abs(targetX - pieceX);
+            int deltaY = Mathf.Abs(targetY - pieceY);
+            return (deltaX == 2 && deltaY == 1) || (deltaX == 1 && deltaY == 2);
+        }
+        
+        return false;
+    }
+    
+    // Check if there are any pieces blocking the path between two positions
+    private bool IsPathBlocked(int fromX, int fromY, int toX, int toY)
+    {
+        int deltaX = toX - fromX;
+        int deltaY = toY - fromY;
+        
+        // Determine the direction (normalize to -1, 0, or 1)
+        int stepX = deltaX == 0 ? 0 : (deltaX > 0 ? 1 : -1);
+        int stepY = deltaY == 0 ? 0 : (deltaY > 0 ? 1 : -1);
+        
+        // Check each position along the path (excluding start and end positions)
+        int currentX = fromX + stepX;
+        int currentY = fromY + stepY;
+        
+        while (currentX != toX || currentY != toY)
+        {
+            // Check if there's a piece at this position
+            GameObject pieceAtPos = GetPosition(currentX, currentY);
+            if (pieceAtPos != null)
+            {
+                Debug.Log($"[CheckDetection] Path blocked by {pieceAtPos.name} at ({currentX},{currentY})");
+                return true; // Path is blocked
+            }
+            
+            // Move to next position
+            currentX += stepX;
+            currentY += stepY;
+        }
+        
+        return false; // Path is clear
     }
 }
