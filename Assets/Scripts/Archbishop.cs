@@ -159,7 +159,7 @@ foreach (Chessman piece in allPieces)
             return;
         }
 
-        // Check if captured piece is valid for summoning
+        // Check if captured piece is valid for summoning 
         if (!IsValidPieceForSummoning(capturedPiece))
         {
             Debug.Log($"[Soulbinding Conquest] {capturedPiece} is not valid for summoning.");

@@ -41,7 +41,7 @@ public bool IsMomentumReady()
 }
 
     private void Awake()
-    {
+    { 
         game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
 
         if (movePlatePrefab == null)

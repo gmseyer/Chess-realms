@@ -292,6 +292,7 @@ private void UpdateLatestMoveUI(string latestMove)
             if (obj.GetComponent<RoyalKnight>() == null)
             {
                 RoyalKnight rk = obj.AddComponent<RoyalKnight>();
+                rk.movePlatePrefab = movePlatePrefabReference;
                 Debug.Log($"[Game] RoyalKnight component added for {name} at ({x},{y})");
             }
         }

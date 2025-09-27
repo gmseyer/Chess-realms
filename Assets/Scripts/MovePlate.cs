@@ -158,6 +158,87 @@ public class MovePlate : MonoBehaviour
                     }
                 }  // --ROYAL KNIGHT PHANTOM SWAP END -------------------------------------
 
+                // ----------------- PHANTOM GUARD BUFF SECTION -----------------
+                // Check if the defending piece has Phantom Guard buff from Sacred Mist
+                Chessman defendingChessman = cp.GetComponent<Chessman>();
+                if (defendingChessman != null && defendingChessman.statusManager.HasStatus(StatusType.PhantomGuard, controller.GetComponent<Game>().GetTurnCount()))
+                {
+                    Debug.Log($"[MovePlate] {cp.name} has Phantom Guard buff - checking for mist knight swap");
+
+                    // Find Royal Knight's mist knight (same logic as Royal Knight's own swap)
+                    RoyalKnight[] royalKnights = FindObjectsOfType<RoyalKnight>();
+                    GameObject mistKnight = null;
+                    
+                    foreach (RoyalKnight rk in royalKnights)
+                    {
+                        if (rk != null)
+                        {
+                            // Use the existing FindExistingMistKnight logic
+                            Chessman[] allPieces = FindObjectsOfType<Chessman>();
+                            foreach (Chessman piece in allPieces)
+                            {
+                                if (piece != null && piece.name == "white_mist_knight")
+                                {
+                                    mistKnight = piece.gameObject;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    if (mistKnight != null)
+                    {
+                        Chessman mistKnightChessman = mistKnight.GetComponent<Chessman>();
+                        if (mistKnightChessman != null)
+                        {
+                            // Get mist knight's position
+                            int mistKnightX = mistKnightChessman.GetXBoard();
+                            int mistKnightY = mistKnightChessman.GetYBoard();
+
+                            Debug.Log($"[PhantomGuardBuff] {cp.name} with Phantom Guard buff swapping with Mist Knight at ({mistKnightX},{mistKnightY})");
+
+                            // Get the defended piece's current position
+                            int defendedPieceX = defendingChessman.GetXBoard();
+                            int defendedPieceY = defendingChessman.GetYBoard();
+
+                            // Perform the swap (move defended piece to mist knight's position)
+                            // Step 1: Clear both positions
+                            controller.GetComponent<Game>().SetPositionEmpty(defendedPieceX, defendedPieceY);
+                            controller.GetComponent<Game>().SetPositionEmpty(mistKnightX, mistKnightY);
+
+                            // Step 2: Update defended piece coordinates and visual position
+                            defendingChessman.SetXBoard(mistKnightX);
+                            defendingChessman.SetYBoard(mistKnightY);
+                            defendingChessman.SetCoords();
+
+                            // Step 3: Set defended piece at new position
+                            controller.GetComponent<Game>().SetPositionAt(cp, mistKnightX, mistKnightY);
+
+                            // Step 4: Destroy the mist knight
+                            Destroy(mistKnight);
+
+                            // Remove Phantom Guard buff (used up)
+                            defendingChessman.statusManager.RemoveStatus(StatusType.PhantomGuard);
+
+                            Debug.Log($"[PhantomGuardBuff] Phantom Guard buff activated! {cp.name} swapped to ({mistKnightX},{mistKnightY}), Mist Knight destroyed, buff removed.");
+
+                            // Cancel capture flow: piece escaped with Phantom Guard buff
+                            movingPiece.DestroyMovePlates();
+                            movingPiece.ClearFortify();
+                            movingPiece.CheckMoveTiles_End();
+                            controller.GetComponent<Game>().NextTurn();
+                            return; // stop further processing
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("[PhantomGuardBuff] No mist knight found - Phantom Guard buff cannot activate");
+                        // Remove buff since it couldn't be used
+                        defendingChessman.statusManager.RemoveStatus(StatusType.PhantomGuard);
+                    }
+                }  // --PHANTOM GUARD BUFF END -------------------------------------
+
                 if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
                 if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
 

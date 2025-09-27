@@ -12,6 +12,7 @@ public enum StatusType
     Soulbrand,
     Bounty,
     KingMovement,
+    PhantomGuard,
 
     specialTile, //status for special tiles like lava
      SolidBlock //status for tile_earth

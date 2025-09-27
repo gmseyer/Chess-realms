@@ -9,6 +9,15 @@ public class RoyalKnight : MonoBehaviour
     // Phantom Swap cooldown tracking (6 turns)
     private int phantomSwapCooldown = 0;
     private const int phantomSwapCooldownMax = 6;
+    
+    // Sacred Mist once per battle tracking
+    private bool sacredMistUsed = false;
+    
+    // Oathbound Gambit once per battle tracking
+    private bool oathboundGambitUsed = false;
+    
+    // MovePlate prefab reference for creating target plates
+    public GameObject movePlatePrefab;
 
     private void Awake()
     {
@@ -150,16 +159,21 @@ public class RoyalKnight : MonoBehaviour
 
     private void SwapPositions(Chessman royalKnight, Chessman mistKnight, int mistKnightX, int mistKnightY)
     {
-        // Clear Royal Knight's current position
-        game.SetPositionEmpty(royalKnight.GetXBoard(), royalKnight.GetYBoard());
+        // Get Royal Knight's current position
+        int royalKnightX = royalKnight.GetXBoard();
+        int royalKnightY = royalKnight.GetYBoard();
 
-        // Move Royal Knight to mist knight's position
+        // Step 1: Clear both positions
+        game.SetPositionEmpty(royalKnightX, royalKnightY);
+        game.SetPositionEmpty(mistKnightX, mistKnightY);
+
+        // Step 2: Update Royal Knight coordinates and visual position
         royalKnight.SetXBoard(mistKnightX);
         royalKnight.SetYBoard(mistKnightY);
         royalKnight.SetCoords();
 
-        // Set Royal Knight at the new position (mist knight will be destroyed after this)
-        game.SetPosition(royalKnight.gameObject);
+        // Step 3: Set Royal Knight at the new position
+        game.SetPositionAt(royalKnight.gameObject, mistKnightX, mistKnightY);
     }
 
     // Check if Phantom Swap is available (not on cooldown)
@@ -208,5 +222,369 @@ public class RoyalKnight : MonoBehaviour
         {
             Debug.Log("[PhantomGuard] Royal Knight destroyed - no Mist Knight found to clean up.");
         }
+    }
+
+    // Sacred Mist active skill - Give any allied piece the Phantom Guard buff for 2 turns
+    // Cost: 2 SP, Once per battle
+    public void SacredMist()
+    {
+        if (game == null)
+        {
+            Debug.LogError("[SacredMist] Missing Game reference!");
+            return;
+        }
+
+        // Check if already used this battle
+        if (sacredMistUsed)
+        {
+            Debug.Log("[SacredMist] Sacred Mist already used this battle!");
+            return;
+        }
+
+        // Get current player (assume UI validation handles turn checking)
+        string currentPlayer = game.GetCurrentPlayer();
+        
+        Debug.Log($"[SacredMist] Sacred Mist activated by {currentPlayer} Royal Knight! Current player: {currentPlayer}");
+
+        // Check SP cost (2 SP)
+        const int sacredMistCost = 2;
+        if (SkillManager.Instance.GetPlayerSP(currentPlayer) < sacredMistCost)
+        {
+            Debug.LogWarning($"[SacredMist] Not enough SP for {currentPlayer} (cost {sacredMistCost}).");
+            return;
+        }
+
+        // Deduct SP
+        bool paid = SkillManager.Instance.SpendPlayerSP(currentPlayer, sacredMistCost);
+        if (!paid)
+        {
+            Debug.LogWarning("[SacredMist] Failed to deduct SP!");
+            return;
+        }
+
+        Debug.Log($"[SacredMist] Sacred Mist skill used! Cost: {sacredMistCost} SP");
+
+        // Mark as used
+        sacredMistUsed = true;
+
+        // Generate target plates for allied pieces
+        GenerateSacredMistTargetPlates(currentPlayer);
+    }
+
+    private void GenerateSacredMistTargetPlates(string playerColor)
+    {
+        // Clear existing move plates
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+
+        Debug.Log($"[SacredMist] Generating target plates for {playerColor} allied pieces");
+
+        int platesCreated = 0;
+
+        // Generate plates on all allied pieces
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null && piece.name != "white_mist_knight" && piece.name != "white_royal_knight")
+                {
+                    Chessman pieceChessman = piece.GetComponent<Chessman>();
+                    if (pieceChessman != null)
+                    {
+                        string pieceName = piece.name;
+                        // Only target allied pieces (same player color)
+                        if (pieceName.StartsWith(playerColor))
+                        {
+                            SpawnSacredMistTargetPlate(x, y, pieceName);
+                            platesCreated++;
+                        }
+                    }
+                }
+            }
+        }
+
+        Debug.Log($"[SacredMist] Created {platesCreated} target plates for {playerColor} pieces. Select an allied piece to grant Phantom Guard buff.");
+    }
+
+    private void SpawnSacredMistTargetPlate(int x, int y, string targetPieceName)
+    {
+        if (movePlatePrefab == null)
+        {
+            Debug.LogError("[SacredMist] MovePlate prefab is null! Cannot create target plates.");
+            return;
+        }
+
+        float fx = x * 0.57f - 1.98f;
+        float fy = y * 0.56f - 1.95f;
+
+        GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+
+        // Remove default MovePlate script
+        MovePlate oldScript = mp.GetComponent<MovePlate>();
+        if (oldScript != null) Destroy(oldScript);
+
+        // Add SacredMistPlate script
+        SacredMistPlate plate = mp.AddComponent<SacredMistPlate>();
+        plate.Setup(game, x, y, targetPieceName, this);
+
+        // Make target plates visually distinct (white with 50% opacity)
+        SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.color = new Color(1f, 1f, 1f, 0.5f); // White with 50% opacity
+        }
+
+        Debug.Log($"[SacredMist] Created target plate for {targetPieceName} at ({x},{y})");
+    }
+
+    // Apply Phantom Guard buff to target piece (called from SacredMistPlate)
+    public void ApplyPhantomGuardBuff(int x, int y, string targetPieceName)
+    {
+        GameObject targetPiece = game.GetPosition(x, y);
+        if (targetPiece == null || targetPiece.name != targetPieceName)
+        {
+            Debug.LogError($"[SacredMist] Target piece not found or name mismatch at ({x},{y})!");
+            return;
+        }
+
+        Chessman targetChessman = targetPiece.GetComponent<Chessman>();
+        if (targetChessman == null)
+        {
+            Debug.LogError($"[SacredMist] Target piece has no Chessman component!");
+            return;
+        }
+
+        // Apply Phantom Guard status for 2 turns
+        int currentTurn = game.GetTurnCount();
+        int expiresOnTurn = currentTurn + 2;
+        
+        targetChessman.statusManager.AddStatus(StatusType.PhantomGuard, expiresOnTurn);
+        
+        Debug.Log($"[SacredMist] Phantom Guard buff applied to {targetPieceName} at ({x},{y}) - expires on turn {expiresOnTurn}");
+
+        // Clean up target plates
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+
+        // End turn
+        game.NextTurn();
+    }
+
+    // Reset Sacred Mist usage for new battle
+    public static void ResetSacredMistUsage()
+    {
+        RoyalKnight[] royalKnights = FindObjectsOfType<RoyalKnight>();
+        foreach (RoyalKnight royalKnight in royalKnights)
+        {
+            if (royalKnight != null)
+            {
+                royalKnight.sacredMistUsed = false;
+            }
+        }
+        Debug.Log("[SacredMist] Usage reset for all Royal Knights in new battle");
+    }
+
+    // Oathbound Gambit active skill - Select enemy piece for 1v1 duel
+    // Cost: 1 SP, Once per battle, locks all other pieces for 4 turns
+    public void OathboundGambit()
+    {
+        if (game == null)
+        {
+            Debug.LogError("[OathboundGambit] Missing Game reference!");
+            return;
+        }
+
+        // Check if already used this battle
+        if (oathboundGambitUsed)
+        {
+            Debug.Log("[OathboundGambit] Oathbound Gambit already used this battle!");
+            return;
+        }
+
+        // Get current player
+        string currentPlayer = game.GetCurrentPlayer();
+        
+        Debug.Log($"[OathboundGambit] Oathbound Gambit activated by {currentPlayer} Royal Knight!");
+
+        // Check SP cost (1 SP)
+        const int oathboundCost = 1;
+        if (SkillManager.Instance.GetPlayerSP(currentPlayer) < oathboundCost)
+        {
+            Debug.LogWarning($"[OathboundGambit] Not enough SP for {currentPlayer} (cost {oathboundCost}).");
+            return;
+        }
+
+        // Deduct SP
+        bool paid = SkillManager.Instance.SpendPlayerSP(currentPlayer, oathboundCost);
+        if (!paid)
+        {
+            Debug.LogWarning("[OathboundGambit] Failed to deduct SP!");
+            return;
+        }
+
+        Debug.Log($"[OathboundGambit] Oathbound Gambit skill used! Cost: {oathboundCost} SP");
+
+        // Mark as used
+        oathboundGambitUsed = true;
+
+        // Generate target plates for enemy pieces
+        GenerateOathboundTargetPlates(currentPlayer);
+    }
+
+    private void GenerateOathboundTargetPlates(string playerColor)
+    {
+        // Clear existing move plates
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+
+        Debug.Log($"[OathboundGambit] Generating target plates for enemy pieces (not {playerColor})");
+
+        int platesCreated = 0;
+        string enemyColor = (playerColor == "white") ? "black" : "white";
+
+        // Generate plates on all enemy pieces (except kings)
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null)
+                {
+                    Chessman pieceChessman = piece.GetComponent<Chessman>();
+                    if (pieceChessman != null)
+                    {
+                        string pieceName = piece.name;
+                        // Only target enemy pieces, exclude kings
+                        if (pieceName.StartsWith(enemyColor) && !pieceName.Contains("king"))
+                        {
+                            SpawnOathboundTargetPlate(x, y, pieceName);
+                            platesCreated++;
+                        }
+                    }
+                }
+            }
+        }
+
+        Debug.Log($"[OathboundGambit] Created {platesCreated} target plates for {enemyColor} pieces (excluding kings). Select an enemy to challenge to a duel!");
+    }
+
+    private void SpawnOathboundTargetPlate(int x, int y, string targetPieceName)
+    {
+        if (movePlatePrefab == null)
+        {
+            Debug.LogError("[OathboundGambit] MovePlate prefab is null! Cannot create target plates.");
+            return;
+        }
+
+        float fx = x * 0.57f - 1.98f;
+        float fy = y * 0.56f - 1.95f;
+
+        GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+
+        // Remove default MovePlate script
+        MovePlate oldScript = mp.GetComponent<MovePlate>();
+        if (oldScript != null) Destroy(oldScript);
+
+        // Add OathboundGambitPlate script
+        OathboundGambitPlate plate = mp.AddComponent<OathboundGambitPlate>();
+        plate.Setup(game, x, y, targetPieceName, this);
+
+        // Make target plates visually distinct (red for enemy targeting)
+        SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            sr.color = Color.red;
+        }
+
+        Debug.Log($"[OathboundGambit] Created target plate for {targetPieceName} at ({x},{y})");
+    }
+
+    // Apply Oathbound Gambit effect - lock all pieces except Royal Knight and target
+    public void ApplyOathboundGambit(int x, int y, string targetPieceName)
+    {
+        GameObject targetPiece = game.GetPosition(x, y);
+        if (targetPiece == null || targetPiece.name != targetPieceName)
+        {
+            Debug.LogError($"[OathboundGambit] Target piece not found or name mismatch at ({x},{y})!");
+            return;
+        }
+
+        Chessman targetChessman = targetPiece.GetComponent<Chessman>();
+        if (targetChessman == null)
+        {
+            Debug.LogError($"[OathboundGambit] Target piece has no Chessman component!");
+            return;
+        }
+
+        Debug.Log($"[OathboundGambit] Oathbound Gambit activated! Target: {targetPieceName} at ({x},{y})");
+
+        // Lock all pieces except this Royal Knight and the target
+        LockAllPiecesExceptDuelists(targetPiece);
+
+        // Clean up target plates
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+
+        // End turn
+        game.NextTurn();
+    }
+
+    private void LockAllPiecesExceptDuelists(GameObject oathTarget)
+    {
+        int currentTurn = game.GetTurnCount();
+        int lockDuration = 6; // 4 turns
+        int expiresOnTurn = currentTurn + lockDuration;
+
+        Debug.Log($"[OathboundGambit] Locking all pieces except Royal Knight and {oathTarget.name} for {lockDuration} turns (until turn {expiresOnTurn})");
+
+        // Find all pieces on the board
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        int lockedCount = 0;
+
+        foreach (Chessman piece in allPieces)
+        {
+            if (piece == null) continue;
+
+            // Skip the Royal Knight (by name)
+            if (piece.name.Contains("royal_knight")) 
+            {
+                Debug.Log($"[OathboundGambit] Skipping Royal Knight {piece.name} - duelist remains free!");
+                continue;
+            }
+
+            // Skip the oath target
+            if (piece.gameObject == oathTarget) 
+            {
+                Debug.Log($"[OathboundGambit] Skipping oath target {piece.name} - duelist remains free!");
+                continue;
+            }
+
+            // Skip tiles and neutral pieces
+            if (piece.name.StartsWith("tile_") || piece.name.Contains("celestial_pillar")) continue;
+
+            // Lock all other pieces with Invulnerable + Stunned
+            piece.statusManager.AddStatus(StatusType.Invulnerable, expiresOnTurn);
+            piece.statusManager.AddStatus(StatusType.Stunned, expiresOnTurn);
+            lockedCount++;
+
+            Debug.Log($"[OathboundGambit] Locked {piece.name} - cannot move or be attacked until turn {expiresOnTurn}");
+        }
+
+        Debug.Log($"[OathboundGambit] Oathbound duel initiated! Locked {lockedCount} pieces. Only Royal Knight and {oathTarget.name} can act for {lockDuration} turns!");
+    }
+
+    // Reset Oathbound Gambit usage for new battle
+    public static void ResetOathboundGambitUsage()
+    {
+        RoyalKnight[] royalKnights = FindObjectsOfType<RoyalKnight>();
+        foreach (RoyalKnight royalKnight in royalKnights)
+        {
+            if (royalKnight != null)
+            {
+                royalKnight.oathboundGambitUsed = false;
+            }
+        }
+        Debug.Log("[OathboundGambit] Usage reset for all Royal Knights in new battle");
     }
 }
