@@ -30,6 +30,7 @@ public int momentumCooldownTurns = 15;     // cooldown length (in turns)
 [Header("Trial of Valor Promotion")]
 public int valorStacks = 0;                // Current valor stacks
 public int trialOfValorSPCost = 2;         // SP cost for Trial of Valor
+public bool trialOfValorActive = false;    // Track if Trial of Valor is active
 
 // Check if the passive is ready (public helper other scripts can call)
 public bool IsMomentumReady()
@@ -446,8 +447,9 @@ public void TrialOfValor()
         return;
     }
     
-    // Set valor stacks to 0 (start the trial)
+    // Set valor stacks to 0 and activate Trial of Valor
     knightComponent.valorStacks = 0;
+    knightComponent.trialOfValorActive = true;
     
     Debug.Log($"[TrialOfValor] {player} knight started Trial of Valor. Valor stacks: {knightComponent.valorStacks}/3");
 }
@@ -455,15 +457,32 @@ public void TrialOfValor()
 // Called when this knight captures an enemy (add valor stack)
 public void OnCaptureEnemy()
 {
-    if (valorStacks < 3)
+    if (trialOfValorActive && valorStacks < 3)
     {
         valorStacks++;
-        Debug.Log($"[TrialOfValor] Knight gained valor stack! Current: {valorStacks}/3");
+        Debug.Log($"[TrialOfValor] Knight gained valor stack from capture! Current: {valorStacks}/3");
         
         // Check if ready for promotion
         if (valorStacks == 3)
         {
             Debug.Log($"[TrialOfValor] Knight has 3 valor stacks! Ready for promotion to Royal Knight!");
+            PromoteToRoyalKnight();
+        }
+    }
+}
+
+// Add valor charge from various sources (capture, check, adjacent ally death)
+public void AddValorCharge(string source)
+{
+    if (trialOfValorActive && valorStacks < 3)
+    {
+        valorStacks++;
+        Debug.Log($"[TrialOfValor] Knight gained valor charge from {source}! Current: {valorStacks}/3");
+        
+        // Check if ready for promotion
+        if (valorStacks == 3)
+        {
+            Debug.Log($"[TrialOfValor] Knight has 3 valor charges! Ready for promotion to Royal Knight!");
             PromoteToRoyalKnight();
         }
     }

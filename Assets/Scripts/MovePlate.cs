@@ -53,6 +53,20 @@ public class MovePlate : MonoBehaviour
         // ----------------- Handle Attacks -----------------
         if (attack)
         {
+            // ✅ CHECK FOR VOID TILES ON ATTACK PATH FIRST
+            if (movingPiece.CheckVoidTileOnPath(movingPiece.GetXBoard(), movingPiece.GetYBoard(), matrixX, matrixY))
+            {
+                Debug.Log($"[VoidTile] {movingPiece.name} destroyed by void tile during attack attempt!");
+                movingPiece.DestroyByVoidTile();
+                
+                // Hide UI panels
+                HideAllUIPanels();
+                
+                // End turn
+                controller.GetComponent<Game>().NextTurn();
+                return; // Stop processing - piece destroyed by void
+            }
+
             GameObject cp = controller.GetComponent<Game>().GetPosition(matrixX, matrixY);
             if (cp != null)
             {
@@ -276,8 +290,8 @@ public class MovePlate : MonoBehaviour
                 Knight attackerKnight = reference.GetComponent<Knight>();
                 if (attackerKnight != null)
                 {
-                    // Check for Trial of Valor - add valor stack on capture
-                    attackerKnight.OnCaptureEnemy();
+                    // Check for Trial of Valor - add valor charge on capture
+                    attackerKnight.AddValorCharge("capture");
                     
                     // Check if knight promotion just happened (knight was destroyed)
                     if (attackerKnight == null || !attackerKnight.gameObject.activeInHierarchy)
@@ -381,6 +395,20 @@ public class MovePlate : MonoBehaviour
         {
             HandleCastling(movingPiece);
             return; // Stop processing after castling
+        }
+
+        // ----------------- CHECK FOR VOID TILES ON MOVEMENT PATH FIRST -----------------
+        if (movingPiece.CheckVoidTileOnPath(movingPiece.GetXBoard(), movingPiece.GetYBoard(), matrixX, matrixY))
+        {
+            Debug.Log($"[VoidTile] {movingPiece.name} destroyed by void tile during movement attempt!");
+            movingPiece.DestroyByVoidTile();
+            
+            // Hide UI panels
+            HideAllUIPanels();
+            
+            // End turn
+            controller.GetComponent<Game>().NextTurn();
+            return; // Stop processing - piece destroyed by void
         }
 
         // ----------------- Tile Effects Check (BEFORE moving) -----------------
@@ -1127,6 +1155,36 @@ public class MovePlate : MonoBehaviour
                 Debug.Log($"[FireMarker] Attack case: Both pieces destroyed, fire marker converted and destroyed - turn ends");
                 return; // Stop further processing
             }
+        }
+    }
+
+    // Helper function to hide all UI panels
+    private void HideAllUIPanels()
+    {
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.pawnPanel?.SetActive(false);
+            UIManager.Instance.knightPanel?.SetActive(false);
+            UIManager.Instance.bishopPanel?.SetActive(false);
+            UIManager.Instance.rookPanel?.SetActive(false);
+            UIManager.Instance.queenPanel?.SetActive(false);
+            UIManager.Instance.kingPanel?.SetActive(false);
+            UIManager.Instance.whiteElementalBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteArchBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteRoyalKnightPanel?.SetActive(false);
+            UIManager.Instance.whiteRoyalPawnPanel?.SetActive(false);
+            UIManager.Instance.whiteSpectralHeraldPanel?.SetActive(false);
+            UIManager.Instance.whiteChronomagusPanel?.SetActive(false);
+            
+            // Hide status panel when hiding all panels
+            UIManager.Instance.HideStatusPanel();
+            
+            // Clear selected piece
+            UIManager.Instance.selectedPiece = null;
+        }
+        if (SkillManagerTMP.Instance != null)
+        {
+            SkillManagerTMP.Instance.skillPanel?.SetActive(false);
         }
     }
 

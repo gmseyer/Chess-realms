@@ -35,14 +35,14 @@ public class Chessman : MonoBehaviour
 
     public Sprite white_spectral_herald;
     public Sprite black_spectral_herald;
-    public Sprite white_mist_knight;
+    
 
     //Royal Units
     public Sprite white_royal_pawn;
     public Sprite white_royal_rook;
     public Sprite white_royal_bishop;
     public Sprite white_royal_knight;
-
+    public Sprite white_mist_knight;
     
 
     public Sprite white_chronomagus;
@@ -55,6 +55,8 @@ public class Chessman : MonoBehaviour
     public Sprite tile_ice;
     public Sprite tile_earth;
     public Sprite tile_thunder;
+    public Sprite tile_void;
+    
     public Sprite celestial_pillar;
 
     public Sprite tile_sanctuary;
@@ -373,6 +375,7 @@ if (game != null)
                 case "white_royal_rook": this.GetComponent<SpriteRenderer>().sprite = white_royal_rook; player = "white"; break;
                 case "white_royal_bishop": this.GetComponent<SpriteRenderer>().sprite = white_royal_bishop; player = "white"; break;
                 case "white_royal_knight": this.GetComponent<SpriteRenderer>().sprite = white_royal_knight; player = "white"; break;
+                case "white_mist_knight": this.GetComponent<SpriteRenderer>().sprite = white_mist_knight; player = "white"; break;
                 case "black_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = black_royal_pawn; player = "black"; break;
                 case "white_chronomagus": this.GetComponent<SpriteRenderer>().sprite = white_chronomagus; player = "white"; break;
                 case "black_chronomagus": this.GetComponent<SpriteRenderer>().sprite = black_chronomagus; player = "black"; break;
@@ -381,6 +384,7 @@ if (game != null)
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
                 case "tile_earth": this.GetComponent<SpriteRenderer>().sprite = tile_earth; player = "neutral"; break;
                 case "tile_thunder": this.GetComponent<SpriteRenderer>().sprite = tile_thunder; player = "neutral"; break;
+                case "tile_void": this.GetComponent<SpriteRenderer>().sprite = tile_void; player = "neutral"; break;
                 case "tile_sanctuary": this.GetComponent<SpriteRenderer>().sprite = tile_sanctuary; player = "neutral"; break;
                 case "celestial_pillar": this.GetComponent<SpriteRenderer>().sprite = celestial_pillar; player = "neutral"; break;
             }
@@ -424,6 +428,11 @@ if (game != null)
             statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
             Debug.Log($"{name} is a special tile.");
         }
+        else if (this.name == "tile_void")
+        {
+            statusManager.AddStatus(StatusType.specialTile, 999); // permanent special tile status
+            Debug.Log($"{name} is a void tile - destroys any piece that enters or passes through.");
+        }
         UpdateVisualStatus();
     }
 
@@ -448,6 +457,7 @@ if (game != null)
             UIManager.Instance.whiteSpectralHeraldPanel?.SetActive(false);
             UIManager.Instance.whiteChronomagusPanel?.SetActive(false);
             UIManager.Instance.whiteRoyalKnightPanel?.SetActive(false);
+            UIManager.Instance.whiteMistKnightPanel?.SetActive(false);
             
             // Hide status panel when hiding all panels
             UIManager.Instance.HideStatusPanel();
@@ -471,6 +481,8 @@ if (game != null)
             }
             else if (name.Contains("royal_knight"))
                 panelForThisPiece = UIManager.Instance.whiteRoyalKnightPanel;
+            else if (name.Contains("mist_knight"))
+                panelForThisPiece = UIManager.Instance.whiteMistKnightPanel;
             else if (name.Contains("spectral_herald"))
                 panelForThisPiece = UIManager.Instance.whiteSpectralHeraldPanel;
             else if (name.Contains("royal_pawn"))
@@ -1106,6 +1118,61 @@ if (game != null)
     {
         Debug.Log($"[King Movement] {gameObject.name} activated King Movement from Russian Roulette!");
         // The status is already added in the Pawn script, this is just for activation logging
+    }
+
+    // Check if there's a void tile on the path from (fromX, fromY) to (toX, toY)
+    public bool CheckVoidTileOnPath(int fromX, int fromY, int toX, int toY)
+    {
+        Game sc = controller.GetComponent<Game>();
+        
+        int deltaX = toX - fromX;
+        int deltaY = toY - fromY;
+        
+        // Determine the direction (normalize to -1, 0, or 1)
+        int stepX = deltaX == 0 ? 0 : (deltaX > 0 ? 1 : -1);
+        int stepY = deltaY == 0 ? 0 : (deltaY > 0 ? 1 : -1);
+        
+        // Check each position along the path (including destination)
+        int currentX = fromX + stepX;
+        int currentY = fromY + stepY;
+        
+        while (sc.PositionOnBoard(currentX, currentY))
+        {
+            // Check if there's a void tile at this position
+            GameObject pieceAtPos = sc.GetPosition(currentX, currentY);
+            if (pieceAtPos != null && pieceAtPos.name == "tile_void")
+            {
+                Debug.Log($"[VoidTile] Void tile detected on path at ({currentX},{currentY})");
+                return true; // Void tile found on path
+            }
+            
+            // If we reached the destination, stop checking
+            if (currentX == toX && currentY == toY)
+                break;
+                
+            // Move to next position
+            currentX += stepX;
+            currentY += stepY;
+        }
+        
+        return false; // No void tile found on path
+    }
+
+    // Destroy this piece due to void tile interaction
+    public void DestroyByVoidTile()
+    {
+        Game sc = controller.GetComponent<Game>();
+        
+        // Clear the piece's position from the game board
+        sc.SetPositionEmpty(GetXBoard(), GetYBoard());
+        
+        // Clean up any remaining move plates
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+        
+        // Destroy the piece GameObject
+        Debug.Log($"[VoidTile] {name} destroyed by void tile!");
+        Destroy(gameObject);
     }
 
 }

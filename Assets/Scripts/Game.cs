@@ -94,8 +94,8 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
+            Create("white_mist_knight", 3, 3),
             
-
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
              Create("white_pawn6", 6, 1), Create("white_pawn7", 7, 1)
@@ -165,6 +165,12 @@ private void UpdateLatestMoveUI(string latestMove)
         {
             cm.SetPlayer("neutral");          // neutral tile
             Debug.Log($"[Game] {name} set to neutral player via specific case");
+        }
+        else if (name == "tile_void")
+        {
+            cm.SetPlayer("neutral");          // neutral tile
+            cm.statusManager.AddStatus(StatusType.specialTile, 999); // permanent special tile status
+            Debug.Log($"[Game] {name} set to neutral player - void tile created");
         }
         else if (name == "celestial_pillar")
         {
@@ -619,7 +625,42 @@ public void SetPositionAt(GameObject obj, int x, int y)
                     whiteKingInCheck = true;
                     Debug.Log("[CheckDetection] White king is in check!");
                 }
+                
+                // Check if this is a knight with Trial of Valor active
+                Knight knight = piece.GetComponent<Knight>();
+                if (knight != null && knight.trialOfValorActive)
+                {
+                    Debug.Log($"[TrialOfValor] {piece.name} put enemy king in check - gaining valor charge!");
+                    knight.AddValorCharge("check");
+                }
+                
                 // Don't break - continue checking for other checks
+            }
+        }
+        
+        // Update visual effects for checked kings
+        UpdateKingCheckVisuals();
+    }
+    
+    // Simple visual effect for checked kings
+    private void UpdateKingCheckVisuals()
+    {
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        
+        foreach (Chessman piece in allPieces)
+        {
+            if (piece == null) continue;
+            
+            SpriteRenderer sr = piece.GetComponent<SpriteRenderer>();
+            if (sr == null) continue;
+            
+            if (piece.name.Contains("white_king"))
+            {
+                sr.color = whiteKingInCheck ? new Color(1f, 0f, 0f, 0.5f) : Color.white;
+            }
+            else if (piece.name.Contains("black_king"))
+            {
+                sr.color = blackKingInCheck ? new Color(1f, 0f, 0f, 0.5f) : Color.white;
             }
         }
     }
