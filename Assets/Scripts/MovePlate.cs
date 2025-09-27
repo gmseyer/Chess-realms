@@ -127,6 +127,37 @@ public class MovePlate : MonoBehaviour
                     }
                 }  // --QUEEN PASSIVE END -------------------------------------
 
+                // ----------------- ROYAL KNIGHT PHANTOM SWAP SECTION -----------------
+                // Check if the defending piece is a Royal Knight and trigger Phantom Swap passive
+                if (cp.name.ToLower().Contains("royal_knight"))
+                {
+                    Debug.Log($"[MovePlate] Royal Knight is about to be taken: {cp.name} at ({matrixX},{matrixY}) by {movingPiece.name}");
+
+                    RoyalKnight royalKnight = cp.GetComponent<RoyalKnight>();
+                    if (royalKnight != null)
+                    {
+                        bool phantomSwapActivated = royalKnight.TryTriggerPhantomSwap();
+
+                        if (phantomSwapActivated)
+                        {
+                            Debug.Log("[MovePlate] Royal Knight survives thanks to Phantom Swap!");
+                            // Cancel capture flow: Royal Knight swapped positions with Mist Knight
+                            movingPiece.DestroyMovePlates();
+                            movingPiece.ClearFortify();
+                            movingPiece.CheckMoveTiles_End();
+                            controller.GetComponent<Game>().NextTurn();
+                            return; // stop further processing
+                        }
+                        else
+                        {
+                            // Phantom Swap failed (on cooldown or no mist knight) - Royal Knight will be captured
+                            // Clean up any existing mist knight since the Royal Knight is being destroyed
+                            Debug.Log("[MovePlate] Phantom Swap failed - Royal Knight will be captured, cleaning up Mist Knight");
+                            royalKnight.OnRoyalKnightDestroyed();
+                        }
+                    }
+                }  // --ROYAL KNIGHT PHANTOM SWAP END -------------------------------------
+
                 if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
                 if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
 
@@ -343,6 +374,28 @@ public class MovePlate : MonoBehaviour
                     }
                 }
 
+                // ----------------- Phantom Guard Passive Check (BEFORE moving) -----------------
+                // Check if the attacking piece is a Royal Knight and trigger Phantom Guard passive
+                int originalX = movingPiece.GetXBoard();
+                int originalY = movingPiece.GetYBoard();
+                
+                Debug.Log($"[MovePlate] Checking for Royal Knight attack - piece name: {reference?.name}");
+                
+                if (reference != null && reference.name.ToLower().Contains("royal_knight"))
+                {
+                    Debug.Log($"[MovePlate] Royal Knight detected: {reference.name}");
+                    RoyalKnight attackingRoyalKnight = reference.GetComponent<RoyalKnight>(); 
+                    if (attackingRoyalKnight != null)
+                    {
+                        Debug.Log($"[MovePlate] Royal Knight {reference.name} attacking - will trigger Phantom Guard at ({originalX},{originalY})");
+                        // Note: We'll trigger PhantomGuard after the piece moves
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[MovePlate] Royal Knight component not found on {reference.name}!");
+                    }
+                }
+
                 // ----------------- Move Attacker to Captured Position -----------------
                 controller.GetComponent<Game>().SetPositionEmpty(
                     movingPiece.GetXBoard(),
@@ -357,6 +410,18 @@ public class MovePlate : MonoBehaviour
 
                 // Mark piece as moved (for castling tracking)
                 movingPiece.SetHasMoved(true);
+
+                // ----------------- Phantom Guard Passive Trigger (AFTER moving) -----------------
+                // Trigger Phantom Guard if the attacking piece is a Royal Knight
+                if (reference != null && reference.name.ToLower().Contains("royal_knight"))
+                {
+                    RoyalKnight attackingRoyalKnight = reference.GetComponent<RoyalKnight>();
+                    if (attackingRoyalKnight != null)
+                    {
+                        Debug.Log($"[MovePlate] Triggering Phantom Guard for Royal Knight attack from ({originalX},{originalY})");
+                        attackingRoyalKnight.PhantomGuard(originalX, originalY);
+                    }
+                }
 
                 // ----------------- Check Thunder Tile Effect AFTER Attack -----------------
                 bool attackThunderEffectTriggered = CheckTileThunderEffect(movingPiece, matrixX, matrixY);
@@ -419,6 +484,10 @@ public class MovePlate : MonoBehaviour
         // ----------------- Move Chessman (skip if tile effects triggered) -----------------
         if (!iceEffectTriggered && !lavaEffectTriggered && !thunderEffectTriggered)
         {
+            // Store original position for Phantom Guard before moving
+            int originalX = movingPiece.GetXBoard();
+            int originalY = movingPiece.GetYBoard();
+
             controller.GetComponent<Game>().SetPositionEmpty(
                 movingPiece.GetXBoard(),
                 movingPiece.GetYBoard()
@@ -432,6 +501,25 @@ public class MovePlate : MonoBehaviour
 
             // Mark piece as moved (for castling tracking)
             movingPiece.SetHasMoved(true);
+
+            // ----------------- Phantom Guard Passive Trigger (AFTER moving) -----------------
+            // Trigger Phantom Guard if the moving piece is a Royal Knight
+            Debug.Log($"[MovePlate] Checking for Royal Knight movement - piece name: {reference?.name}");
+            
+            if (reference != null && reference.name.ToLower().Contains("royal_knight"))
+            {
+                Debug.Log($"[MovePlate] Royal Knight detected for movement: {reference.name}");
+                RoyalKnight movingRoyalKnight = reference.GetComponent<RoyalKnight>();
+                if (movingRoyalKnight != null)
+                {
+                    Debug.Log($"[MovePlate] Triggering Phantom Guard for Royal Knight movement from ({originalX},{originalY})");
+                    movingRoyalKnight.PhantomGuard(originalX, originalY);
+                }
+                else
+                {
+                    Debug.LogWarning($"[MovePlate] Royal Knight component not found on {reference.name}!");
+                }
+            }
 
             movingPiece.DestroyMovePlates();
             movingPiece.ClearFortify();

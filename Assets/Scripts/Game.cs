@@ -94,7 +94,7 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
-            Create("white_mist_knight", 3, 3),
+            Create("white_royal_knight", 3, 3),
             
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -287,6 +287,15 @@ private void UpdateLatestMoveUI(string latestMove)
             }
         }
 
+        if (name.Contains("royal_knight"))
+        {
+            if (obj.GetComponent<RoyalKnight>() == null)
+            {
+                RoyalKnight rk = obj.AddComponent<RoyalKnight>();
+                Debug.Log($"[Game] RoyalKnight component added for {name} at ({x},{y})");
+            }
+        }
+
 
        if (name.Contains("queen"))
         {
@@ -415,6 +424,15 @@ foreach (King king in kings)
         SingularityManager.Instance.OnTurnStart();
     }
 
+    // Royal Knight cooldown management
+    RoyalKnight[] royalKnights = FindObjectsOfType<RoyalKnight>();
+    foreach (RoyalKnight royalKnight in royalKnights)
+    {
+        if (royalKnight != null)
+        {
+            royalKnight.ReducePhantomSwapCooldown();
+        }
+    }
     
     
 }

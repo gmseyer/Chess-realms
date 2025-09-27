@@ -13,7 +13,7 @@ public class Queen : Pieces
     private const int regalSafeguardCooldownMax = 20; // example: 3 turns cooldown
 
 
-
+ 
     public GameObject movePlatePrefab;
     private Chessman chessman;
     private StatusManager statusManager;
