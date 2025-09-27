@@ -338,6 +338,9 @@ private void UpdateLatestMoveUI(string latestMove)
     ClearExpiredRestrictions();
     ResetAllPieceTurnFlags();
     ClearExpiredStatuses();
+    
+    // Check if Oathbound Gambit should end
+    RoyalKnight.CheckOathboundGambitExpiry();
 
     // Update visual status of all pieces on the board immediately
 Chessman[] allPieces = FindObjectsOfType<Chessman>();

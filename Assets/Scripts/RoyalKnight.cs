@@ -16,6 +16,10 @@ public class RoyalKnight : MonoBehaviour
     // Oathbound Gambit once per battle tracking
     private bool oathboundGambitUsed = false;
     
+    // Static flag to track if any OathboundGambit is currently active
+    private static bool isOathboundGambitActive = false;
+    private static int oathboundGambitEndTurn = 0;
+    
     // MovePlate prefab reference for creating target plates
     public GameObject movePlatePrefab;
 
@@ -519,6 +523,11 @@ public class RoyalKnight : MonoBehaviour
 
         Debug.Log($"[OathboundGambit] Oathbound Gambit activated! Target: {targetPieceName} at ({x},{y})");
 
+        // Set Oathbound Gambit as active
+        isOathboundGambitActive = true;
+        oathboundGambitEndTurn = game.GetTurnCount() + 6; // 6 turns duration
+        Debug.Log($"[OathboundGambit] Duel will end on turn {oathboundGambitEndTurn}");
+
         // Lock all pieces except this Royal Knight and the target
         LockAllPiecesExceptDuelists(targetPiece);
 
@@ -585,6 +594,149 @@ public class RoyalKnight : MonoBehaviour
                 royalKnight.oathboundGambitUsed = false;
             }
         }
+        isOathboundGambitActive = false;
+        oathboundGambitEndTurn = 0;
         Debug.Log("[OathboundGambit] Usage reset for all Royal Knights in new battle");
+    }
+
+    // Check if Oathbound Gambit should end
+    public static void CheckOathboundGambitExpiry()
+    {
+        if (isOathboundGambitActive)
+        {
+            Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+            if (game != null)
+            {
+                // Spawn 3 random lava tiles each turn during the duel
+                SpawnRandomLavaTiles();
+                
+                // Check if duel should end
+                if (game.GetTurnCount() >= oathboundGambitEndTurn)
+                {
+                    isOathboundGambitActive = false;
+                    CleanupAllLavaTiles(game);
+                    Debug.Log($"[OathboundGambit] Duel has ended on turn {game.GetTurnCount()}! Oathbound Gambit deactivated and lava cleaned up.");
+                }
+            }
+        }
+    }
+
+    // Clean up all lava tiles when Oathbound Gambit ends
+    private static void CleanupAllLavaTiles(Game game)
+    {
+        Debug.Log("[LavaCleanup] Cleaning up all lava tiles after Oathbound Gambit ends!");
+        
+        int lavaCleaned = 0;
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject pieceAtPos = game.GetPosition(x, y);
+                if (pieceAtPos != null)
+                {
+                    Chessman chessman = pieceAtPos.GetComponent<Chessman>();
+                    if (chessman != null && chessman.name == "tile_lava")
+                    {
+                        // Destroy lava tile
+                        game.SetPositionEmpty(x, y);
+                        Destroy(pieceAtPos);
+                        lavaCleaned++;
+                        Debug.Log($"[LavaCleanup] Lava tile destroyed at ({x},{y})");
+                    }
+                }
+            }
+        }
+        
+        Debug.Log($"[LavaCleanup] Cleanup complete! {lavaCleaned} lava tiles removed from battlefield.");
+    }
+
+    // Spawn 3 random lava tiles per turn during Oathbound Gambit
+    public static void SpawnRandomLavaTiles()
+    {
+        if (!isOathboundGambitActive)
+        {
+            return; // Only spawn lava during Oathbound Gambit
+        }
+
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[LavaSpawn] Game reference not found!");
+            return;
+        }
+
+        Debug.Log($"[LavaSpawn] Spawning 3 random lava tiles for turn {game.GetTurnCount()}!");
+
+        // Find all empty tiles (no pieces, no elemental tiles, no mist knights)
+        List<Vector2Int> emptyTiles = FindEmptyTilesForLava(game);
+        
+        if (emptyTiles.Count == 0)
+        {
+            Debug.Log("[LavaSpawn] No empty tiles available for lava spawning!");
+            return;
+        }
+
+        // Spawn 3 random lava tiles
+        int lavaToSpawn = Mathf.Min(3, emptyTiles.Count);
+        for (int i = 0; i < lavaToSpawn; i++)
+        {
+            int randomIndex = Random.Range(0, emptyTiles.Count);
+            Vector2Int lavaPos = emptyTiles[randomIndex];
+            
+            // Remove this position from available tiles to avoid duplicates
+            emptyTiles.RemoveAt(randomIndex);
+            
+            // Create lava tile
+            game.Create("tile_lava", lavaPos.x, lavaPos.y);
+            Debug.Log($"[LavaSpawn] Lava tile created at ({lavaPos.x},{lavaPos.y}) - Royal Knight battlefield control!");
+        }
+
+        Debug.Log($"[LavaSpawn] {lavaToSpawn} lava tiles spawned - Royal Knight gains mobility advantage!");
+    }
+
+    private static List<Vector2Int> FindEmptyTilesForLava(Game game)
+    {
+        List<Vector2Int> emptyTiles = new List<Vector2Int>();
+
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject pieceAtPos = game.GetPosition(x, y);
+                if (pieceAtPos == null)
+                {
+                    // Empty tile - valid for lava
+                    emptyTiles.Add(new Vector2Int(x, y));
+                }
+                else
+                {
+                    Chessman chessman = pieceAtPos.GetComponent<Chessman>();
+                    if (chessman != null)
+                    {
+                        // Check if it's an elemental tile or mist knight (skip these)
+                        if (chessman.name.StartsWith("tile_") || 
+                            chessman.name.Contains("mist_knight") ||
+                            chessman.name.Contains("celestial_pillar"))
+                        {
+                            // Skip elemental tiles and mist knights - they block lava spawning
+                            continue;
+                        }
+                        else
+                        {
+                            // Regular piece - skip this tile
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        // No chessman component - skip
+                        continue;
+                    }
+                }
+            }
+        }
+
+        Debug.Log($"[LavaSpawn] Found {emptyTiles.Count} empty tiles suitable for lava spawning");
+        return emptyTiles;
     }
 }

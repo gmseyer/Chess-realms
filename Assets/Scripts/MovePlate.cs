@@ -780,10 +780,20 @@ public class MovePlate : MonoBehaviour
     GameObject tileAtPosition = game.GetPosition(x, y);
     if (tileAtPosition != null && tileAtPosition.name == "tile_lava")
     {
-        // Check if it's an Elemental Bishop (immune to lava)
-        if (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "white_king" || movingPiece.name == "black_king")
+        // Check if it's an Elemental Bishop (immune to lava) or a spectator piece during Oathbound Gambit
+        bool isImmuneToLava = (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "white_king" || movingPiece.name == "black_king");
+        bool isSpectatorDuringDuel = IsSpectatorPieceDuringOathboundGambit(movingPiece);
+        
+        if (isImmuneToLava || isSpectatorDuringDuel)
         {
-            Debug.Log($"[Tile_Lava] {movingPiece.name} is immune to lava - tile disappears!");
+            if (isSpectatorDuringDuel)
+            {
+                Debug.Log($"[Tile_Lava] {movingPiece.name} is a spectator during Oathbound Gambit - immune to lava!");
+            }
+            else
+            {
+                Debug.Log($"[Tile_Lava] {movingPiece.name} is immune to lava - tile disappears!");
+            }
             
             // Just destroy the lava tile (no piece destruction)
             DestroyLavaTile(game, x, y);
@@ -1357,5 +1367,24 @@ public class MovePlate : MonoBehaviour
         }
     }
 
+    // Check if a piece is a spectator (stunned) during Oathbound Gambit
+    private bool IsSpectatorPieceDuringOathboundGambit(Chessman piece)
+    {
+        if (piece == null || piece.statusManager == null) return false;
+        
+        // Check if the piece has Stunned status (spectators are stunned during Oathbound Gambit)
+        Game game = controller.GetComponent<Game>();
+        if (game != null)
+        {
+            bool isStunned = piece.statusManager.HasStatus(StatusType.Stunned, game.GetTurnCount());
+            if (isStunned)
+            {
+                Debug.Log($"[OathboundGambit] {piece.name} is stunned (spectator) - immune to lava during duel!");
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
 } 
