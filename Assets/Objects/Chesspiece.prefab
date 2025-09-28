@@ -120,6 +120,9 @@ MonoBehaviour:
   white_spectral_herald: {fileID: 21300000, guid: 611053d671400464bba1f1fbce20bb4d,
     type: 3}
   black_spectral_herald: {fileID: 0}
+  white_ice_bishop: {fileID: 21300000, guid: ce0710abbcb28224eaf3dc8f6353341d, type: 3}
+  white_earth_bishop: {fileID: 21300000, guid: b739c7159e6ec5e41b9684488e4254b1, type: 3}
+  white_fire_bishop: {fileID: 21300000, guid: 15146436c5d53984faf11768b0b92faa, type: 3}
   white_royal_pawn: {fileID: 21300000, guid: e49e9ba30cb274a45a29916dd7439982, type: 3}
   white_royal_rook: {fileID: 21300000, guid: c4b84692b38901b4c8ef0d311ee1b0c6, type: 3}
   white_royal_bishop: {fileID: 21300000, guid: 571c0534e058aa34fb3db1797a8e8dcc, type: 3}

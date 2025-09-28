@@ -14,6 +14,9 @@ public class UIManager : MonoBehaviour
     public GameObject kingPanel;
 
     public GameObject whiteElementalBishopPanel;
+    public GameObject whiteIceBishopPanel;
+    public GameObject whiteEarthBishopPanel;
+    public GameObject whiteFireBishopPanel;
     public GameObject whiteArchBishopPanel;
     public GameObject whiteRoyalRookPanel;
     public GameObject whiteRoyalBishopPanel;
@@ -79,6 +82,9 @@ public Button fortifyButton;
         if (pieceName.Contains("spectral_herald")) return whiteSpectralHeraldPanel;
         if (pieceName.Contains("royal_pawn")) return whiteRoyalPawnPanel;
         if (pieceName.Contains("mist_knight")) return whiteMistKnightPanel;
+        if (pieceName.Contains("ice_bishop")) return whiteIceBishopPanel;
+        if (pieceName.Contains("earth_bishop")) return whiteEarthBishopPanel;
+        if (pieceName.Contains("fire_bishop")) return whiteFireBishopPanel;
         
         
         

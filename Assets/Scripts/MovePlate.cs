@@ -653,6 +653,9 @@ public class MovePlate : MonoBehaviour
             UIManager.Instance.whiteRoyalPawnPanel?.SetActive(false);
             UIManager.Instance.whiteSpectralHeraldPanel?.SetActive(false);
             UIManager.Instance.whiteChronomagusPanel?.SetActive(false);
+            UIManager.Instance.whiteIceBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteEarthBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteFireBishopPanel?.SetActive(false);
             
             // Hide status panel when hiding all panels
             UIManager.Instance.HideStatusPanel();

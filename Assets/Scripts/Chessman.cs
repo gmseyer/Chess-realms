@@ -35,6 +35,10 @@ public class Chessman : MonoBehaviour
 
     public Sprite white_spectral_herald;
     public Sprite black_spectral_herald;
+
+    public Sprite white_ice_bishop;
+    public Sprite white_earth_bishop;
+    public Sprite white_fire_bishop;
     
 
     //Royal Units
@@ -95,6 +99,9 @@ public static class ChessNotation
         if (pieceName.Contains("royal_pawn")) return "RP";
         if (pieceName.Contains("spectral_herald")) return "SH";
         if (pieceName.Contains("elemental_bishop")) return "EB";
+        if (pieceName.Contains("elemental_ice_bishop")) return "EIB";
+        if (pieceName.Contains("elemental_earth_bishop")) return "EEB";
+        if (pieceName.Contains("elemental_fire_bishop")) return "EFB";
         if (pieceName.Contains("royal_bishop")) return "RB";
         if (pieceName.Contains("royal_rook")) return "RR";
         if (pieceName.Contains("wraith_pawn")) return "WP";
@@ -366,6 +373,9 @@ if (game != null)
 
                 //Summoned Units
                 case "white_elemental_bishop": this.GetComponent<SpriteRenderer>().sprite = white_elemental_bishop; player = "white"; break;
+                case "white_ice_bishop": this.GetComponent<SpriteRenderer>().sprite = white_ice_bishop; player = "white"; break;
+                case "white_earth_bishop": this.GetComponent<SpriteRenderer>().sprite = white_earth_bishop; player = "white"; break;
+                case "white_fire_bishop": this.GetComponent<SpriteRenderer>().sprite = white_fire_bishop; player = "white"; break;
                 case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
                 case "white_wraith_pawn": this.GetComponent<SpriteRenderer>().sprite = white_wraith_pawn; player = "white"; break;
                 case "white_spectral_herald": this.GetComponent<SpriteRenderer>().sprite = white_spectral_herald; player = "white"; break;
@@ -458,6 +468,9 @@ if (game != null)
             UIManager.Instance.whiteChronomagusPanel?.SetActive(false);
             UIManager.Instance.whiteRoyalKnightPanel?.SetActive(false);
             UIManager.Instance.whiteMistKnightPanel?.SetActive(false);
+            UIManager.Instance.whiteIceBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteEarthBishopPanel?.SetActive(false);
+            UIManager.Instance.whiteFireBishopPanel?.SetActive(false);
             
             // Hide status panel when hiding all panels
             UIManager.Instance.HideStatusPanel();
@@ -489,8 +502,14 @@ if (game != null)
                 panelForThisPiece = UIManager.Instance.whiteRoyalPawnPanel;
             else if (name.Contains("pawn"))
                 panelForThisPiece = UIManager.Instance.pawnPanel;
-            else if (name.Contains("elemental_bishop"))
+            else if (name.Contains("elemental_bishop") )
                 panelForThisPiece = UIManager.Instance.whiteElementalBishopPanel;
+            else if (name.Contains("ice_bishop"))
+                panelForThisPiece = UIManager.Instance.whiteIceBishopPanel;
+            else if (name.Contains("earth_bishop"))
+                panelForThisPiece = UIManager.Instance.whiteEarthBishopPanel;
+            else if (name.Contains("fire_bishop"))
+                panelForThisPiece = UIManager.Instance.whiteFireBishopPanel;
             else if (name.Contains("arch_bishop"))
                 panelForThisPiece = UIManager.Instance.whiteArchBishopPanel;
             else if (name.Contains("royal_rook"))
@@ -682,7 +701,10 @@ if (game != null)
                         LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1);
                     }
                     break;
-                case "white_elemental_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case "white_elemental_bishop": 
+                case "white_ice_bishop": 
+                case "white_earth_bishop": 
+                case "white_fire_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_arch_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_royal_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_chronomagus": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
