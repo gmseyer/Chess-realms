@@ -94,7 +94,7 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
-            Create("white_ice_bishop", 3, 3),
+            Create("white_fire_bishop", 3, 3),
            
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -208,6 +208,15 @@ private void UpdateLatestMoveUI(string latestMove)
             {
                 IceBishop ib = obj.AddComponent<IceBishop>();
                 Debug.Log($"[Game] IceBishop component added for {name} at ({x},{y})");
+            }
+        }
+
+        if (name.Contains("fire_bishop"))
+        {
+            if (obj.GetComponent<FireBishop>() == null)
+            {
+                FireBishop fb = obj.AddComponent<FireBishop>();
+                Debug.Log($"[Game] FireBishop component added for {name} at ({x},{y})");
             }
         }
 
@@ -357,6 +366,9 @@ private void UpdateLatestMoveUI(string latestMove)
     
     // Check if Frostbound period has ended
     IceBishop.CheckFrostboundExpiry(turns);
+    
+    // Check if Worldfire Ring should expand
+    FireBishop.CheckWorldfireRingExpansion(turns);
 
     // Update visual status of all pieces on the board immediately
 Chessman[] allPieces = FindObjectsOfType<Chessman>();

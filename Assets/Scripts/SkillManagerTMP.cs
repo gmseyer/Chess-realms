@@ -46,7 +46,13 @@ public class SkillManagerTMP : MonoBehaviour
     public Button cancelButton;
 
     private Skill currentSkill;
+    private Game game;
 
+    void Start()
+    {
+        game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        
+    }
     /// <summary>
     /// Call this from a skill button to open the skill panel for that skill
     /// </summary>
@@ -87,6 +93,9 @@ public class SkillManagerTMP : MonoBehaviour
                     
                     // Close skill panel without executing skill
                     skillPanel.SetActive(false);
+                    foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+                Destroy(plate);
+                game.NextTurn();
                     return; // Cancel skill execution
                 }
             }

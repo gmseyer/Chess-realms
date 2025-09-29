@@ -391,7 +391,8 @@ public class IceBishop : MonoBehaviour
         }
         
         Debug.Log($"[Frostbound] Activated! Any piece using active skills will be frozen for the next 4 turns!");
-        
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
         // End turn
         game.NextTurn();
     }

@@ -156,6 +156,7 @@ public static class ChessNotation
         if (game == null) return;
         bool isStunned = statusManager.HasStatus(StatusType.Stunned, game.turns);
         bool isFrozen = statusManager.HasStatus(StatusType.Frozen, game.turns);
+        bool isCrippled = statusManager.HasStatus(StatusType.Crippled, game.turns);
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         bool isTemporalShifted = game.IsPlayerRestrictedToPawns(player) && !name.Contains("pawn");
         bool isEthereal = statusManager.HasStatus(StatusType.Ethereal, game.turns);
@@ -171,6 +172,14 @@ public static class ChessNotation
         originalColor = sr.color;
     // Set to blue for Frozen
     sr.color = Color.blue;
+}
+           else if (isCrippled)
+{
+    // Store original color if not already stored
+    if (originalColor == Color.clear)
+        originalColor = sr.color;
+    // Set to orange for Crippled
+    sr.color = new Color(1.0f, 0.5f, 0.0f, 1.0f); // Orange
 }
            else if (isStunned)
 {
@@ -592,6 +601,20 @@ if (game != null)
             return; // Only unfreeze move plate, no other move plates
         }
 
+        // Check if piece is crippled - pawns are immune, others handled in LineMovePlate
+        if (statusManager.HasStatus(StatusType.Crippled, game.turns))
+        {
+            // Pawns are immune to crippled effect
+            if (name.ToLower().Contains("pawn"))
+            {
+                Debug.Log($"[Crippled] {name} is immune to crippled effect.");
+                return; // No movement plates at all
+            }
+            
+            // For other pieces, crippled movement is handled in LineMovePlate method
+            Debug.Log($"[Crippled] {name} is crippled - movement will be limited to 1 tile per direction.");
+        }
+
         if (this.name.StartsWith("black_pawn"))
         {
             // Check for King Movement status (Russian Roulette effect)
@@ -752,6 +775,7 @@ if (game != null)
     } // END OF INITIATEMOVEPLATES
 
 
+
     public void DestroyMovePlates()
     {   UpdateVisualStatus();
         //Destroy old MovePlates (but not Russian Roulette target plates or Royal Knight summon plates)
@@ -775,8 +799,13 @@ if (game != null)
 
         int x = xBoard + xIncrement;
         int y = yBoard + yIncrement;
+        
+        // Check if piece is crippled - limit movement to 1 tile only
+        bool isCrippled = statusManager.HasStatus(StatusType.Crippled, sc.turns);
+        int maxMoves = isCrippled ? 1 : 7; // 1 tile if crippled, otherwise full board range
+        int movesMade = 0;
 
-        while (sc.PositionOnBoard(x, y))
+        while (sc.PositionOnBoard(x, y) && movesMade < maxMoves)
         {
             GameObject target = sc.GetPosition(x, y);
 
@@ -794,6 +823,7 @@ if (game != null)
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             x += xIncrement;
                             y += yIncrement;
+                            movesMade++;
                             continue; // pass through and continue
                         }
                         else
@@ -806,6 +836,7 @@ if (game != null)
                         if(this.name == "white_chronomagus" || this.name == "black_chronomagus"){
                              x += xIncrement;
                             y += yIncrement;
+                            movesMade++;
                             continue; // pass through and continue
                         }
                         else{
@@ -821,6 +852,7 @@ if (game != null)
                         MovePlateSpawn(x, y); // can land
                         x += xIncrement;
                         y += yIncrement;
+                        movesMade++;
                         continue;
                     }
 
@@ -854,6 +886,7 @@ if (game != null)
 
             x += xIncrement;
             y += yIncrement;
+            movesMade++;
         }
     }
 
