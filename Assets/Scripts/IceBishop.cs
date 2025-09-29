@@ -7,6 +7,27 @@ public class IceBishop : MonoBehaviour
     private Game game;
     private Chessman chessman;
     
+    // AbsoluteZero tracking
+    private static int absoluteZeroEndTurn = -1;
+    private static List<AbsoluteZeroPiece> piecesAtAbsoluteZeroStart = new List<AbsoluteZeroPiece>();
+    
+    // Helper class to track pieces by position and name
+    private class AbsoluteZeroPiece
+    {
+        public string pieceName;
+        public int x;
+        public int y;
+        public bool hasMovedDuringPeriod;
+        
+        public AbsoluteZeroPiece(string name, int x, int y)
+        {
+            this.pieceName = name;
+            this.x = x;
+            this.y = y;
+            this.hasMovedDuringPeriod = false;
+        }
+    }
+    
     void Start()
     {
         game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
@@ -16,7 +37,15 @@ public class IceBishop : MonoBehaviour
     // Cryostasis Surge Passive - triggers after moving
     public void CryostasisSurge()
     {
-        string player = chessman.GetPlayer();
+        // Find the actual IceBishop piece on the board (not the script GameObject)
+        Chessman iceBishopChessman = FindIceBishopPiece();
+        if (iceBishopChessman == null)
+        {
+            Debug.LogError("[CryostasisSurge] Could not find IceBishop piece on board!");
+            return;
+        }
+        
+        string player = iceBishopChessman.GetPlayer();
         
         // Check cooldown using CooldownManager
         if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "CryostasisSurge"))
@@ -42,10 +71,10 @@ public class IceBishop : MonoBehaviour
         // Check 8 surrounding tiles for enemies
         List<string> capturedEnemies = new List<string>();
         
-        if (chessman != null)
+        if (iceBishopChessman != null)
         {
-            int x = chessman.GetXBoard();
-            int y = chessman.GetYBoard();
+            int x = iceBishopChessman.GetXBoard();
+            int y = iceBishopChessman.GetYBoard();
             
             // Check all 8 directions around the IceBishop
             for (int dx = -1; dx <= 1; dx++)
@@ -64,7 +93,7 @@ public class IceBishop : MonoBehaviour
                         if (pieceAtPos != null)
                         {
                             Chessman enemyChessman = pieceAtPos.GetComponent<Chessman>();
-                            if (enemyChessman != null && enemyChessman.GetPlayer() != chessman.GetPlayer())
+                            if (enemyChessman != null && enemyChessman.GetPlayer() != iceBishopChessman.GetPlayer())
                             {
                                 capturedEnemies.Add(pieceAtPos.name);
                                 Debug.Log($"[CryostasisSurge] Found enemy: {pieceAtPos.name} at ({checkX},{checkY})");
@@ -126,7 +155,15 @@ public class IceBishop : MonoBehaviour
     /// <returns>True if Glacial Mirror was triggered, false otherwise</returns>
     public bool TryTriggerGlacialMirror()
     {
-        string player = chessman.GetPlayer();
+        // Find the actual IceBishop piece on the board (not the script GameObject)
+        Chessman iceBishopChessman = FindIceBishopPiece();
+        if (iceBishopChessman == null)
+        {
+            Debug.LogError("[GlacialMirror] Could not find IceBishop piece on board!");
+            return false;
+        }
+        
+        string player = iceBishopChessman.GetPlayer();
         
         // Check if Glacial Mirror is on cooldown
         if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "GlacialMirror"))
@@ -135,13 +172,13 @@ public class IceBishop : MonoBehaviour
             return false;
         }
         
-        Debug.Log($"[GlacialMirror] {gameObject.name} activates Glacial Mirror! Attack negated, entering frozen state for 4 turns.");
+        Debug.Log($"[GlacialMirror] {iceBishopChessman.name} activates Glacial Mirror! Attack negated, entering frozen state for 4 turns.");
         
         // Apply frozen status to self (4 turns duration)
-        chessman.statusManager.AddStatus(StatusType.Frozen, game.turns + 4);
+        iceBishopChessman.statusManager.AddStatus(StatusType.Frozen, game.turns + 4);
         
         // Update visual status immediately for real-time effect
-        chessman.UpdateVisualStatus();
+        iceBishopChessman.UpdateVisualStatus();
         
         // Start cooldown (30 turns)
         if (CooldownManager.Instance != null)
@@ -151,5 +188,161 @@ public class IceBishop : MonoBehaviour
         }
         
         return true;
+    }
+    
+    /// <summary>
+    /// AbsoluteZero - Freezes all pieces that don't move during 14 turns
+    /// </summary>
+    public void AbsoluteZero()
+    {
+        // Find the actual IceBishop piece on the board (not the script GameObject)
+        Chessman iceBishopChessman = FindIceBishopPiece();
+        if (iceBishopChessman == null)
+        {
+            Debug.LogError("[AbsoluteZero] Could not find IceBishop piece on board!");
+            return;
+        }
+        
+        string player = iceBishopChessman.GetPlayer();
+        
+        // Check SP cost
+        if (SkillManager.Instance.GetPlayerSP(player) < 2)
+        {
+            Debug.Log("[AbsoluteZero] Not enough SP!");
+            return;
+        }
+        
+        // Check if already used this battle
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "AbsoluteZero"))
+        {
+            Debug.Log("[AbsoluteZero] Already used this battle!");
+            return;
+        }
+        
+        // Deduct SP
+        SkillManager.Instance.SpendPlayerSP(player, 2);
+        
+        // Record all pieces on board at the start (by position)
+        piecesAtAbsoluteZeroStart.Clear();
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null)
+                {
+                    piecesAtAbsoluteZeroStart.Add(new AbsoluteZeroPiece(piece.name, x, y));
+                }
+            }
+        }
+        
+        // Set end turn (14 turns from now)
+        absoluteZeroEndTurn = game.turns + 14;
+        
+        // Start cooldown (once per battle)
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "AbsoluteZero", CooldownManager.CooldownType.OncePerBattle);
+        }
+        
+        Debug.Log($"[AbsoluteZero] Cast! All pieces must move at least once in the next 14 turns or be frozen!");
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+        // End turn
+        game.NextTurn();
+    }
+    
+    /// <summary>
+    /// Check if AbsoluteZero period has ended and apply frozen to non-movers
+    /// </summary>
+    public static void CheckAbsoluteZeroExpiry(Game game)
+    {
+        if (absoluteZeroEndTurn == -1 || game.turns < absoluteZeroEndTurn)
+            return;
+        
+        // AbsoluteZero period has ended
+        int frozenCount = 0;
+        
+        foreach (AbsoluteZeroPiece trackedPiece in piecesAtAbsoluteZeroStart)
+        {
+            // Check if there's still a piece at the original position
+            GameObject pieceAtPosition = game.GetPosition(trackedPiece.x, trackedPiece.y);
+            
+            // If no piece at original position, it moved (or was captured)
+            if (pieceAtPosition == null)
+            {
+                continue; // Piece moved, so it's safe
+            }
+            
+            // If there's a different piece at the position, the original moved
+            if (pieceAtPosition.name != trackedPiece.pieceName)
+            {
+                continue; // Different piece here, original moved
+            }
+            
+            // Same piece at same position - it didn't move during AbsoluteZero period
+            Chessman chessman = pieceAtPosition.GetComponent<Chessman>();
+            if (chessman != null)
+            {
+                // IceBishop is immune to AbsoluteZero effects
+                if (trackedPiece.pieceName.ToLower().Contains("ice_bishop"))
+                {
+                    continue; // Skip freezing IceBishop
+                }
+                
+                // Piece didn't move during AbsoluteZero period - freeze it
+                chessman.statusManager.AddStatus(StatusType.Frozen, game.turns + 4);
+                chessman.UpdateVisualStatus();
+                frozenCount++;
+            }
+        }
+        
+        Debug.Log($"[AbsoluteZero] Period ended! {frozenCount} pieces frozen for not moving.");
+        
+        // Reset tracking
+        absoluteZeroEndTurn = -1;
+        piecesAtAbsoluteZeroStart.Clear();
+    }
+    
+    /// <summary>
+    /// Find a piece by name on the board
+    /// </summary>
+    private static GameObject FindPieceByName(Game game, string pieceName)
+    {
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null && piece.name == pieceName)
+                {
+                    return piece;
+                }
+            }
+        }
+        return null;
+    }
+    
+    /// <summary>
+    /// Find the actual IceBishop piece on the board
+    /// </summary>
+    private Chessman FindIceBishopPiece()
+    {
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null && piece.name.ToLower().Contains("ice_bishop"))
+                {
+                    Chessman chessman = piece.GetComponent<Chessman>();
+                    if (chessman != null)
+                    {
+                        return chessman;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

@@ -350,6 +350,9 @@ private void UpdateLatestMoveUI(string latestMove)
     
     // Check if Oathbound Gambit should end
     RoyalKnight.CheckOathboundGambitExpiry();
+    
+    // Check if AbsoluteZero period has ended
+    IceBishop.CheckAbsoluteZeroExpiry(this);
 
     // Update visual status of all pieces on the board immediately
 Chessman[] allPieces = FindObjectsOfType<Chessman>();
