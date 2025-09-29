@@ -345,10 +345,21 @@ private void TransformElementalBishop(string newPieceName, string invocationType
     
     Debug.Log($"[Invocation] {invocationType} - Transforming Elemental Bishop at ({x},{y}) into {newPieceName}");
     
-    // Use Pawn.cs promotion pattern: Clear position, destroy old piece, create new piece
-    game.SetPositionEmpty(x, y);
-    Destroy(gameObject);
+    // ✅ EXACT Pawn.cs promotion pattern: Clear position, destroy old piece, create new piece
+    // Step 1: Get reference to the ElementalBishop piece BEFORE clearing position
+    GameObject elementalBishopPiece = game.GetPosition(x, y);
     
+    // Step 2: Clear the current position
+    game.SetPositionEmpty(x, y);
+    
+    // Step 3: Destroy the current Elemental Bishop piece
+    if (elementalBishopPiece != null)
+    {
+        Destroy(elementalBishopPiece);
+        Debug.Log($"[Invocation] Destroyed ElementalBishop piece at ({x},{y})");
+    }
+    
+    // Step 4: Create the new specialized bishop at the same position
     GameObject newBishop = game.Create(newPieceName, x, y);
     if (newBishop != null)
     {
@@ -358,8 +369,7 @@ private void TransformElementalBishop(string newPieceName, string invocationType
     {
         Debug.LogError($"[Invocation] Failed to create {newPieceName} at ({x},{y})");
     }
-    
-     foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
     // End turn (following the pattern)
     game.NextTurn();
