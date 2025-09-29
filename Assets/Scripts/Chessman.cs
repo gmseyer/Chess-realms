@@ -155,6 +155,7 @@ public static class ChessNotation
         Game game = controller?.GetComponent<Game>();
         if (game == null) return;
         bool isStunned = statusManager.HasStatus(StatusType.Stunned, game.turns);
+        bool isFrozen = statusManager.HasStatus(StatusType.Frozen, game.turns);
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         bool isTemporalShifted = game.IsPlayerRestrictedToPawns(player) && !name.Contains("pawn");
         bool isEthereal = statusManager.HasStatus(StatusType.Ethereal, game.turns);
@@ -163,7 +164,15 @@ public static class ChessNotation
         
         if (sr != null)
         {
-           if (isStunned)
+           if (isFrozen)
+{
+    // Store original color if not already stored
+    if (originalColor == Color.clear)
+        originalColor = sr.color;
+    // Set to blue for Frozen
+    sr.color = Color.blue;
+}
+           else if (isStunned)
 {
     // Store original color if not already stored
     if (originalColor == Color.clear)
@@ -572,6 +581,15 @@ if (game != null)
         {
             Debug.Log($"[Stunned] {name} is stunned and cannot move this turn.");
             return; // no move plates
+        }
+
+        // Check if piece is frozen
+        if (statusManager.HasStatus(StatusType.Frozen, game.turns))
+        {
+            Debug.Log($"[Frozen] {name} is frozen - generating unfreeze move plate.");
+            // Generate a move plate on the frozen piece's own location for unfreezing
+            MovePlateSpawn(xBoard, yBoard);
+            return; // Only unfreeze move plate, no other move plates
         }
 
         if (this.name.StartsWith("black_pawn"))

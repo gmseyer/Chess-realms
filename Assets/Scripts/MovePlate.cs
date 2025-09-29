@@ -125,6 +125,30 @@ public class MovePlate : MonoBehaviour
                             return; // stop further processing
                         }
                     }
+                }
+
+                // ----------------- ICEBISHOP GLACIAL MIRROR PASSIVE SECTION -----------------
+                // Check if the attacked piece is an IceBishop
+                if (cp.name.ToLower().Contains("ice_bishop"))
+                {
+                    Debug.Log($"[MovePlate] IceBishop is about to be taken: {cp.name} at ({matrixX},{matrixY}) by {movingPiece.name}");
+
+                    IceBishop iceBishop = cp.GetComponent<IceBishop>();
+                    if (iceBishop != null)
+                    {
+                        bool passiveActivated = iceBishop.TryTriggerGlacialMirror();
+
+                        if (passiveActivated)
+                        {
+                            Debug.Log("[MovePlate] IceBishop survives thanks to Glacial Mirror!");
+                            // Cancel capture flow: iceBishop not destroyed, but gets frozen
+                            movingPiece.DestroyMovePlates();
+                            movingPiece.ClearFortify();
+                            movingPiece.CheckMoveTiles_End();
+                            controller.GetComponent<Game>().NextTurn();
+                            return; // stop further processing
+                        }
+                    }
                 }  // --QUEEN PASSIVE END -------------------------------------
 
                 // ----------------- ROYAL KNIGHT PHANTOM SWAP SECTION -----------------
@@ -386,6 +410,7 @@ public class MovePlate : MonoBehaviour
                 // Check for bounty SP gain before destroying piece
                 CheckBountySPGain(cp.GetComponent<Chessman>(), movingPiece);
 
+
                 // Only destroy the piece if it's not a wraith pawn (wraith pawn destroys itself in explosion)
                 if (!isWraithPawn)
                 {
@@ -557,6 +582,30 @@ public class MovePlate : MonoBehaviour
             return; // Stop processing - piece destroyed by void
         }
 
+        // ----------------- FROZEN UNFREEZE CHECK -----------------
+        // Check if the piece is frozen and clicking on its own location
+        if (movingPiece.statusManager.HasStatus(StatusType.Frozen, controller.GetComponent<Game>().turns))
+        {
+            int currentX = movingPiece.GetXBoard();
+            int currentY = movingPiece.GetYBoard();
+            
+            // If frozen piece is clicking on its own location (unfreeze move plate)
+            if (matrixX == currentX && matrixY == currentY)
+            {
+                Debug.Log($"[FrozenUnfreeze] {movingPiece.name} unfreezing itself - removing frozen status and ending turn");
+                
+                // Remove frozen status
+                movingPiece.statusManager.RemoveStatus(StatusType.Frozen);
+                
+                // End turn (consumes their turn as requested)
+                movingPiece.DestroyMovePlates();
+                movingPiece.ClearFortify();
+                movingPiece.CheckMoveTiles_End();
+                controller.GetComponent<Game>().NextTurn();
+                return; // Stop processing - unfreeze complete
+            }
+        }
+
         // ----------------- Tile Effects Check (BEFORE moving) -----------------
         bool iceEffectTriggered = CheckTileIceEffect(movingPiece, matrixX, matrixY);
         bool lavaEffectTriggered = CheckTileLavaEffect(movingPiece, matrixX, matrixY);
@@ -599,6 +648,25 @@ public class MovePlate : MonoBehaviour
                 else
                 {
                     Debug.LogWarning($"[MovePlate] Royal Knight component not found on {reference.name}!");
+                }
+            }
+            
+            // ----------------- Cryostasis Surge Passive Trigger (AFTER moving) -----------------
+            // Trigger Cryostasis Surge if the moving piece is an Ice Bishop
+            Debug.Log($"[MovePlate] Checking for Ice Bishop movement - piece name: {reference?.name}");
+            
+            if (reference != null && reference.name.ToLower().Contains("ice_bishop"))
+            {
+                Debug.Log($"[MovePlate] Ice Bishop detected for movement: {reference.name}");
+                IceBishop movingIceBishop = reference.GetComponent<IceBishop>();
+                if (movingIceBishop != null)
+                {
+                    Debug.Log($"[MovePlate] Triggering Cryostasis Surge for Ice Bishop movement from ({originalX},{originalY})");
+                    movingIceBishop.CryostasisSurge();
+                }
+                else
+                {
+                    Debug.LogWarning($"[MovePlate] Ice Bishop component not found on {reference.name}!");
                 }
             }
 

@@ -13,6 +13,7 @@ public enum StatusType
     Bounty,
     KingMovement,
     PhantomGuard,
+    Frozen,
 
     specialTile, //status for special tiles like lava
      SolidBlock //status for tile_earth

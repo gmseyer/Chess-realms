@@ -94,7 +94,7 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
-            
+            Create("white_ice_bishop", 3, 3),
            
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -200,6 +200,15 @@ private void UpdateLatestMoveUI(string latestMove)
             // ✅ Add Summoned status to ElementalBishop (permanent, never expires)
             cm.statusManager.AddStatus(StatusType.Summoned, 999);
             Debug.Log($"[Game] {name} marked as Summoned (ElementalBishop)");
+        }
+
+        if (name.Contains("ice_bishop"))
+        {
+            if (obj.GetComponent<IceBishop>() == null)
+            {
+                IceBishop ib = obj.AddComponent<IceBishop>();
+                Debug.Log($"[Game] IceBishop component added for {name} at ({x},{y})");
+            }
         }
 
         if (name.Contains("arch_bishop"))
