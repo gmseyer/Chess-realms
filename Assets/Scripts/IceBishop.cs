@@ -11,6 +11,9 @@ public class IceBishop : MonoBehaviour
     private static int absoluteZeroEndTurn = -1;
     private static List<AbsoluteZeroPiece> piecesAtAbsoluteZeroStart = new List<AbsoluteZeroPiece>();
     
+    // Frostbound tracking
+    private static int frostboundEndTurn = -1;
+    
     // Helper class to track pieces by position and name
     private class AbsoluteZeroPiece
     {
@@ -344,5 +347,72 @@ public class IceBishop : MonoBehaviour
             }
         }
         return null;
+    }
+    
+    /// <summary>
+    /// Frostbound - Freezes any piece that uses an active skill for 4 turns
+    /// </summary>
+    public void Frostbound()
+    {
+        // Find the actual IceBishop piece on the board (not the script GameObject)
+        Chessman iceBishopChessman = FindIceBishopPiece();
+        if (iceBishopChessman == null)
+        {
+            Debug.LogError("[Frostbound] Could not find IceBishop piece on board!");
+            return;
+        }
+        
+        string player = iceBishopChessman.GetPlayer();
+        
+        // Check SP cost
+        if (SkillManager.Instance.GetPlayerSP(player) < 2)
+        {
+            Debug.Log("[Frostbound] Not enough SP!");
+            return;
+        }
+        
+        // Check if Frostbound is on cooldown
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "Frostbound"))
+        {
+            Debug.Log("[Frostbound] Skill is on cooldown!");
+            return;
+        }
+        
+        // Deduct SP
+        SkillManager.Instance.SpendPlayerSP(player, 2);
+        
+        // Set Frostbound duration (4 turns)
+        frostboundEndTurn = game.turns + 4;
+        
+        // Start cooldown (15 turns)
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "Frostbound", CooldownManager.CooldownType.TurnBased, 15);
+        }
+        
+        Debug.Log($"[Frostbound] Activated! Any piece using active skills will be frozen for the next 4 turns!");
+        
+        // End turn
+        game.NextTurn();
+    }
+    
+    /// <summary>
+    /// Check if Frostbound is currently active
+    /// </summary>
+    public static bool IsFrostboundActive(int currentTurn)
+    {
+        return frostboundEndTurn != -1 && currentTurn <= frostboundEndTurn;
+    }
+    
+    /// <summary>
+    /// Check if Frostbound period has ended and reset tracking
+    /// </summary>
+    public static void CheckFrostboundExpiry(int currentTurn)
+    {
+        if (frostboundEndTurn != -1 && currentTurn > frostboundEndTurn)
+        {
+            Debug.Log("[Frostbound] Period ended - no longer active.");
+            frostboundEndTurn = -1;
+        }
     }
 }

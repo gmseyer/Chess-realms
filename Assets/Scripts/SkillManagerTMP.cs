@@ -72,6 +72,26 @@ public class SkillManagerTMP : MonoBehaviour
         confirmButton.onClick.RemoveAllListeners();
         confirmButton.onClick.AddListener(() =>
         {
+            // Check if Frostbound is active (except for IceBishop)
+            if (IceBishop.IsFrostboundActive(GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().turns))
+            {
+                // Find the piece that's trying to use the skill
+                Chessman selectedPiece = UIManager.Instance?.selectedPiece?.GetComponent<Chessman>();
+                if (selectedPiece != null && !selectedPiece.name.ToLower().Contains("ice_bishop"))
+                {
+                    Debug.Log($"[Frostbound] {selectedPiece.name} tried to use a skill but was frozen by Frostbound!");
+                    
+                    // Apply frozen status to the piece
+                    selectedPiece.statusManager.AddStatus(StatusType.Frozen, GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>().turns + 4);
+                    selectedPiece.UpdateVisualStatus();
+                    
+                    // Close skill panel without executing skill
+                    skillPanel.SetActive(false);
+                    return; // Cancel skill execution
+                }
+            }
+            
+            // Execute the skill normally
             currentSkill.onActivate?.Invoke();
             skillPanel.SetActive(false);
         });

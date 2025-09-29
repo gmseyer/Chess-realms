@@ -214,6 +214,7 @@ private void UpdateLatestMoveUI(string latestMove)
         if (name.Contains("arch_bishop"))
         {
             if (obj.GetComponent<Archbishop>() == null)
+            
             {
                 Archbishop ab = obj.AddComponent<Archbishop>();
                 // ✅ assign prefab from a central reference
@@ -353,6 +354,9 @@ private void UpdateLatestMoveUI(string latestMove)
     
     // Check if AbsoluteZero period has ended
     IceBishop.CheckAbsoluteZeroExpiry(this);
+    
+    // Check if Frostbound period has ended
+    IceBishop.CheckFrostboundExpiry(turns);
 
     // Update visual status of all pieces on the board immediately
 Chessman[] allPieces = FindObjectsOfType<Chessman>();
