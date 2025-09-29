@@ -28,6 +28,12 @@ public class ElementalBishop : MonoBehaviour
     
     // ✅ Marker tracking (both fire and ice)
     private List<Marker> activeMarkers = new List<Marker>();
+    
+    // 🔥❄️🌍 INVOCATION SYSTEM - Element Stack Tracking
+    private int fireStack = 0;
+    private int iceStack = 0;
+    private int earthStack = 0;
+    private const int INVOCATION_THRESHOLD = 5; // 5 stacks to transform
 
      // Helper methods
     public void InfernalBrand() => CastSkill("tile_lava");
@@ -75,8 +81,11 @@ if (SkillTracker.Instance != null)
     SkillTracker.Instance.LogSkillUsage(game.GetCurrentPlayer(), "ELEMENTAL BISHOP", tileName, 1);
 }
 
+        // 🔥❄️🌍 UPDATE ELEMENT STACKS
+        UpdateElementStacks(tileName);
+
         // ✅ Put skill on cooldown for 5 turns
-        skillCooldowns[tileName] = currentTurn + 5;
+        skillCooldowns[tileName] = currentTurn + 1;
         UpdateCooldownUI();
 
         // ✅ Spawn move plates on BOTH empty and occupied tiles
@@ -228,6 +237,132 @@ public void CheckAndDestroyExpiredTiles()
     }
 }
 
+// 🔥❄️🌍 INVOCATION SYSTEM METHODS
 
+private void UpdateElementStacks(string tileName)
+{
+    // Reset other element stacks and increment current element
+    switch (tileName)
+    {
+        case "tile_lava": // Fire element - InfernalBrand
+            fireStack++;
+            iceStack = 0;
+            earthStack = 0;
+            Debug.Log($"[Invocation] Fire stack: {fireStack} (Ice: {iceStack}, Earth: {earthStack})");
+            break;
+            
+        case "tile_ice": // Ice element - GlacialPath
+            iceStack++;
+            fireStack = 0;
+            earthStack = 0;
+            Debug.Log($"[Invocation] Ice stack: {iceStack} (Fire: {fireStack}, Earth: {earthStack})");
+            break;
+            
+        case "tile_earth": // Earth element - StoneSentinel
+            earthStack++;
+            fireStack = 0;
+            iceStack = 0;
+            Debug.Log($"[Invocation] Earth stack: {earthStack} (Fire: {fireStack}, Ice: {iceStack})");
+            break;
+    }
+}
+
+// Public getters for UI to access stack information
+public int GetFireStack() => fireStack;
+public int GetIceStack() => iceStack;
+public int GetEarthStack() => earthStack;
+public bool IsInvocationReady() => fireStack >= INVOCATION_THRESHOLD || iceStack >= INVOCATION_THRESHOLD || earthStack >= INVOCATION_THRESHOLD;
+
+// Invocation button method - called by UI button
+public void Invocation()
+{
+    Debug.Log("[Invocation] Invocation button pressed!");
+    Debug.Log($"[Invocation] Current stacks - Fire: {fireStack}, Ice: {iceStack}, Earth: {earthStack}");
+    
+    // Check which stack has 5 or more
+    string newPieceName = "";
+    string invocationType = "";
+    
+    if (fireStack >= INVOCATION_THRESHOLD)
+    {
+        newPieceName = "white_fire_bishop";
+        invocationType = "🔥 FIRE INVOCATION";
+    }
+    else if (iceStack >= INVOCATION_THRESHOLD)
+    {
+        newPieceName = "white_ice_bishop";
+        invocationType = "❄️ ICE INVOCATION";
+    }
+    else if (earthStack >= INVOCATION_THRESHOLD)
+    {
+        newPieceName = "white_earth_bishop";
+        invocationType = "🌍 EARTH INVOCATION";
+    }
+    else
+    {
+        Debug.Log("[Invocation] No stack has reached 5 - doing nothing");
+        return;
+    }
+    
+    Debug.Log($"[Invocation] {invocationType} - Transforming into {newPieceName}");
+    
+    // Use Pawn.cs promotion logic for transformation
+    TransformElementalBishop(newPieceName, invocationType);
+}
+
+private void TransformElementalBishop(string newPieceName, string invocationType)
+{
+    if (game == null)
+    {
+        Debug.LogError("[Invocation] Missing Game reference!");
+        return;
+    }
+
+    // Find the Elemental Bishop's position by searching the board (since Chessman component might not exist)
+    int x = -1, y = -1;
+    
+    for (int searchX = 0; searchX < 8; searchX++)
+    {
+        for (int searchY = 0; searchY < 8; searchY++)
+        {
+            GameObject pieceAtPos = game.GetPosition(searchX, searchY);
+            if (pieceAtPos != null && pieceAtPos.name.Contains("white_elemental_bishop"))
+            {
+                x = searchX;
+                y = searchY;
+                Debug.Log($"[Invocation] Found white_elemental_bishop at ({x},{y})");
+                break;
+            }
+        }
+        if (x != -1) break;
+    }
+    
+    if (x == -1 || y == -1)
+    {
+        Debug.LogError("[Invocation] Could not find white_elemental_bishop on board!");
+        return;
+    }
+    
+    Debug.Log($"[Invocation] {invocationType} - Transforming Elemental Bishop at ({x},{y}) into {newPieceName}");
+    
+    // Use Pawn.cs promotion pattern: Clear position, destroy old piece, create new piece
+    game.SetPositionEmpty(x, y);
+    Destroy(gameObject);
+    
+    GameObject newBishop = game.Create(newPieceName, x, y);
+    if (newBishop != null)
+    {
+        Debug.Log($"[Invocation] {invocationType} SUCCESS! {newPieceName} created at ({x},{y})");
+    }
+    else
+    {
+        Debug.LogError($"[Invocation] Failed to create {newPieceName} at ({x},{y})");
+    }
+    
+     foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+    // End turn (following the pattern)
+    game.NextTurn();
+}
 
 }

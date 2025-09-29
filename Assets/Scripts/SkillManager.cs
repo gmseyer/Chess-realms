@@ -60,7 +60,7 @@ public static bool pawnsGambitUsed = false; // Track if Pawn's Gambit has been u
         {
             Instance = this;
             // Force set SP to 0 (overrides Inspector values)
-            whiteSkillPoints = 0;
+            whiteSkillPoints = 5;
             blackSkillPoints = 0;
             lastProcessedTurn = 0;
             UpdateSPUI(); // initialize text at start

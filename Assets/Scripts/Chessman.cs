@@ -99,9 +99,9 @@ public static class ChessNotation
         if (pieceName.Contains("royal_pawn")) return "RP";
         if (pieceName.Contains("spectral_herald")) return "SH";
         if (pieceName.Contains("elemental_bishop")) return "EB";
-        if (pieceName.Contains("elemental_ice_bishop")) return "EIB";
-        if (pieceName.Contains("elemental_earth_bishop")) return "EEB";
-        if (pieceName.Contains("elemental_fire_bishop")) return "EFB";
+        if (pieceName.Contains("ice_bishop")) return "EIB";
+        if (pieceName.Contains("earth_bishop")) return "EEB";
+        if (pieceName.Contains("fire_bishop")) return "EFB";
         if (pieceName.Contains("royal_bishop")) return "RB";
         if (pieceName.Contains("royal_rook")) return "RR";
         if (pieceName.Contains("wraith_pawn")) return "WP";
