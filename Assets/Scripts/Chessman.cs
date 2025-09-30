@@ -63,6 +63,7 @@ public class Chessman : MonoBehaviour
 
     public Sprite tile_altar;
     public Sprite white_ashen_pyre;
+    public Sprite tile_terra_ward;
     
     public Sprite celestial_pillar;
 
@@ -160,6 +161,7 @@ public static class ChessNotation
         bool isStunned = statusManager.HasStatus(StatusType.Stunned, game.turns);
         bool isFrozen = statusManager.HasStatus(StatusType.Frozen, game.turns);
         bool isCrippled = statusManager.HasStatus(StatusType.Crippled, game.turns);
+        bool isStoneSentinel = statusManager.HasStatus(StatusType.StoneSentinel, game.turns);
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         bool isTemporalShifted = game.IsPlayerRestrictedToPawns(player) && !name.Contains("pawn");
         bool isEthereal = statusManager.HasStatus(StatusType.Ethereal, game.turns);
@@ -224,11 +226,25 @@ else if (hasKingMovement)
     // Set to cyan for King Movement
     sr.color = Color.cyan;
 }
+else if (isStoneSentinel)
+{
+    // Store original color if not already stored
+    if (originalColor == Color.clear)
+        originalColor = sr.color;
+    // Set to green for Stone Sentinel (stone-like appearance)
+    sr.color = Color.gray;
+
+    // Set invulnerability for Stone Sentinel pieces
+    isInvulnerable = true;
+}
 else
 {
     // Restore original color when effects end
     if (originalColor != Color.clear)
         sr.color = originalColor;
+
+    // Reset invulnerability when status effects end
+    isInvulnerable = false;
 }
 
         }
@@ -419,6 +435,7 @@ if (game != null)
                 case "tile_sanctuary": this.GetComponent<SpriteRenderer>().sprite = tile_sanctuary; player = "neutral"; break;
                 case "tile_altar": this.GetComponent<SpriteRenderer>().sprite = tile_altar; player = "white"; break;
                 case "white_ashen_pyre": this.GetComponent<SpriteRenderer>().sprite = white_ashen_pyre; player = "white"; break;
+                case "tile_terra_ward": this.GetComponent<SpriteRenderer>().sprite = tile_terra_ward; player = "neutral"; break;
                 case "celestial_pillar": this.GetComponent<SpriteRenderer>().sprite = celestial_pillar; player = "neutral"; break;
             }
         }
@@ -604,6 +621,15 @@ if (game != null)
             // Generate a move plate on the frozen piece's own location for unfreezing
             MovePlateSpawn(xBoard, yBoard);
             return; // Only unfreeze move plate, no other move plates
+        }
+
+        // Check if piece has Stone Sentinel status
+        if (statusManager.HasStatus(StatusType.StoneSentinel, game.turns))
+        {
+            Debug.Log($"[StoneSentinel] {name} has Stone Sentinel - cannot move or attack.");
+            // Pieces with Stone Sentinel cannot move or attack
+            // They are invulnerable and cannot perform actions
+            return; // No move plates at all
         }
 
         // Check if piece is crippled - pawns are immune, others handled in LineMovePlate
@@ -833,11 +859,11 @@ if (game != null)
                 Chessman targetCm = target.GetComponent<Chessman>();
                 if (targetCm != null)
                 {
-                    // Treat tile_earth as solid/invulnerable (except for Elemental Bishop)
+                    // Treat tile_earth as solid/invulnerable (except for Elemental Bishop and Earthbound Bishop)
                     if (targetCm.name == "tile_earth")
                     {
-                        // Check if this is an Elemental Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop" || name.Contains("king"))
+                        // Check if this is an Elemental Bishop or Earthbound Bishop (can pass through boulders)
+                        if (this.name == "white_elemental_bishop" || this.name == "white_earth_bishop" || name.Contains("king"))
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             x += xIncrement;
@@ -851,8 +877,29 @@ if (game != null)
                             break; // stop movement
                         }
                     }
+                    
+                    // Treat tile_terra_ward as solid/invulnerable (except for Earthbound Bishop)
+                    if (targetCm.name == "tile_terra_ward")
+                    {
+                        // Check if this is an Earthbound Bishop (can pass through Terra Wards)
+                        if (this.name == "white_earth_bishop")
+                        {
+                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                            x += xIncrement;
+                            y += yIncrement;
+                            movesMade++;
+                            continue; // pass through and continue
+                        }
+                        else
+                        {
+                            Debug.Log($"{targetCm.name} is a solid block. Cannot pass or land.");
+                            break; // stop movement
+                        }
+                    }
+                    
+                    // Treat celestial_pillar as solid/invulnerable (except for Earthbound Bishop and Chronomagus)
                     if(targetCm.name == "celestial_pillar"){
-                        if(this.name == "white_chronomagus" || this.name == "black_chronomagus"){
+                        if(this.name == "white_earth_bishop" || this.name == "white_chronomagus" || this.name == "black_chronomagus"){
                              x += xIncrement;
                             y += yIncrement;
                             movesMade++;
@@ -995,11 +1042,11 @@ if (game != null)
             Chessman targetCm = cp.GetComponent<Chessman>();
             if (targetCm != null)
             {
-                // Check for tile_earth → solid block (except for Elemental Bishop)
+                // Check for tile_earth → solid block (except for Elemental Bishop and Earthbound Bishop)
                 if (targetCm.name == "tile_earth")
                 {
-                    // Check if this is an Elemental Bishop (can pass through boulders)
-                    if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
+                    // Check if this is an Elemental Bishop, Earthbound Bishop, or other pieces that can pass through boulders
+                    if (this.name == "white_elemental_bishop" || this.name == "white_earth_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                     {
                         Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
@@ -1010,8 +1057,38 @@ if (game != null)
                         return; // cannot land or pass
                     }
                 }
-                     
-
+                
+                // Check for tile_terra_ward → solid block (except for Earthbound Bishop)
+                if (targetCm.name == "tile_terra_ward")
+                {
+                    // Check if this is an Earthbound Bishop (can pass through Terra Wards)
+                    if (this.name == "white_earth_bishop")
+                    {
+                        Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                        return; // pass through but don't land
+                    }
+                    else
+                    {
+                        Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
+                        return; // cannot land or pass
+                    }
+                }
+                
+                // Check for celestial_pillar → solid block (except for Earthbound Bishop and Chronomagus)
+                if (targetCm.name == "celestial_pillar")
+                {
+                    // Check if this is an Earthbound Bishop or Chronomagus (can pass through pillars)
+                    if (this.name == "white_earth_bishop" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
+                    {
+                        Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                        return; // pass through but don't land
+                    }
+                    else
+                    {
+                        Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
+                        return; // cannot land or pass
+                    }
+                }
 
                 // Special tile like lava/ice → can land
                 if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
@@ -1084,6 +1161,22 @@ if (game != null)
                             break; // stop movement
                         }
                     }
+                    
+                    // tile_terra_ward → block movement (except for Earthbound Bishop)
+                    if (targetCm.name == "tile_terra_ward")
+                    {
+                        // Check if this is an Earthbound Bishop (can pass through Terra Wards)
+                        if (this.name == "white_earth_bishop")
+                        {
+                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                            continue; // pass through and continue
+                        }
+                        else
+                        {
+                            Debug.Log($"{targetCm.name} is a solid block. Pawn cannot move forward.");
+                            break; // stop movement
+                        }
+                    }
 
                     // Special tile → can land and continue checking
                     if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
@@ -1126,6 +1219,22 @@ if (game != null)
                     {
                         // Check if this is an Elemental Bishop (can pass through boulders)
                         if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
+                        {
+                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                            continue; // pass through and continue
+                        }
+                        else
+                        {
+                            Debug.Log($"{targetCm.name} is a solid block. Pawn cannot attack.");
+                            continue;
+                        }
+                    }
+                    
+                    // tile_terra_ward → cannot attack (except for Earthbound Bishop)
+                    if (targetCm.name == "tile_terra_ward")
+                    {
+                        // Check if this is an Earthbound Bishop (can pass through Terra Wards)
+                        if (this.name == "white_earth_bishop")
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue

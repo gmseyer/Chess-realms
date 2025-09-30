@@ -22399,14 +22399,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 72916002}
-        m_TargetAssemblyTypeName: SkillManagerTMP, Assembly-CSharp
-        m_MethodName: OpenSkillPanel
-        m_Mode: 3
+      - m_Target: {fileID: 714150902}
+        m_TargetAssemblyTypeName: FireBishop, Assembly-CSharp
+        m_MethodName: PhoenixPyre
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 7
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -28584,7 +28584,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "GLACIAL\n PATH"
+  m_text: 'PHOENIX
+
+    PYRE'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -53430,7 +53432,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cfcac2c58dbcb4046861e33c0a2b48a1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 970eb3e2f7c73724e918640713e6c20d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -70907,6 +70909,7 @@ MonoBehaviour:
   tile_thunder: {fileID: 0}
   tile_void: {fileID: 0}
   tile_altar: {fileID: 0}
+  white_ashen_pyre: {fileID: 0}
   celestial_pillar: {fileID: 0}
   tile_sanctuary: {fileID: 0}
   fortifyActive: 0

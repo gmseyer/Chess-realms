@@ -138,6 +138,7 @@ MonoBehaviour:
   tile_void: {fileID: 21300000, guid: 65b31714825a1dc478b73e8f6819ac14, type: 3}
   tile_altar: {fileID: 21300000, guid: 4051a38b0cfef8543973f277c861225b, type: 3}
   white_ashen_pyre: {fileID: 21300000, guid: 64947c8cbdfaf494bb14c9c5501fb0cc, type: 3}
+  tile_terra_ward: {fileID: 21300000, guid: cb3d405b1477ae845b1a349d08021dfb, type: 3}
   celestial_pillar: {fileID: 21300000, guid: db16fdd018d95bd458c443664d4ae83d, type: 3}
   tile_sanctuary: {fileID: 21300000, guid: b8e4dce0fea1310438a8d7d05ad98be9, type: 3}
   fortifyActive: 0

@@ -703,6 +703,24 @@ public class MovePlate : MonoBehaviour
                     Debug.LogWarning($"[MovePlate] Ice Bishop component not found on {reference.name}!");
                 }
             }
+            
+            // Check for EarthboundBishop movement and trigger Terra Ward creation
+            Debug.Log($"[MovePlate] Checking for Earthbound Bishop movement - piece name: {reference?.name}");
+            
+            if (reference != null && reference.name.ToLower().Contains("earth_bishop"))
+            {
+                Debug.Log($"[MovePlate] Earthbound Bishop detected for movement: {reference.name}");
+                EarthboundBishop movingEarthboundBishop = reference.GetComponent<EarthboundBishop>();
+                if (movingEarthboundBishop != null)
+                {
+                    Debug.Log($"[MovePlate] Triggering Terra Ward creation for Earthbound Bishop movement from ({originalX},{originalY}) to ({matrixX},{matrixY})");
+                    EarthboundBishop.CreateTerraWard(matrixX, matrixY); // Create Terra Ward at new position
+                }
+                else
+                {
+                    Debug.LogWarning($"[MovePlate] Earthbound Bishop component not found on {reference.name}!");
+                }
+            }
 
             movingPiece.DestroyMovePlates();
             movingPiece.ClearFortify();
