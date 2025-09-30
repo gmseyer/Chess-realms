@@ -222,7 +222,7 @@ public class Bishop : Pieces
 
     // 3️⃣ Activate skill (your existing logic) - but skip the cooldown check since we already did it
     HealingBenedictionWithoutCooldownCheck();
-
+    Game.Instance.NextTurn();
     Debug.Log("[HealingBenediction] Skill activated successfully!");
 }
 

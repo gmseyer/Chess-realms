@@ -4946,7 +4946,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &135777465
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17022,7 +17022,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &473715466
 RectTransform:
   m_ObjectHideFlags: 0
@@ -24351,14 +24351,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 72916002}
-        m_TargetAssemblyTypeName: SkillManagerTMP, Assembly-CSharp
-        m_MethodName: OpenSkillPanel
-        m_Mode: 3
+      - m_Target: {fileID: 714150902}
+        m_TargetAssemblyTypeName: FireBishop, Assembly-CSharp
+        m_MethodName: WorldfireRing
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 6
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -25086,6 +25086,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 712606973}
   m_CullTransparentMesh: 1
+--- !u!1 &714150901
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 714150903}
+  - component: {fileID: 714150902}
+  m_Layer: 0
+  m_Name: FireBishopScript
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &714150902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714150901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7de9eb4a839fd64c86d04b42c908870, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &714150903
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714150901}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.56060517, y: -1.916039, z: -0.0164919}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &715111330
 GameObject:
   m_ObjectHideFlags: 0
@@ -32294,7 +32338,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "INFERNAL \nBRAND"
+  m_text: 'WORLDFIRE
+
+    RING'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -50490,7 +50536,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ELEMENTAL GRACE
+  m_text: "ETERNAL \nFLAME"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -70860,6 +70906,7 @@ MonoBehaviour:
   tile_earth: {fileID: 21300000, guid: bbfd5c64bda093e4a839e1433b8b1b71, type: 3}
   tile_thunder: {fileID: 0}
   tile_void: {fileID: 0}
+  tile_altar: {fileID: 0}
   celestial_pillar: {fileID: 0}
   tile_sanctuary: {fileID: 0}
   fortifyActive: 0
@@ -73484,6 +73531,7 @@ SceneRoots:
   - {fileID: 232825481}
   - {fileID: 1422114242}
   - {fileID: 1811307014}
+  - {fileID: 714150903}
   - {fileID: 298031822}
   - {fileID: 1783933381}
   - {fileID: 1206980337}

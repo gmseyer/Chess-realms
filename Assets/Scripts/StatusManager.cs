@@ -15,6 +15,7 @@ public enum StatusType
     PhantomGuard,
     Frozen,
     Crippled,
+    PhoenixResurrection,
 
     specialTile, //status for special tiles like lava
      SolidBlock //status for tile_earth

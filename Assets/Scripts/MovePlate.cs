@@ -47,6 +47,21 @@ public class MovePlate : MonoBehaviour
     public void OnMouseUp()
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
+        
+        // ----------------- Check for Altar Summon Plate Component -----------------
+        // Altar summon plates have their own component and OnMouseUp handler
+        if (GetComponent<AltarSummonPlate>() != null)
+        {
+            return; // Let AltarSummonPlate component handle the click
+        }
+        
+        // Safety check - if reference is null, this plate shouldn't be processed
+        if (reference == null)
+        {
+            Debug.LogWarning("[MovePlate] Reference is null - this plate should not be processed!");
+            return;
+        }
+        
         Chessman movingPiece = reference.GetComponent<Chessman>();
         Knight knightComponent = movingPiece.GetComponent<Knight>();
 
@@ -262,6 +277,25 @@ public class MovePlate : MonoBehaviour
                         defendingChessman.statusManager.RemoveStatus(StatusType.PhantomGuard);
                     }
                 }  // --PHANTOM GUARD BUFF END -------------------------------------
+
+                // ----------------- FIRE BISHOP ETERNAL FLAME SECTION -----------------
+                // Check if the defending piece is a Fire Bishop and trigger Eternal Flame passive
+                if (cp.name.ToLower().Contains("fire_bishop"))
+                {
+                    Debug.Log($"[MovePlate] Fire Bishop is about to be taken: {cp.name} at ({matrixX},{matrixY}) by {movingPiece.name}");
+
+                    FireBishop fireBishop = cp.GetComponent<FireBishop>();
+                    if (fireBishop != null)
+                    {
+                        bool eternalFlameActivated = fireBishop.TryTriggerEternalFlame();
+
+                        if (eternalFlameActivated)
+                        {
+                            Debug.Log("[MovePlate] Fire Bishop destroyed - Eternal Flame activated!");
+                            // Continue with normal capture flow: Fire Bishop is destroyed, Eternal Flame will trigger next turn
+                        }
+                    }
+                }  // --FIRE BISHOP ETERNAL FLAME END -------------------------------------
 
                 if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
                 if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");

@@ -220,6 +220,13 @@ private void UpdateLatestMoveUI(string latestMove)
             }
         }
 
+        if (name == "white_ashen_pyre")
+        {
+            // Ashen pyre is a normal white piece that can be attacked
+            // No special components needed - just a normal piece
+            Debug.Log($"[Game] {name} created as normal white piece at ({x},{y})");
+        }
+
         if (name.Contains("arch_bishop"))
         {
             if (obj.GetComponent<Archbishop>() == null)
@@ -369,6 +376,15 @@ private void UpdateLatestMoveUI(string latestMove)
     
     // Check if Worldfire Ring should expand
     FireBishop.CheckWorldfireRingExpansion(turns);
+    
+    // Check if Eternal Flame should activate (at start of white turn after Fire Bishop was destroyed)
+    if (currentPlayer == "white")
+    {
+        FireBishop.TriggerEternalFlame();
+    }
+    
+    // Check if altar resurrection should occur
+    FireBishop.CheckAltarReborn(turns);
 
     // Update visual status of all pieces on the board immediately
 Chessman[] allPieces = FindObjectsOfType<Chessman>();

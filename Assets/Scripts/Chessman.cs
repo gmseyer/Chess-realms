@@ -60,6 +60,9 @@ public class Chessman : MonoBehaviour
     public Sprite tile_earth;
     public Sprite tile_thunder;
     public Sprite tile_void;
+
+    public Sprite tile_altar;
+    public Sprite white_ashen_pyre;
     
     public Sprite celestial_pillar;
 
@@ -414,6 +417,8 @@ if (game != null)
                 case "tile_thunder": this.GetComponent<SpriteRenderer>().sprite = tile_thunder; player = "neutral"; break;
                 case "tile_void": this.GetComponent<SpriteRenderer>().sprite = tile_void; player = "neutral"; break;
                 case "tile_sanctuary": this.GetComponent<SpriteRenderer>().sprite = tile_sanctuary; player = "neutral"; break;
+                case "tile_altar": this.GetComponent<SpriteRenderer>().sprite = tile_altar; player = "white"; break;
+                case "white_ashen_pyre": this.GetComponent<SpriteRenderer>().sprite = white_ashen_pyre; player = "white"; break;
                 case "celestial_pillar": this.GetComponent<SpriteRenderer>().sprite = celestial_pillar; player = "neutral"; break;
             }
         }
@@ -744,8 +749,22 @@ if (game != null)
                     break;
                 case "white_elemental_bishop": 
                 case "white_ice_bishop": 
-                case "white_earth_bishop": 
-                case "white_fire_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case "white_earth_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case "white_fire_bishop": 
+                    // Check for Phoenix Resurrection enhanced abilities
+                    if (statusManager.HasStatus(StatusType.PhoenixResurrection, game.turns))
+                    {
+                        Debug.Log("[PhoenixResurrection] Fire Bishop has enhanced movement abilities (SurroundMovePlate + LineMovePlate)!");
+                        // Combined movement: Bishop diagonal movement + King surrounding movement
+                        LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); // Bishop movement
+                        SurroundMovePlate(); // King movement (8 directions)
+                    }
+                    else
+                    {
+                        // Normal Bishop movement
+                        LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1);
+                    }
+                    break;
                 case "white_arch_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_royal_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
                 case "white_chronomagus": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
