@@ -48,6 +48,8 @@ public class ChivalricGuardSelectionPlate : MonoBehaviour
             Debug.LogError("[ChivalricGuardSelectionPlate] No knight reference!");
         }
 
+        // Note: Do NOT clear the ChivalricGuard reference here - it needs to stay until the actual sacrifice happens
+
         // Destroy all selection plates
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);

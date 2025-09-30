@@ -623,4 +623,137 @@ public class Pawn : MonoBehaviour
         
         Debug.Log($"[Russian Roulette] After delay: Found {targetPlateCount} Russian Roulette target plates in scene");
     }
+
+    /// <summary>
+    /// Check if this pawn should gain Queen movement due to Solidarity passive
+    /// </summary>
+    public void CheckSolidarity()
+    {
+        if (chessman == null || game == null)
+        {
+            Debug.LogError("[Solidarity] Missing references!");
+            return;
+        }
+
+        string player = chessman.GetPlayer();
+        
+        // Count how many regular pawns of this team exist on the board
+        // Only count regular pawns (not royal_pawn, wraith_pawn, etc.)
+        int pawnCount = 0;
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null)
+                {
+                    string pieceName = piece.name.ToLower();
+                    // Check if it's a regular pawn of this player's team
+                    if (pieceName.Contains("pawn") && 
+                        !pieceName.Contains("royal_pawn") && 
+                        !pieceName.Contains("wraith_pawn") &&
+                        piece.GetComponent<Chessman>()?.GetPlayer() == player)
+                    {
+                        pawnCount++;
+                    }
+                }
+            }
+        }
+
+        StatusManager status = chessman.GetComponent<StatusManager>();
+        if (status == null)
+        {
+            Debug.LogError("[Solidarity] No StatusManager found on pawn!");
+            return;
+        }
+
+        // If only 1 pawn remains, apply Solidarity status
+        if (pawnCount == 1)
+        {
+            if (!status.HasStatus(StatusType.Solidarity, game.turns))
+            {
+                status.AddStatus(StatusType.Solidarity, 999); // Permanent until more pawns are added
+                Debug.Log($"[Solidarity] {chessman.name} is the last {player} pawn! Gained Queen movement.");
+            }
+        }
+        else
+        {
+            // Remove Solidarity status if there are multiple pawns
+            if (status.HasStatus(StatusType.Solidarity, game.turns))
+            {
+                status.RemoveStatus(StatusType.Solidarity);
+                Debug.Log($"[Solidarity] {chessman.name} lost Solidarity status ({pawnCount} {player} pawns exist).");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Test method to verify Solidarity passive works correctly
+    /// Call this from Unity Inspector or console for testing
+    /// </summary>
+    [ContextMenu("Test Solidarity Passive")]
+    public void TestSolidarityPassive()
+    {
+        Debug.Log("=== TESTING SOLIDARITY PASSIVE ===");
+        
+        if (chessman == null || game == null)
+        {
+            Debug.LogError("[Test] Missing references!");
+            return;
+        }
+
+        string player = chessman.GetPlayer();
+        Debug.Log($"[Test] Testing Solidarity for {player} pawn: {chessman.name}");
+        
+        // Count pawns before
+        int pawnCount = 0;
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null)
+                {
+                    string pieceName = piece.name.ToLower();
+                    if (pieceName.Contains("pawn") && 
+                        !pieceName.Contains("royal_pawn") && 
+                        !pieceName.Contains("wraith_pawn") &&
+                        piece.GetComponent<Chessman>()?.GetPlayer() == player)
+                    {
+                        pawnCount++;
+                        Debug.Log($"[Test] Found {player} pawn: {piece.name} at ({x},{y})");
+                    }
+                }
+            }
+        }
+        
+        Debug.Log($"[Test] Total {player} pawns found: {pawnCount}");
+        
+        // Check current status
+        StatusManager status = chessman.GetComponent<StatusManager>();
+        bool hasSolidarity = status.HasStatus(StatusType.Solidarity, game.turns);
+        Debug.Log($"[Test] Currently has Solidarity status: {hasSolidarity}");
+        
+        // Run the check
+        CheckSolidarity();
+        
+        // Check status after
+        bool hasSolidarityAfter = status.HasStatus(StatusType.Solidarity, game.turns);
+        Debug.Log($"[Test] After check - has Solidarity status: {hasSolidarityAfter}");
+        
+        if (pawnCount == 1 && !hasSolidarityAfter)
+        {
+            Debug.LogError("[Test] ERROR: Should have Solidarity status but doesn't!");
+        }
+        else if (pawnCount > 1 && hasSolidarityAfter)
+        {
+            Debug.LogError("[Test] ERROR: Should not have Solidarity status but does!");
+        }
+        else
+        {
+            Debug.Log("[Test] Solidarity passive working correctly!");
+        }
+        
+        Debug.Log("=== END TEST ===");
+    }
 }

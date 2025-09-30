@@ -178,7 +178,7 @@ public Button fortifyButton;
         StatusType[] allStatusTypes = {
             StatusType.Invulnerable, StatusType.Summoned, StatusType.Phase, StatusType.Locked,
             StatusType.Stunned, StatusType.Ethereal, StatusType.Soulbrand, StatusType.Bounty,
-            StatusType.KingMovement, StatusType.specialTile, StatusType.SolidBlock
+            StatusType.KingMovement, StatusType.Solidarity, StatusType.specialTile, StatusType.SolidBlock
         };
 
         foreach (StatusType statusType in allStatusTypes)
@@ -237,6 +237,7 @@ public Button fortifyButton;
             case StatusType.Soulbrand: return soulbrandSprite;
             case StatusType.Bounty: return bountySprite;
             case StatusType.KingMovement: return kingMovementSprite;
+            case StatusType.Solidarity: return kingMovementSprite; // Use same sprite as KingMovement for now
             case StatusType.specialTile: return specialTileSprite;
             case StatusType.SolidBlock: return solidBlockSprite;
             default: return null;

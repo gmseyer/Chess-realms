@@ -176,14 +176,178 @@ public class RoyalAcolyte : MonoBehaviour
         Debug.Log("[AbyssalRite] Usage reset for new battle");
     }
 
-   
+    /// <summary>
+    /// Check if this RoyalAcolyte should gain Queen movement due to Solidarity passive
+    /// Conditions: RoyalAcolyte exists, Spectral Herald does NOT exist, and only 1 regular pawn exists
+    /// </summary>
+    public void CheckRoyalSolidarity()
+    {
+        if (game == null)
+        {
+            Debug.LogError("[RoyalSolidarity] Missing Game reference!");
+            return;
+        }
 
-   
+        Chessman chessman = GetComponent<Chessman>();
+        if (chessman == null)
+        {
+            Debug.LogError("[RoyalSolidarity] Missing Chessman component!");
+            return;
+        }
 
+        string player = chessman.GetPlayer();
+        
+        // Check if Spectral Herald exists for this player
+        bool spectralHeraldExists = false;
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        foreach (Chessman piece in allPieces)
+        {
+            if (piece != null && piece.name.Contains("spectral_herald") && piece.GetPlayer() == player)
+            {
+                spectralHeraldExists = true;
+                break;
+            }
+        }
 
+        // Count regular pawns for this player (exclude royal_pawn, wraith_pawn)
+        int pawnCount = 0;
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null)
+                {
+                    string pieceName = piece.name.ToLower();
+                    // Check if it's a regular pawn of this player's team
+                    if (pieceName.Contains("pawn") && 
+                        !pieceName.Contains("royal_pawn") && 
+                        !pieceName.Contains("wraith_pawn") &&
+                        piece.GetComponent<Chessman>()?.GetPlayer() == player)
+                    {
+                        pawnCount++;
+                    }
+                }
+            }
+        }
 
+        StatusManager status = chessman.GetComponent<StatusManager>();
+        if (status == null)
+        {
+            Debug.LogError("[RoyalSolidarity] No StatusManager found on RoyalAcolyte!");
+            return;
+        }
 
+        // Apply Solidarity if: RoyalAcolyte exists, Spectral Herald does NOT exist, and exactly 1 regular pawn exists
+        if (!spectralHeraldExists && pawnCount == 1)
+        {
+            if (!status.HasStatus(StatusType.Solidarity, game.turns))
+            {
+                status.AddStatus(StatusType.Solidarity, 999); // Permanent until conditions change
+                Debug.Log($"[RoyalSolidarity] {chessman.name} gained Solidarity! (No Spectral Herald, {pawnCount} regular pawn)");
+            }
+        }
+        else
+        {
+            // Remove Solidarity status if conditions are not met
+            if (status.HasStatus(StatusType.Solidarity, game.turns))
+            {
+                status.RemoveStatus(StatusType.Solidarity);
+                string reason = spectralHeraldExists ? "Spectral Herald exists" : $"Multiple pawns exist ({pawnCount})";
+                Debug.Log($"[RoyalSolidarity] {chessman.name} lost Solidarity status ({reason}).");
+            }
+        }
+    }
 
+    /// <summary>
+    /// Test method to verify RoyalAcolyte Solidarity passive works correctly
+    /// Call this from Unity Inspector or console for testing
+    /// </summary>
+    [ContextMenu("Test Royal Solidarity Passive")]
+    public void TestRoyalSolidarityPassive()
+    {
+        Debug.Log("=== TESTING ROYAL ACOLYTE SOLIDARITY PASSIVE ===");
+        
+        if (game == null)
+        {
+            Debug.LogError("[Test] Missing Game reference!");
+            return;
+        }
 
+        Chessman chessman = GetComponent<Chessman>();
+        if (chessman == null)
+        {
+            Debug.LogError("[Test] Missing Chessman component!");
+            return;
+        }
 
+        string player = chessman.GetPlayer();
+        Debug.Log($"[Test] Testing Royal Solidarity for {player} RoyalAcolyte: {chessman.name}");
+        
+        // Check Spectral Herald existence
+        bool spectralHeraldExists = false;
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        foreach (Chessman piece in allPieces)
+        {
+            if (piece != null && piece.name.Contains("spectral_herald") && piece.GetPlayer() == player)
+            {
+                spectralHeraldExists = true;
+                Debug.Log($"[Test] Found Spectral Herald: {piece.name}");
+                break;
+            }
+        }
+        Debug.Log($"[Test] Spectral Herald exists: {spectralHeraldExists}");
+        
+        // Count regular pawns
+        int pawnCount = 0;
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null)
+                {
+                    string pieceName = piece.name.ToLower();
+                    if (pieceName.Contains("pawn") && 
+                        !pieceName.Contains("royal_pawn") && 
+                        !pieceName.Contains("wraith_pawn") &&
+                        piece.GetComponent<Chessman>()?.GetPlayer() == player)
+                    {
+                        pawnCount++;
+                        Debug.Log($"[Test] Found {player} regular pawn: {piece.name} at ({x},{y})");
+                    }
+                }
+            }
+        }
+        Debug.Log($"[Test] Total {player} regular pawns found: {pawnCount}");
+        
+        // Check current status
+        StatusManager status = chessman.GetComponent<StatusManager>();
+        bool hasSolidarity = status.HasStatus(StatusType.Solidarity, game.turns);
+        Debug.Log($"[Test] Currently has Solidarity status: {hasSolidarity}");
+        
+        // Run the check
+        CheckRoyalSolidarity();
+        
+        // Check status after
+        bool hasSolidarityAfter = status.HasStatus(StatusType.Solidarity, game.turns);
+        Debug.Log($"[Test] After check - has Solidarity status: {hasSolidarityAfter}");
+        
+        // Verify conditions
+        bool shouldHaveSolidarity = !spectralHeraldExists && pawnCount == 1;
+        if (shouldHaveSolidarity && !hasSolidarityAfter)
+        {
+            Debug.LogError("[Test] ERROR: Should have Solidarity status but doesn't!");
+        }
+        else if (!shouldHaveSolidarity && hasSolidarityAfter)
+        {
+            Debug.LogError("[Test] ERROR: Should not have Solidarity status but does!");
+        }
+        else
+        {
+            Debug.Log("[Test] Royal Solidarity passive working correctly!");
+        }
+        
+        Debug.Log("=== END ROYAL SOLIDARITY TEST ===");
+    }
 }

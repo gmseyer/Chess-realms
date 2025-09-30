@@ -1522,39 +1522,34 @@ public class MovePlate : MonoBehaviour
             return;
         }
 
-        // Find the knight that cast Chivalric Guard (any knight of the same player except the attacker)
-        GameObject knightPiece = null;
-        int knightX = -1, knightY = -1;
-
-        for (int x = 0; x < 8; x++)
+        // Use the specific knight that activated ChivalricGuard
+        if (Knight.chivalricGuardKnight == null)
         {
-            for (int y = 0; y < 8; y++)
-            {
-                GameObject piece = game.GetPosition(x, y);
-                if (piece != null && (piece.name == "white_knight" || piece.name == "black_knight"))
-                {
-                    Chessman knightChessman = piece.GetComponent<Chessman>();
-                    if (knightChessman != null && knightChessman.GetPlayer() == guardedPiece.GetPlayer())
-                    {
-                        // Make sure this is not the same knight that's attacking
-                        if (!(piece == attacker.gameObject))
-                        {
-                            knightPiece = piece;
-                            knightX = x;
-                            knightY = y;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (knightPiece != null) break;
-        }
-
-        if (knightPiece == null)
-        {
-            Debug.LogError("[ChivalricGuard] Could not find knight for sacrifice!");
+            Debug.LogError("[ChivalricGuard] No knight reference found! ChivalricGuard may not have been activated properly.");
             return;
         }
+
+        GameObject knightPiece = Knight.chivalricGuardKnight.gameObject;
+        Chessman knightChessman = knightPiece.GetComponent<Chessman>();
+        
+        if (knightChessman == null)
+        {
+            Debug.LogError("[ChivalricGuard] Knight reference has no Chessman component!");
+            return;
+        }
+
+        int knightX = knightChessman.GetXBoard();
+        int knightY = knightChessman.GetYBoard();
+
+        // Verify this is the correct knight (same player as guarded piece)
+        if (knightChessman.GetPlayer() != guardedPiece.GetPlayer())
+        {
+            Debug.LogError("[ChivalricGuard] Knight reference is not the same player as guarded piece!");
+            return;
+        }
+
+        // Clear the reference since we're about to destroy the knight
+        Knight.chivalricGuardKnight = null;
 
         // Get positions
         int guardedX = guardedPiece.GetXBoard();

@@ -27,10 +27,13 @@ public class Knight : MonoBehaviour
 public int momentumCooldownTurns = 15;     // cooldown length (in turns)
 // Removed nextMomentumAvailableTurn - now using CooldownManager
 
-[Header("Trial of Valor Promotion")]
-public int valorStacks = 0;                // Current valor stacks
-public int trialOfValorSPCost = 2;         // SP cost for Trial of Valor
-public bool trialOfValorActive = false;    // Track if Trial of Valor is active
+    [Header("Trial of Valor Promotion")]
+    public int valorStacks = 0;                // Current valor stacks
+    public int trialOfValorSPCost = 2;         // SP cost for Trial of Valor
+    public bool trialOfValorActive = false;    // Track if Trial of Valor is active
+
+    [Header("Chivalric Guard")]
+    public static Knight chivalricGuardKnight = null; // Track which knight activated ChivalricGuard
 
 // Check if the passive is ready (public helper other scripts can call)
 public bool IsMomentumReady()
@@ -753,10 +756,13 @@ public static System.Collections.IEnumerator CheckPlateSurvivalStatic(GameObject
             return;
         }
 
+        // Set this knight as the one who activated ChivalricGuard
+        chivalricGuardKnight = knightInstance;
+
         // Create 5x5 selection area centered on knight
         CreateChivalricGuardSelectionPlates(knightX, knightY, knightPlayer, knightInstance);
 
-        Debug.Log("[ChivalricGuard] 🛡️ CHIVALRIC GUARD ACTIVATED! Select allied piece to guard...");
+        Debug.Log($"[ChivalricGuard] 🛡️ CHIVALRIC GUARD ACTIVATED by {knightInstance.name}! Select allied piece to guard...");
     }
 
 
@@ -957,5 +963,14 @@ public static System.Collections.IEnumerator CheckPlateSurvivalStatic(GameObject
             return knightComponents[0]; // Return first available knight
         }
         return null;
+    }
+
+    /// <summary>
+    /// Clear the ChivalricGuard knight reference (call when skill is cancelled or game resets)
+    /// </summary>
+    public static void ClearChivalricGuardReference()
+    {
+        chivalricGuardKnight = null;
+        Debug.Log("[ChivalricGuard] Knight reference cleared.");
     }
 }

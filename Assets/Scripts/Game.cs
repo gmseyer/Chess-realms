@@ -90,11 +90,14 @@ private void UpdateLatestMoveUI(string latestMove)
 
     public void Start()
     {
+        // Clear any existing ChivalricGuard references from previous games
+        Knight.ClearChivalricGuardReference();
+        
         playerWhite = new GameObject[] {
             Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
-            Create("white_ice_bishop", 3, 3),
+            
            
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
@@ -425,24 +428,68 @@ foreach (WraithPawn wraithPawn in wraithPawns)
     }
 }
 
-// Update King Last Stand movement when pawn counts change
-King[] kings = FindObjectsOfType<King>();
-foreach (King king in kings)
-{
-    if (king != null && king.gameObject != null)
+    // Update King Last Stand movement when pawn counts change
+    King[] kings = FindObjectsOfType<King>();
+    foreach (King king in kings)
     {
-        try
+        if (king != null && king.gameObject != null)
         {
-            king.UpdateLastStandMovement();
-            // Also update Monarch Shield passive
-            king.UpdateMonarchShield();
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"[Game] Error updating King Last Stand movement: {e.Message}");
+            try
+            {
+                king.UpdateLastStandMovement();
+                // Also update Monarch Shield passive
+                king.UpdateMonarchShield();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[Game] Error updating King Last Stand movement: {e.Message}");
+            }
         }
     }
-}
+
+    // Update Solidarity passive for all pawns when pawn counts change
+    Pawn[] allPawns = FindObjectsOfType<Pawn>();
+    foreach (Pawn pawn in allPawns)
+    {
+        if (pawn != null && pawn.gameObject != null)
+        {
+            try
+            {
+                pawn.CheckSolidarity();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[Game] Error updating Pawn Solidarity: {e.Message}");
+            }
+        }
+    }
+
+    // Update Solidarity passive for all RoyalAcolytes when conditions change
+    RoyalAcolyte[] allRoyalAcolytes = FindObjectsOfType<RoyalAcolyte>();
+    foreach (RoyalAcolyte royalAcolyte in allRoyalAcolytes)
+    {
+        if (royalAcolyte != null && royalAcolyte.gameObject != null)
+        {
+            try
+            {
+                royalAcolyte.CheckRoyalSolidarity();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[Game] Error updating RoyalAcolyte Solidarity: {e.Message}");
+            }
+        }
+    }
+
+    // Clear ChivalricGuard reference if the knight no longer exists (safety cleanup)
+    if (Knight.chivalricGuardKnight != null)
+    {
+        if (Knight.chivalricGuardKnight.gameObject == null)
+        {
+            Knight.ClearChivalricGuardReference();
+            Debug.Log("[Game] Cleared ChivalricGuard reference - knight no longer exists");
+        }
+    }
     // Update the Turn UI with player
     if(TurnUI.Instance != null)
         TurnUI.Instance.UpdateTurn(turns, currentPlayer);

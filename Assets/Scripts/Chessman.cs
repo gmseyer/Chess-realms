@@ -162,6 +162,7 @@ public static class ChessNotation
         bool isFrozen = statusManager.HasStatus(StatusType.Frozen, game.turns);
         bool isCrippled = statusManager.HasStatus(StatusType.Crippled, game.turns);
         bool isStoneSentinel = statusManager.HasStatus(StatusType.StoneSentinel, game.turns);
+        bool hasSolidarity = statusManager.HasStatus(StatusType.Solidarity, game.turns);
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         bool isTemporalShifted = game.IsPlayerRestrictedToPawns(player) && !name.Contains("pawn");
         bool isEthereal = statusManager.HasStatus(StatusType.Ethereal, game.turns);
@@ -648,8 +649,16 @@ if (game != null)
 
         if (this.name.StartsWith("black_pawn"))
         {
+            // Check for Solidarity status (Queen movement for last pawn)
+            if (statusManager.HasStatus(StatusType.Solidarity, game.turns))
+            {
+                Debug.Log($"[Solidarity] {this.name} is the last black pawn! Gains Queen movement.");
+                // Queen movement (Rook + Bishop)
+                LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);
+                LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1);
+            }
             // Check for King Movement status (Russian Roulette effect)
-            if (statusManager.HasStatus(StatusType.KingMovement, game.turns))
+            else if (statusManager.HasStatus(StatusType.KingMovement, game.turns))
             {
                 Debug.Log($"[King Movement] {this.name} gains King-style movement from Russian Roulette!");
                 SurroundMovePlate(); // King-style movement (8 directions)
@@ -676,8 +685,16 @@ if (game != null)
 
         else if (this.name.StartsWith("white_pawn")|| this.name.StartsWith("white_wraith_pawn"))
         {
+            // Check for Solidarity status (Queen movement for last pawn)
+            if (statusManager.HasStatus(StatusType.Solidarity, game.turns))
+            {
+                Debug.Log($"[Solidarity] {this.name} is the last white pawn! Gains Queen movement.");
+                // Queen movement (Rook + Bishop)
+                LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);
+                LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1);
+            }
             // Check for King Movement status (Russian Roulette effect)
-            if (statusManager.HasStatus(StatusType.KingMovement, game.turns))
+            else if (statusManager.HasStatus(StatusType.KingMovement, game.turns))
             {
                 Debug.Log($"[King Movement] {this.name} gains King-style movement from Russian Roulette!");
                 SurroundMovePlate(); // King-style movement (8 directions)
