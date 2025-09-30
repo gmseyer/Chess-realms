@@ -1291,6 +1291,7 @@ if (game != null)
         mpScript.SetCoords(matrixX, matrixY);
     }
 
+
     public void MovePlateAttackSpawn(int matrixX, int matrixY)
     {
         //Get the board value in order to convert to xy coords

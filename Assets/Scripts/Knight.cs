@@ -651,11 +651,311 @@ private System.Collections.IEnumerator CheckPlateSurvival(GameObject plate, int 
 public static System.Collections.IEnumerator CheckPlateSurvivalStatic(GameObject plate, int x, int y, string pieceName)
 {
     yield return new WaitForSeconds(0.1f); // Wait 0.1 seconds
-    
-  
-    
+
+
+
     yield return new WaitForSeconds(1.0f); // Wait another 1 second
-    
-   
+
+
 }
+
+    /// <summary>
+    /// Chivalric Guard - Apply Guard status to allied pieces in 5x5 area
+    /// </summary>
+    public void ChivalricGuard()
+    {
+        // Get the knight that this skill is being used on - try multiple methods like TrialOfValor
+        Chessman selectedPiece = GetComponent<Chessman>();
+        if (selectedPiece == null)
+        {
+            // Try to get from UIManager selected piece
+            if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
+            {
+                selectedPiece = UIManager.Instance.selectedPiece.GetComponent<Chessman>();
+            }
+        }
+
+        if (selectedPiece == null)
+        {
+            // Try to find any active knight of the current player
+            string currentPlayer = game.GetCurrentPlayer();
+            Knight[] knightsOnBoard = FindObjectsOfType<Knight>();
+            foreach (Knight knight in knightsOnBoard)
+            {
+                Chessman knightCm = knight.GetComponent<Chessman>();
+                if (knightCm != null && knightCm.GetPlayer() == currentPlayer)
+                {
+                    selectedPiece = knightCm;
+                    break;
+                }
+            }
+        }
+
+        if (selectedPiece == null)
+        {
+            Debug.LogError("[ChivalricGuard] Could not find Chessman reference!");
+            return;
+        }
+
+        string player = selectedPiece.GetPlayer();
+
+        // Check SP cost (1 SP)
+        if (SkillManager.Instance.GetPlayerSP(player) < 1)
+        {
+            Debug.Log("[ChivalricGuard] Not enough SP!");
+            return;
+        }
+
+        // Check if Chivalric Guard is on cooldown (10 turns)
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "ChivalricGuard"))
+        {
+            Debug.Log("[ChivalricGuard] Skill is on cooldown!");
+            return;
+        }
+
+        // Deduct SP
+        SkillManager.Instance.SpendPlayerSP(player, 1);
+
+        // Start Chivalric Guard cooldown (10 turns)
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "ChivalricGuard", CooldownManager.CooldownType.TurnBased, 10);
+        }
+
+        // Get knight's position and player
+        int knightX = selectedPiece.GetXBoard();
+        int knightY = selectedPiece.GetYBoard();
+        string knightPlayer = selectedPiece.GetPlayer();
+
+        // Remove all existing move plates
+        foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+            Destroy(plate);
+
+        // Find the Knight instance that corresponds to the selected piece
+        Knight knightInstance = null;
+        Knight[] allKnightComponents = FindObjectsOfType<Knight>();
+        foreach (Knight knight in allKnightComponents)
+        {
+            Chessman knightCm = knight.GetComponent<Chessman>();
+            if (knightCm != null &&
+                knightCm.GetXBoard() == knightX &&
+                knightCm.GetYBoard() == knightY &&
+                knightCm.GetPlayer() == knightPlayer)
+            {
+                knightInstance = knight;
+                break;
+            }
+        }
+
+        if (knightInstance == null)
+        {
+            Debug.LogError("[ChivalricGuard] Could not find Knight instance for the selected piece!");
+            return;
+        }
+
+        // Create 5x5 selection area centered on knight
+        CreateChivalricGuardSelectionPlates(knightX, knightY, knightPlayer, knightInstance);
+
+        Debug.Log("[ChivalricGuard] 🛡️ CHIVALRIC GUARD ACTIVATED! Select allied piece to guard...");
+    }
+
+
+    /// <summary>
+    /// Create 5x5 selection area centered on knight for Chivalric Guard
+    /// </summary>
+    private static void CreateChivalricGuardSelectionPlates(int centerX, int centerY, string knightPlayer, Knight knightInstance)
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[ChivalricGuard] Could not find Game component for selection plates!");
+            return;
+        }
+
+        int selectionPlateCount = 0;
+
+        // Create 5x5 area centered on knight
+        for (int dx = -2; dx <= 2; dx++)
+        {
+            for (int dy = -2; dy <= 2; dy++)
+            {
+                int x = centerX + dx;
+                int y = centerY + dy;
+
+                // Check if position is within board bounds
+                if (x >= 0 && x < 8 && y >= 0 && y < 8)
+                {
+                    GameObject piece = game.GetPosition(x, y);
+                    if (piece != null)
+                    {
+                        Chessman chessman = piece.GetComponent<Chessman>();
+                        if (chessman != null)
+                        {
+                            string pieceName = chessman.name;
+
+                            // Check if this is an allied piece (same player, not knight itself, not other knights)
+                            if (chessman.GetPlayer() == knightPlayer &&
+                                !pieceName.Contains("knight"))
+                            {
+                                CreateChivalricGuardSelectionPlate(x, y, knightInstance);
+                                selectionPlateCount++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Debug.Log($"[ChivalricGuard] Created {selectionPlateCount} selection plates for allied pieces");
+    }
+
+    /// <summary>
+    /// Find an active knight piece on the board (for skill activation)
+    /// </summary>
+    private static Chessman FindActiveKnightPiece()
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[ChivalricGuard] Could not find Game component!");
+            return null;
+        }
+
+        // First try to find a knight that matches the current player's turn
+        string currentPlayer = game.GetCurrentPlayer();
+
+        // Search for Knight on the board (white_knight or black_knight)
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null && (piece.name == "white_knight" || piece.name == "black_knight"))
+                {
+                    Chessman chessman = piece.GetComponent<Chessman>();
+                    if (chessman != null && chessman.GetPlayer() == currentPlayer)
+                    {
+                        Debug.Log($"[ChivalricGuard] Found active Knight at ({x},{y}) for player {currentPlayer}");
+                        return chessman;
+                    }
+                }
+            }
+        }
+
+        // If no knight found for current player, try to find any knight
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null && (piece.name == "white_knight" || piece.name == "black_knight"))
+                {
+                    Chessman chessman = piece.GetComponent<Chessman>();
+                    if (chessman != null)
+                    {
+                        Debug.Log($"[ChivalricGuard] Found Knight at ({x},{y}) as fallback");
+                        return chessman;
+                    }
+                }
+            }
+        }
+
+        Debug.LogError("[ChivalricGuard] No Knight found on board!");
+        return null;
+    }
+
+    /// <summary>
+    /// Create a single selection plate for Chivalric Guard targeting
+    /// </summary>
+    private static void CreateChivalricGuardSelectionPlate(int x, int y, Knight knightInstance)
+    {
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null) return;
+
+        float fx = x * 0.57f - 1.98f;
+        float fy = y * 0.56f - 1.95f;
+
+        GameObject plate = Instantiate(game.movePlatePrefabReference);
+        plate.transform.position = new Vector3(fx, fy, -3f);
+
+        // Add ChivalricGuardSelectionPlate component
+        ChivalricGuardSelectionPlate guardPlate = plate.AddComponent<ChivalricGuardSelectionPlate>();
+        guardPlate.Setup(x, y, knightInstance);
+
+        // Set visual appearance (blue for guard/protection theme)
+        plate.GetComponent<SpriteRenderer>().color = new Color(0f, 0.5f, 1f, 0.75f);
+
+        Debug.Log($"[ChivalricGuard] Created selection plate at ({x},{y})");
+    }
+
+    /// <summary>
+    /// Apply Guard status to target piece (instance method)
+    /// </summary>
+    public void ApplyGuardStatusToPiece(Chessman targetChessman)
+    {
+        if (targetChessman == null)
+        {
+            Debug.LogError("[ChivalricGuard] Target piece is null!");
+            return;
+        }
+
+        // Get the knight's player for SP deduction and cooldown
+        string knightPlayer = GetComponent<Chessman>()?.GetPlayer();
+        if (knightPlayer == null)
+        {
+            Debug.LogError("[ChivalricGuard] Could not determine knight's player!");
+            return;
+        }
+
+        // Get current turn from Game component
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[ChivalricGuard] Could not find Game component for turn tracking!");
+            return;
+        }
+
+        StatusManager targetStatus = targetChessman.GetComponent<StatusManager>();
+        if (targetStatus != null)
+        {
+            // Apply Guard status for 3 turns
+            targetStatus.AddStatus(StatusType.Guard, game.turns + 3);
+
+            Debug.Log($"[ChivalricGuard] 🛡️ GUARD status applied to {targetChessman.name} for 3 turns!");
+        }
+        else
+        {
+            Debug.LogError($"[ChivalricGuard] Could not find StatusManager on target piece!");
+        }
+    }
+
+    /// <summary>
+    /// Apply Guard status to target piece (static method for backward compatibility)
+    /// </summary>
+    public static void ApplyGuardStatus(Chessman targetChessman)
+    {
+        // Find any active knight and use it
+        Knight activeKnight = FindActiveKnightInstance();
+        if (activeKnight != null)
+        {
+            activeKnight.ApplyGuardStatusToPiece(targetChessman);
+        }
+        else
+        {
+            Debug.LogError("[ChivalricGuard] No active knight found!");
+        }
+    }
+
+    /// <summary>
+    /// Find an active knight instance on the board
+    /// </summary>
+    private static Knight FindActiveKnightInstance()
+    {
+        Knight[] knightComponents = FindObjectsOfType<Knight>();
+        if (knightComponents.Length > 0)
+        {
+            return knightComponents[0]; // Return first available knight
+        }
+        return null;
+    }
 }

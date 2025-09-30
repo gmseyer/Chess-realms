@@ -297,6 +297,24 @@ public class MovePlate : MonoBehaviour
                     }
                 }  // --FIRE BISHOP ETERNAL FLAME END -------------------------------------
 
+                // ----------------- CHIVALRIC GUARD SECTION -----------------
+                // Check if the defending piece has Guard status
+                Chessman guardedChessman = cp.GetComponent<Chessman>();
+                if (guardedChessman != null && guardedChessman.statusManager.HasStatus(StatusType.Guard, controller.GetComponent<Game>().turns))
+                {
+                    Debug.Log($"[ChivalricGuard] {cp.name} is guarded! Triggering knight sacrifice.");
+
+                    // Trigger Chivalric Guard effect
+                    TriggerChivalricGuard(movingPiece, guardedChessman, matrixX, matrixY);
+
+                    // Cancel normal capture flow
+                    movingPiece.DestroyMovePlates();
+                    movingPiece.ClearFortify();
+                    movingPiece.CheckMoveTiles_End();
+                    controller.GetComponent<Game>().NextTurn();
+                    return; // Stop processing further
+                }
+
                 if (cp.name == "white_king") controller.GetComponent<Game>().Winner("black");
                 if (cp.name == "black_king") controller.GetComponent<Game>().Winner("white");
 
@@ -1490,11 +1508,82 @@ public class MovePlate : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Trigger Chivalric Guard effect when attacking a guarded piece
+    /// </summary>
+    private void TriggerChivalricGuard(Chessman attacker, Chessman guardedPiece, int attackX, int attackY)
+    {
+        Debug.Log($"[ChivalricGuard] Knight sacrifice triggered! Attacker: {attacker.name}, Guarded: {guardedPiece.name}");
+
+        Game game = controller.GetComponent<Game>();
+        if (game == null)
+        {
+            Debug.LogError("[ChivalricGuard] Could not find Game component!");
+            return;
+        }
+
+        // Find the knight that cast Chivalric Guard (any knight of the same player except the attacker)
+        GameObject knightPiece = null;
+        int knightX = -1, knightY = -1;
+
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                GameObject piece = game.GetPosition(x, y);
+                if (piece != null && (piece.name == "white_knight" || piece.name == "black_knight"))
+                {
+                    Chessman knightChessman = piece.GetComponent<Chessman>();
+                    if (knightChessman != null && knightChessman.GetPlayer() == guardedPiece.GetPlayer())
+                    {
+                        // Make sure this is not the same knight that's attacking
+                        if (!(piece == attacker.gameObject))
+                        {
+                            knightPiece = piece;
+                            knightX = x;
+                            knightY = y;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (knightPiece != null) break;
+        }
+
+        if (knightPiece == null)
+        {
+            Debug.LogError("[ChivalricGuard] Could not find knight for sacrifice!");
+            return;
+        }
+
+        // Get positions
+        int guardedX = guardedPiece.GetXBoard();
+        int guardedY = guardedPiece.GetYBoard();
+
+        Debug.Log($"[ChivalricGuard] Knight at ({knightX},{knightY}) will sacrifice for {guardedPiece.name} at ({guardedX},{guardedY})");
+
+        // Clear knight's position and destroy the knight
+        game.SetPositionEmpty(knightX, knightY);
+        Destroy(knightPiece);
+
+        // Move the guarded piece to the knight's original position
+        game.SetPositionEmpty(guardedX, guardedY);
+
+        // Update guarded piece coordinates
+        guardedPiece.SetXBoard(knightX);
+        guardedPiece.SetYBoard(knightY);
+        guardedPiece.SetCoords();
+
+        game.SetPosition(guardedPiece.gameObject);
+
+        Debug.Log($"[ChivalricGuard] 🛡️ KNIGHT SACRIFICED! {guardedPiece.name} moved to ({knightX},{knightY})");
+    }
+
     // Check if a piece is a spectator (stunned) during Oathbound Gambit
     private bool IsSpectatorPieceDuringOathboundGambit(Chessman piece)
     {
         if (piece == null || piece.statusManager == null) return false;
-        
+
         // Check if the piece has Stunned status (spectators are stunned during Oathbound Gambit)
         Game game = controller.GetComponent<Game>();
         if (game != null)

@@ -41,17 +41,24 @@ public class PolarityMovePlate : MonoBehaviour
         // Apply stun effects to adjacent enemies first
         ApplyAdjacentStunEffect(x, y);
 
-        // Move the piece to the destination
+        // Move the piece to the destination (following normal MovePlate.cs pattern)
         game.SetPositionEmpty(selectedPos.x, selectedPos.y);
-        game.SetPosition(pieceToMove);
 
-        // Update the piece's position
+        // Update the piece's coordinates and transform
         Chessman chessman = pieceToMove.GetComponent<Chessman>();
         if (chessman != null)
         {
             chessman.SetXBoard(x);
             chessman.SetYBoard(y);
             chessman.SetCoords();
+        }
+
+        game.SetPosition(pieceToMove);
+
+        // Mark piece as moved (for castling tracking if applicable)
+        if (chessman != null)
+        {
+            chessman.SetHasMoved(true);
         }
 
         // Reset the selected piece position
