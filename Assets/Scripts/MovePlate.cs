@@ -733,8 +733,10 @@ public class MovePlate : MonoBehaviour
                 EarthboundBishop movingEarthboundBishop = reference.GetComponent<EarthboundBishop>();
                 if (movingEarthboundBishop != null)
                 {
-                    Debug.Log($"[MovePlate] Triggering Terra Ward creation for Earthbound Bishop movement from ({originalX},{originalY}) to ({matrixX},{matrixY})");
-                    EarthboundBishop.CreateTerraWard(matrixX, matrixY); // Create Terra Ward at new position
+                Debug.Log($"[MovePlate] Triggering Terra Ward creation for Earthbound Bishop movement from ({originalX},{originalY}) to ({matrixX},{matrixY})");
+                Chessman earthBishopChessman = reference.GetComponent<Chessman>();
+                string earthBishopPlayer = earthBishopChessman != null ? earthBishopChessman.GetPlayer() : "white";
+                EarthboundBishop.CreateTerraWard(matrixX, matrixY, earthBishopPlayer); // Create Terra Ward at new position
                 }
                 else
                 {

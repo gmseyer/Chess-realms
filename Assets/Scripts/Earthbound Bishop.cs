@@ -7,10 +7,10 @@ public class EarthboundBishop : MonoBehaviour
     private Game game;
     private Chessman chessman;
     
-    // Terra Ward tracking
-    private static GameObject currentTerraWard = null;
-    private static int terraWardX = -1;
-    private static int terraWardY = -1;
+    // Terra Ward tracking - player-aware
+    private static Dictionary<string, GameObject> currentTerraWard = new Dictionary<string, GameObject>();
+    private static Dictionary<string, int> terraWardX = new Dictionary<string, int>();
+    private static Dictionary<string, int> terraWardY = new Dictionary<string, int>();
     
     // Seismic Seal Terra Ward tracking (max 3)
     private static List<GameObject> seismicTerraWards = new List<GameObject>();
@@ -34,14 +34,14 @@ public class EarthboundBishop : MonoBehaviour
     /// EarthenGenesis - Create Terra Ward after movement
     /// Called from MovePlate.cs after EarthboundBishop moves
     /// </summary>
-    public static void CreateTerraWard(int bishopX, int bishopY)
+    public static void CreateTerraWard(int bishopX, int bishopY, string player)
     {
-        // Destroy existing Terra Ward if it exists
-        if (currentTerraWard != null)
+        // Destroy existing Terra Ward for this player if it exists
+        if (currentTerraWard.ContainsKey(player) && currentTerraWard[player] != null)
         {
-            Debug.Log($"[EarthenGenesis] Destroying existing Terra Ward at ({terraWardX},{terraWardY})");
-            Destroy(currentTerraWard);
-            currentTerraWard = null;
+            Debug.Log($"[EarthenGenesis] Destroying existing Terra Ward for {player} at ({terraWardX[player]},{terraWardY[player]})");
+            Destroy(currentTerraWard[player]);
+            currentTerraWard[player] = null;
         }
         
         // Find a random adjacent tile for the new Terra Ward
@@ -94,12 +94,12 @@ public class EarthboundBishop : MonoBehaviour
                     wardStatus.AddStatus(StatusType.specialTile, 999); // Special tile status
                 }
                 
-                // Track the Terra Ward
-                currentTerraWard = terraWard;
-                terraWardX = wardX;
-                terraWardY = wardY;
+                // Track the Terra Ward for this player
+                currentTerraWard[player] = terraWard;
+                terraWardX[player] = wardX;
+                terraWardY[player] = wardY;
                 
-                Debug.Log($"[EarthenGenesis] 🌍 TERRA WARD CREATED at ({wardX},{wardY})! Lasts until end of battle.");
+                Debug.Log($"[EarthenGenesis] 🌍 TERRA WARD CREATED for {player} at ({wardX},{wardY})! Lasts until end of battle.");
             }
             else
             {
@@ -128,11 +128,25 @@ public class EarthboundBishop : MonoBehaviour
     /// </summary>
     public void SeismicSeal()
     {
-        // Find the actual EarthboundBishop piece on the board (not the script GameObject)
-        Chessman earthboundBishopChessman = FindEarthboundBishopPiece();
-        if (earthboundBishopChessman == null)
+        // ✅ Get the selected earthbound bishop from UIManager (following Archbishop pattern)
+        EarthboundBishop selectedEarthboundBishop = null;
+        Chessman earthboundBishopChessman = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            Debug.LogError("[SeismicSeal] Could not find EarthboundBishop piece on board!");
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedEarthboundBishop = selectedPiece.GetComponent<EarthboundBishop>();
+            earthboundBishopChessman = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedEarthboundBishop == null || earthboundBishopChessman == null)
+            {
+                Debug.LogError($"[SeismicSeal] Selected piece {selectedPiece.name} is not an EarthboundBishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[SeismicSeal] No piece selected via UIManager!");
             return;
         }
         
@@ -171,39 +185,6 @@ public class EarthboundBishop : MonoBehaviour
         Debug.Log("[SeismicSeal] 🌍 SEISMIC SEAL ACTIVATED! Select target tile...");
     }
     
-    /// <summary>
-    /// Find the actual EarthboundBishop piece on the board
-    /// </summary>
-    private static Chessman FindEarthboundBishopPiece()
-    {
-        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
-        if (game == null)
-        {
-            Debug.LogError("[SeismicSeal] Could not find Game component!");
-            return null;
-        }
-        
-        // Search for EarthboundBishop on the board
-        for (int x = 0; x < 8; x++)
-        {
-            for (int y = 0; y < 8; y++)
-            {
-                GameObject piece = game.GetPosition(x, y);
-                if (piece != null && piece.name == "white_earth_bishop")
-                {
-                    Chessman chessman = piece.GetComponent<Chessman>();
-                    if (chessman != null)
-                    {
-                        Debug.Log($"[SeismicSeal] Found EarthboundBishop at ({x},{y})");
-                        return chessman;
-                    }
-                }
-            }
-        }
-        
-        Debug.LogError("[SeismicSeal] EarthboundBishop not found on board!");
-        return null;
-    }
     
     /// <summary>
     /// Create selection plates on all board tiles for Seismic Seal targeting
@@ -397,7 +378,7 @@ public class EarthboundBishop : MonoBehaviour
     /// </summary>
     public static void ApplySeismicSealSelfCast(Chessman earthboundBishop)
     {
-        if (earthboundBishop == null || earthboundBishop.name != "white_earth_bishop")
+        if (earthboundBishop == null || !earthboundBishop.name.ToLower().Contains("earth_bishop"))
         {
             Debug.LogError("[SeismicSeal] Invalid target for self-cast!");
             return;
@@ -430,11 +411,25 @@ public class EarthboundBishop : MonoBehaviour
     /// </summary>
     public void Polarity()
     {
-        // Find the actual EarthboundBishop piece on the board (not the script GameObject)
-        Chessman earthboundBishopChessman = FindEarthboundBishopPiece();
-        if (earthboundBishopChessman == null)
+        // ✅ Get the selected earthbound bishop from UIManager (following Archbishop pattern)
+        EarthboundBishop selectedEarthboundBishop = null;
+        Chessman earthboundBishopChessman = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            Debug.LogError("[Polarity] Could not find EarthboundBishop piece on board!");
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedEarthboundBishop = selectedPiece.GetComponent<EarthboundBishop>();
+            earthboundBishopChessman = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedEarthboundBishop == null || earthboundBishopChessman == null)
+            {
+                Debug.LogError($"[Polarity] Selected piece {selectedPiece.name} is not an EarthboundBishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[Polarity] No piece selected via UIManager!");
             return;
         }
 

@@ -910,7 +910,7 @@ if (game != null)
                     if (targetCm.name == "tile_earth")
                     {
                         // Check if this is an Elemental Bishop or Earthbound Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_earth_bishop" || name.Contains("king"))
+                        if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_earth_bishop" || this.name == "black_earth_bishop" || name.Contains("king"))
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             x += xIncrement;
@@ -929,7 +929,7 @@ if (game != null)
                     if (targetCm.name == "tile_terra_ward")
                     {
                         // Check if this is an Earthbound Bishop (can pass through Terra Wards)
-                        if (this.name == "white_earth_bishop")
+                        if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop")
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             x += xIncrement;
@@ -946,7 +946,7 @@ if (game != null)
                     
                     // Treat celestial_pillar as solid/invulnerable (except for Earthbound Bishop and Chronomagus)
                     if(targetCm.name == "celestial_pillar"){
-                        if(this.name == "white_earth_bishop" || this.name == "white_chronomagus" || this.name == "black_chronomagus"){
+                        if(this.name == "white_earth_bishop" || this.name == "black_earth_bishop" || this.name == "white_chronomagus" || this.name == "black_chronomagus"){
                              x += xIncrement;
                             y += yIncrement;
                             movesMade++;
@@ -1093,7 +1093,7 @@ if (game != null)
                 if (targetCm.name == "tile_earth")
                 {
                     // Check if this is an Elemental Bishop, Earthbound Bishop, or other pieces that can pass through boulders
-                    if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_earth_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
+                    if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_earth_bishop" || this.name == "black_earth_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                     {
                         Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
@@ -1109,7 +1109,7 @@ if (game != null)
                 if (targetCm.name == "tile_terra_ward")
                 {
                     // Check if this is an Earthbound Bishop (can pass through Terra Wards)
-                    if (this.name == "white_earth_bishop")
+                    if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop")
                     {
                         Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
@@ -1125,7 +1125,7 @@ if (game != null)
                 if (targetCm.name == "celestial_pillar")
                 {
                     // Check if this is an Earthbound Bishop or Chronomagus (can pass through pillars)
-                    if (this.name == "white_earth_bishop" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
+                    if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                     {
                         Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
@@ -1213,7 +1213,7 @@ if (game != null)
                     if (targetCm.name == "tile_terra_ward")
                     {
                         // Check if this is an Earthbound Bishop (can pass through Terra Wards)
-                        if (this.name == "white_earth_bishop")
+                        if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop")
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
@@ -1281,7 +1281,7 @@ if (game != null)
                     if (targetCm.name == "tile_terra_ward")
                     {
                         // Check if this is an Earthbound Bishop (can pass through Terra Wards)
-                        if (this.name == "white_earth_bishop")
+                        if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop")
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
