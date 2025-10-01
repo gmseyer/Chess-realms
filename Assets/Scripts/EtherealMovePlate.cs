@@ -100,6 +100,13 @@ public class EtherealMovePlate : MonoBehaviour
             Debug.Log("[EtherealMovePlate] Ethereal status ended for Royal Bishop promotion");
         }
         
+        // ✅ Get player from bishop to create correct team's royal bishop
+        string player = "white"; // Default fallback
+        if (bishopCm != null)
+        {
+            player = bishopCm.GetPlayer();
+        }
+        
         // Destroy the current Bishop
         game.SetPositionEmpty(bishopCm.GetXBoard(), bishopCm.GetYBoard());
         Destroy(bishop);
@@ -118,8 +125,9 @@ public class EtherealMovePlate : MonoBehaviour
             }
         }
         
-        // Create Royal Bishop at the nearest destroyed enemy position
-        GameObject royalBishop = game.Create("white_royal_bishop", royalBishopPosition.x, royalBishopPosition.y);
+        // ✅ Create player-specific Royal Bishop at the nearest destroyed enemy position
+        string royalBishopName = $"{player}_royal_bishop";
+        GameObject royalBishop = game.Create(royalBishopName, royalBishopPosition.x, royalBishopPosition.y);
         if (royalBishop != null)
         {
             // Add 2-turn invulnerability to the Royal Bishop
@@ -129,11 +137,11 @@ public class EtherealMovePlate : MonoBehaviour
                 int currentTurn = game.turns;
                 int invulnerabilityEndTurn = currentTurn + 2;
                 royalBishopCm.statusManager.AddStatus(StatusType.Invulnerable, invulnerabilityEndTurn);
-                Debug.Log($"[EtherealMovePlate] Royal Bishop created at ({royalBishopPosition.x},{royalBishopPosition.y}) with 2-turn invulnerability!");
+                Debug.Log($"[EtherealMovePlate] {royalBishopName} created at ({royalBishopPosition.x},{royalBishopPosition.y}) with 2-turn invulnerability for {player} player!");
             }
             else
             {
-                Debug.Log($"[EtherealMovePlate] Royal Bishop created at ({royalBishopPosition.x},{royalBishopPosition.y})!");
+                Debug.Log($"[EtherealMovePlate] {royalBishopName} created at ({royalBishopPosition.x},{royalBishopPosition.y}) for {player} player!");
             }
         }
     }

@@ -22,6 +22,7 @@ public class ElementalBishop : MonoBehaviour
     public TMP_Text stoneSentinelCooldownText;
 
     private Game game;
+    private Chessman chessman; // ✅ Cache Chessman reference for player info
 
     private List<ActiveTile> activeTiles = new List<ActiveTile>();
     public int tileDuration = 5; // ✅ configurable duration for tiles
@@ -35,19 +36,53 @@ public class ElementalBishop : MonoBehaviour
     private int earthStack = 0;
     private const int INVOCATION_THRESHOLD = 5; // 5 stacks to transform
 
-     // Helper methods
-    public void InfernalBrand() => CastSkill("tile_lava");
-    public void GlacialPath() => CastSkill("tile_ice");
-    public void StoneSentinel() => CastSkill("tile_earth");
+     // Helper methods - now get selected piece from UIManager (following Queen pattern)
+    public void InfernalBrand() => CastSkillFromUI("tile_lava");
+    public void GlacialPath() => CastSkillFromUI("tile_ice");
+    public void StoneSentinel() => CastSkillFromUI("tile_earth");
     
 
+    private void Awake()
+    {
+        // Cache Chessman reference (following Bishop pattern)
+        chessman = GetComponent<Chessman>();
+        if (chessman == null)
+            Debug.LogError("[ElementalBishop] Missing Chessman component!");
+    }
 
     private void Start()
     {
         game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
     }
 
-
+    // ✅ NEW: Get selected elemental bishop from UIManager first (following Queen pattern)
+    public void CastSkillFromUI(string tileName)
+    {
+        // Get the selected elemental bishop from UIManager
+        ElementalBishop selectedBishop = null;
+        Chessman cm = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
+        {
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedBishop = selectedPiece.GetComponent<ElementalBishop>();
+            cm = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedBishop == null || cm == null)
+            {
+                Debug.LogError($"[ElementalBishop] Selected piece {selectedPiece.name} is not an Elemental Bishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[ElementalBishop] No piece selected via UIManager!");
+            return;
+        }
+        
+        // Now call CastSkill on the selected elemental bishop
+        selectedBishop.CastSkill(tileName);
+    }
 
 
 
@@ -61,31 +96,45 @@ public class ElementalBishop : MonoBehaviour
             return;
         }
 
+        // ✅ Get player from Chessman component (following Bishop pattern)
+        if (chessman == null)
+        {
+            chessman = GetComponent<Chessman>();
+            if (chessman == null)
+            {
+                Debug.LogError("[ElementalBishop] No Chessman component found!");
+                return;
+            }
+        }
+        
+        string player = chessman.GetPlayer();
+        Debug.Log($"[ElementalBishop] Attempting {tileName} for {player} player...");
+
         int currentTurn = game.GetTurnCount(); // assumes Game has a turn counter
         if (skillCooldowns.TryGetValue(tileName, out int availableTurn) && currentTurn < availableTurn)
         {
-            Debug.Log($"[ElementalBishop] {tileName} is still on cooldown! Available on turn {availableTurn}.");
+            Debug.Log($"[ElementalBishop] {tileName} is still on cooldown for {player}! Available on turn {availableTurn}.");
             return;
         }
 
-        // ✅ Deduct Skill Point
-        // ✅ Deduct Skill Point using SkillManager (not game)
-if (!SkillManager.Instance.SpendPlayerSP("white", 1)) // assuming white is the player
-{
-    Debug.LogWarning("[ElementalBishop] Not enough Skill Points!");
-    return;
-}
-// In Rook.cs, in AttemptFortify() method:
-if (SkillTracker.Instance != null)
-{
-    SkillTracker.Instance.LogSkillUsage(game.GetCurrentPlayer(), "ELEMENTAL BISHOP", tileName, 1);
-}
+        // ✅ Deduct Skill Point using SkillManager with correct player
+        if (!SkillManager.Instance.SpendPlayerSP(player, 1)) // Cost is 2 SP
+        {
+            Debug.LogWarning($"[ElementalBishop] Not enough Skill Points for {player}!");
+            return;
+        }
+        
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, "ELEMENTAL BISHOP", tileName, 1);
+        }
 
         // 🔥❄️🌍 UPDATE ELEMENT STACKS
         UpdateElementStacks(tileName);
 
         // ✅ Put skill on cooldown for 5 turns
-        skillCooldowns[tileName] = currentTurn + 1;
+        skillCooldowns[tileName] = currentTurn + 5;
         UpdateCooldownUI();
 
         // ✅ Spawn move plates on BOTH empty and occupied tiles
@@ -101,16 +150,22 @@ if (SkillTracker.Instance != null)
             }
         }
 
-        Debug.Log($"[ElementalBishop] {tileName} skill activated (cooldown until turn {skillCooldowns[tileName]}).");
+        Debug.Log($"[ElementalBishop] {tileName} skill activated for {player} (cooldown until turn {skillCooldowns[tileName]}).");
     }
 
     private void UpdateCooldownUI()
     {
+        // ✅ Add null checks - UI text fields may not be assigned for all elemental bishops
+        if (game == null) return;
+        
         int currentTurn = game.GetTurnCount();
 
-        infernalBrandCooldownText.text = GetCooldownText("tile_lava", currentTurn);
-        glacialPathCooldownText.text = GetCooldownText("tile_ice", currentTurn);
-        stoneSentinelCooldownText.text = GetCooldownText("tile_earth", currentTurn);
+        if (infernalBrandCooldownText != null)
+            infernalBrandCooldownText.text = GetCooldownText("tile_lava", currentTurn);
+        if (glacialPathCooldownText != null)
+            glacialPathCooldownText.text = GetCooldownText("tile_ice", currentTurn);
+        if (stoneSentinelCooldownText != null)
+            stoneSentinelCooldownText.text = GetCooldownText("tile_earth", currentTurn);
     }
 
     private string GetCooldownText(string skillName, int currentTurn)
@@ -153,6 +208,7 @@ if (SkillTracker.Instance != null)
         float fy = y * 0.56f - 1.95f;
 
         GameObject mp = Instantiate(movePlatePrefab, new Vector3(fx, fy, -3f), Quaternion.identity);
+
 
         MovePlate oldScript = mp.GetComponent<MovePlate>();
         if (oldScript != null) Destroy(oldScript);
@@ -295,7 +351,7 @@ public void Invocation()
     }
     else if (earthStack >= INVOCATION_THRESHOLD)
     {
-        newPieceName = "white_earth_bishop";
+        newPieceName = "white_earth_bishop"; 
         invocationType = "🌍 EARTH INVOCATION";
     }
     else

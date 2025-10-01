@@ -69,28 +69,60 @@ public class Bishop : Pieces
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
 
-        // ✅ Spawn ELEMENTAL BISHOP plates (bottom 3-4 ranks)
-        for (int x = 4; x < 8; x++)
+        // ✅ Spawn ELEMENTAL BISHOP plates (player-specific positioning)
+        if (player == "white")
         {
-            for (int y = 0; y < 4; y++)
+            // White player: bottom 3-4 ranks
+            for (int x = 4; x < 8; x++)
             {
-                if (game.GetPosition(x, y) == null)
+                for (int y = 0; y < 4; y++)
                 {
-                    SpawnTile(game, x, y, elementalSummonPlatePrefab, "white_elemental_bishop");
-                    Debug.Log($"[DivineOffering] Spawning ELEMENTAL bishop plate at ({x},{y})");
+                    if (game.GetPosition(x, y) == null)
+                    {
+                        SpawnTile(game, x, y, elementalSummonPlatePrefab, "white_elemental_bishop");
+                        Debug.Log($"[DivineOffering] Spawning ELEMENTAL bishop plate at ({x},{y})");
+                    }
+                }
+            }
+
+            // White player: bottom 1-2 ranks for archbishop
+            for (int x = 0; x < 4; x++)
+            {
+                for (int y = 0; y < 4; y++) 
+                {
+                    if (game.GetPosition(x, y) == null)
+                    {
+                        SpawnTile(game, x, y, archbishopSummonPlatePrefab, "white_arch_bishop");
+                        Debug.Log($"[DivineOffering] Spawning ARCHBISHOP plate at ({x},{y})");
+                    }
                 }
             }
         }
-
-        // ✅ Spawn ARCHBISHOP plates (bottom 1-2 ranks)
-        for (int x = 0; x < 4; x++)
+        else if (player == "black")
         {
-            for (int y = 0; y < 4; y++) 
+            // Black player: top 3-4 ranks
+            for (int x = 4; x < 8; x++)
             {
-                if (game.GetPosition(x, y) == null)
+                for (int y = 4; y < 8; y++)
                 {
-                    SpawnTile(game, x, y, archbishopSummonPlatePrefab, "white_arch_bishop");
-                    Debug.Log($"[DivineOffering] Spawning ARCHBISHOP plate at ({x},{y})");
+                    if (game.GetPosition(x, y) == null)
+                    {
+                        SpawnTile(game, x, y, elementalSummonPlatePrefab, "black_elemental_bishop");
+                        Debug.Log($"[DivineOffering] Spawning ELEMENTAL bishop plate at ({x},{y})");
+                    }
+                }
+            }
+
+            // Black player: top 1-2 ranks for archbishop
+            for (int x = 0; x < 4; x++)
+            {
+                for (int y = 4; y < 8; y++) 
+                {
+                    if (game.GetPosition(x, y) == null)
+                    {
+                        SpawnTile(game, x, y, archbishopSummonPlatePrefab, "black_arch_bishop");
+                        Debug.Log($"[DivineOffering] Spawning ARCHBISHOP plate at ({x},{y})");
+                    }
                 }
             }
         }
@@ -157,18 +189,35 @@ public class Bishop : Pieces
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
 
-        Vector2Int[] whiteStartPositions = new Vector2Int[]
+        // Player-specific starting positions for revival plates
+        Vector2Int[] startPositions;
+        if (player == "white")
         {
-            new Vector2Int(0, 0), new Vector2Int(7, 0),
-            new Vector2Int(1, 0), new Vector2Int(6, 0),
-            new Vector2Int(0, 1), new Vector2Int(1, 1),
-            new Vector2Int(2, 1), new Vector2Int(3, 1),
-            new Vector2Int(4, 1), new Vector2Int(5, 1),
-            new Vector2Int(6, 1), new Vector2Int(7, 1)
-        };
+            startPositions = new Vector2Int[]
+            {
+                new Vector2Int(0, 0), new Vector2Int(7, 0),
+                new Vector2Int(1, 0), new Vector2Int(6, 0),
+                new Vector2Int(0, 1), new Vector2Int(1, 1),
+                new Vector2Int(2, 1), new Vector2Int(3, 1),
+                new Vector2Int(4, 1), new Vector2Int(5, 1),
+                new Vector2Int(6, 1), new Vector2Int(7, 1)
+            };
+        }
+        else // black player
+        {
+            startPositions = new Vector2Int[]
+            {
+                new Vector2Int(0, 7), new Vector2Int(7, 7),
+                new Vector2Int(1, 7), new Vector2Int(6, 7),
+                new Vector2Int(0, 6), new Vector2Int(1, 6),
+                new Vector2Int(2, 6), new Vector2Int(3, 6),
+                new Vector2Int(4, 6), new Vector2Int(5, 6),
+                new Vector2Int(6, 6), new Vector2Int(7, 6)
+            };
+        }
     
         int platesSpawned = 0;
-        foreach (Vector2Int pos in whiteStartPositions)
+        foreach (Vector2Int pos in startPositions)
         {
             if (game.GetPosition(pos.x, pos.y) == null)
             {
@@ -177,14 +226,10 @@ public class Bishop : Pieces
             }
         }
 
-        Debug.Log($"[HealingBenediction] Spawned {platesSpawned} revival plates.");
+        Debug.Log($"[HealingBenediction] Spawned {platesSpawned} revival plates for {player} player.");
         
-        // ✅ NEW: Start cooldown using CooldownManager
-        if (CooldownManager.Instance != null)
-        {
-            CooldownManager.Instance.StartCooldown(player, "HealingBenediction", CooldownManager.CooldownType.OncePerBattle);
-        }
-        Debug.Log("[HealingBenediction] Skill activated - now on cooldown for this battle.");
+        // ✅ NOTE: Cooldown is NOT set here! It's set when clicking a plate to revive a piece.
+        // This allows the player to cancel without using the skill.
     }
 
     private void SpawnHealingPlate(Game game, int x, int y)
@@ -204,26 +249,66 @@ public class Bishop : Pieces
     //test
     public void TestHealingBenedictionWithSP() //actual skill
 {
-    string player = "white"; // Bishop is always white in this test
+    // ✅ Get the selected bishop from UIManager (following RoyalBishop pattern)
+    Bishop selectedBishop = null;
+    Chessman cm = null;
+    
+    if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
+    {
+        GameObject selectedPiece = UIManager.Instance.selectedPiece;
+        selectedBishop = selectedPiece.GetComponent<Bishop>();
+        cm = selectedPiece.GetComponent<Chessman>();
+        
+        if (selectedBishop == null || cm == null)
+        {
+            Debug.LogError($"[HealingBenediction] Selected piece {selectedPiece.name} is not a regular Bishop or missing Chessman component!");
+            return;
+        }
+    }
+    else
+    {
+        Debug.LogError("[HealingBenediction] No piece selected via UIManager!");
+        return;
+    }
+    
+    string player = cm.GetPlayer();
+    Debug.Log($"[HealingBenediction] Attempting activation for {player} player from {selectedBishop.gameObject.name}...");
 
     // ✅ NEW: Use CooldownManager instead of SkillManager cooldown
     if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "HealingBenediction"))
     {
-        Debug.LogWarning("[HealingBenediction] Skill is on cooldown — cannot use.");
+        Debug.LogWarning($"[HealingBenediction] Skill is on cooldown for {player} — cannot use.");
         return;
     }
 
     // 2️⃣ Try spend SP
     if (!SkillManager.Instance.SpendPlayerSP(player, 1))
     {
-        Debug.LogWarning("[HealingBenediction] Not enough SP to cast.");
+        Debug.LogWarning($"[HealingBenediction] Not enough SP for {player} to cast.");
         return;
     }
 
-    // 3️⃣ Activate skill (your existing logic) - but skip the cooldown check since we already did it
-    HealingBenedictionWithoutCooldownCheck();
-    Game.Instance.NextTurn();
-    Debug.Log("[HealingBenediction] Skill activated successfully!");
+    // 3️⃣ Activate skill on the selected bishop
+    // Update cached chessman reference for other methods
+    selectedBishop.chessman = cm;
+    selectedBishop.HealingBenedictionWithoutCooldownCheck();
+    
+    // End turn (with null check)
+    if (Game.Instance != null)
+    {
+        Game.Instance.NextTurn();
+    }
+    else
+    {
+        // Fallback to finding Game via tag
+        GameObject controller = GameObject.FindGameObjectWithTag("GameController");
+        if (controller != null)
+        {
+            controller.GetComponent<Game>().NextTurn();
+        }
+    }
+    
+    Debug.Log($"[HealingBenediction] Skill activated successfully for {player} player!");
 }
 
     // Original HealingBenediction logic without cooldown check (for internal use)
@@ -234,18 +319,42 @@ public class Bishop : Pieces
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
 
-        Vector2Int[] whiteStartPositions = new Vector2Int[]
+        // Get player from the current bishop
+        string player = "white"; // Default fallback
+        if (chessman != null)
         {
-            new Vector2Int(0, 0), new Vector2Int(7, 0),
-            new Vector2Int(1, 0), new Vector2Int(6, 0),
-            new Vector2Int(0, 1), new Vector2Int(1, 1),
-            new Vector2Int(2, 1), new Vector2Int(3, 1),
-            new Vector2Int(4, 1), new Vector2Int(5, 1),
-            new Vector2Int(6, 1), new Vector2Int(7, 1)
-        };
+            player = chessman.GetPlayer();
+        }
+
+        // Player-specific starting positions for revival plates
+        Vector2Int[] startPositions;
+        if (player == "white")
+        {
+            startPositions = new Vector2Int[]
+            {
+                new Vector2Int(0, 0), new Vector2Int(7, 0),
+                new Vector2Int(1, 0), new Vector2Int(6, 0),
+                new Vector2Int(0, 1), new Vector2Int(1, 1),
+                new Vector2Int(2, 1), new Vector2Int(3, 1),
+                new Vector2Int(4, 1), new Vector2Int(5, 1),
+                new Vector2Int(6, 1), new Vector2Int(7, 1)
+            };
+        }
+        else // black player
+        {
+            startPositions = new Vector2Int[]
+            {
+                new Vector2Int(0, 7), new Vector2Int(7, 7),
+                new Vector2Int(1, 7), new Vector2Int(6, 7),
+                new Vector2Int(0, 6), new Vector2Int(1, 6),
+                new Vector2Int(2, 6), new Vector2Int(3, 6),
+                new Vector2Int(4, 6), new Vector2Int(5, 6),
+                new Vector2Int(6, 6), new Vector2Int(7, 6)
+            };
+        }
     
         int platesSpawned = 0;
-        foreach (Vector2Int pos in whiteStartPositions)
+        foreach (Vector2Int pos in startPositions)
         {
             if (game.GetPosition(pos.x, pos.y) == null)
             {
@@ -254,100 +363,64 @@ public class Bishop : Pieces
             }
         }
 
-        Debug.Log($"[HealingBenediction] Spawned {platesSpawned} revival plates.");
+        Debug.Log($"[HealingBenediction] Spawned {platesSpawned} revival plates for {player} player.");
         
-        // ✅ NEW: Start cooldown using CooldownManager
-        if (CooldownManager.Instance != null)
-        {
-            CooldownManager.Instance.StartCooldown("white", "HealingBenediction", CooldownManager.CooldownType.OncePerBattle);
-        }
-        Debug.Log("[HealingBenediction] Skill activated - now on cooldown for this battle.");
+        // ✅ NOTE: Cooldown is NOT set here! It's set when clicking a plate to revive a piece.
+        // This allows the player to cancel without using the skill (just the SP cost is spent).
     }
 
     // Celestial Summon: Sacrifice function
     public void Sacrifice()
     {
-        // Get game reference
-        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
-        
-        // Get current player
-        string currentPlayer = game.GetCurrentPlayer();
-        
-        // ✅ NEW: Use CooldownManager instead of hasUsedCelestialSummon
-        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(currentPlayer, "CelestialSummon"))
-        {
-            Debug.LogWarning("[Celestial Summon] Already used this battle — skill blocked.");
-            return;
-        }
-        
-        // SP cost check (2 SP as specified)
-        const int celestialSummonCost = 2;
-        if (!SkillManager.Instance.SpendPlayerSP(currentPlayer, celestialSummonCost))
-        {
-            Debug.LogWarning($"[Celestial Summon] Not enough SP for {currentPlayer} (cost {celestialSummonCost}).");
-            return;
-        }
-        
-        // Find the selected bishop from UIManager 
+        // ✅ Get the selected bishop from UIManager (following HealingBenediction pattern)
         Bishop selectedBishop = null;
-        int bishopX = -1, bishopY = -1;
+        Chessman cm = null;
         
         if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            // Use the selected piece from UI
             GameObject selectedPiece = UIManager.Instance.selectedPiece;
             selectedBishop = selectedPiece.GetComponent<Bishop>();
+            cm = selectedPiece.GetComponent<Chessman>();
             
-            if (selectedBishop != null)
+            if (selectedBishop == null || cm == null)
             {
-                Chessman selectedCm = selectedPiece.GetComponent<Chessman>();
-                if (selectedCm != null)
-                {
-                    bishopX = selectedCm.GetXBoard();
-                    bishopY = selectedCm.GetYBoard();
-                }
+                Debug.LogError($"[Celestial Summon] Selected piece {selectedPiece.name} is not a regular Bishop or missing Chessman component!");
+                return;
             }
         }
-        
-        // Fallback: search for any bishop if no selection
-        if (selectedBishop == null)
+        else
         {
-            for (int x = 0; x < 8; x++)
-            {
-                for (int y = 0; y < 8; y++)
-                {
-                    GameObject piece = game.GetPosition(x, y);
-                    if (piece == null) continue;
-                    
-                    Bishop tempBishop = piece.GetComponent<Bishop>();
-                    if (tempBishop != null)
-                    {
-                        Chessman tempCm = piece.GetComponent<Chessman>();
-                        if (tempCm != null && tempCm.GetPlayer() == currentPlayer)
-                        {
-                            selectedBishop = tempBishop;
-                            bishopX = x;
-                            bishopY = y;
-                            break;
-                        }
-                    }
-                }
-                if (selectedBishop != null) break;
-            }
-        }
-        
-        if (selectedBishop == null)
-        {
-            Debug.LogError("[Celestial Summon] No bishop found for current player on the board!");
+            Debug.LogError("[Celestial Summon] No piece selected via UIManager!");
             return;
         }
         
-        // Remove move plates (using Chessman method)
-        Chessman bishopChessman = selectedBishop.GetComponent<Chessman>();
-        if (bishopChessman != null)
+        string player = cm.GetPlayer();
+        Debug.Log($"[Celestial Summon] Attempting activation for {player} player from {selectedBishop.gameObject.name}...");
+        
+        // ✅ Check cooldown BEFORE spending SP
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "CelestialSummon"))
         {
-            bishopChessman.DestroyMovePlates();
+            Debug.LogWarning($"[Celestial Summon] Skill is on cooldown for {player} — cannot use.");
+            return;
         }
+        
+        // ✅ SP cost check (1 SP as per requirements)
+        const int celestialSummonCost = 1;
+        if (!SkillManager.Instance.SpendPlayerSP(player, celestialSummonCost))
+        {
+            Debug.LogWarning($"[Celestial Summon] Not enough SP for {player} to cast (cost {celestialSummonCost}).");
+            return;
+        }
+        
+        // Get bishop position
+        int bishopX = cm.GetXBoard();
+        int bishopY = cm.GetYBoard();
+        
+        // Get game reference
+        Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
+        
+        // Remove move plates (using Chessman method)
+        cm.DestroyMovePlates();
         
         // Clear the position on the board
         game.ClearPosition(bishopX, bishopY);
@@ -355,34 +428,50 @@ public class Bishop : Pieces
         // Destroy the selected bishop GameObject
         Destroy(selectedBishop.gameObject);
         
-        // Generate summon tiles on empty squares (like OnBishopButtonClick)
-        GenerateCelestialSummonTiles(game, currentPlayer);
+        // Generate summon tiles on empty squares (player-specific)
+        GenerateCelestialSummonTiles(game, player);
         
-        // ✅ NEW: Start cooldown using CooldownManager
-        if (CooldownManager.Instance != null)
-        {
-            CooldownManager.Instance.StartCooldown(currentPlayer, "CelestialSummon", CooldownManager.CooldownType.OncePerBattle);
-        }
+        // ✅ NOTE: Cooldown is NOT set here! It's set in CelestialSummonPlate after summoning pawns.
+        // This allows cancellation if no valid summons.
         
-        Debug.Log($"[Celestial Summon] Bishop sacrificed at ({bishopX},{bishopY}) for {currentPlayer} player! Summon tiles generated. SP cost: {celestialSummonCost}");
+        Debug.Log($"[Celestial Summon] Bishop sacrificed at ({bishopX},{bishopY}) for {player} player! Summon tiles generated. SP cost: {celestialSummonCost}");
     }
     
-    // Generate tiles for Celestial Summon (based on OnBishopButtonClick pattern)
+    // Generate tiles for Celestial Summon (player-specific positioning)
     private void GenerateCelestialSummonTiles(Game game, string player)
     {
         // Destroy existing plates first
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
 
-        // Generate summon tiles on all empty squares
-        for (int x = 0; x < 8; x++)
+        // Generate summon tiles on empty squares (player-specific)
+        if (player == "white")
         {
-            for (int y = 0; y < 4; y++) //i made it for limitations
+            // White player: bottom half of board (y=0-3)
+            for (int x = 0; x < 8; x++)
             {
-                if (game.GetPosition(x, y) == null)
+                for (int y = 0; y < 4; y++)
                 {
-                    SpawnCelestialSummonTile(game, x, y, player);
-                    Debug.Log($"[Celestial Summon] Spawning summon tile at ({x},{y})");
+                    if (game.GetPosition(x, y) == null)
+                    {
+                        SpawnCelestialSummonTile(game, x, y, player);
+                        Debug.Log($"[Celestial Summon] Spawning summon tile for {player} at ({x},{y})");
+                    }
+                }
+            }
+        }
+        else if (player == "black")
+        {
+            // Black player: top half of board (y=4-7)
+            for (int x = 0; x < 8; x++)
+            {
+                for (int y = 4; y < 8; y++)
+                {
+                    if (game.GetPosition(x, y) == null)
+                    {
+                        SpawnCelestialSummonTile(game, x, y, player);
+                        Debug.Log($"[Celestial Summon] Spawning summon tile for {player} at ({x},{y})");
+                    }
                 }
             }
         }
@@ -412,28 +501,51 @@ public class Bishop : Pieces
     // Wraithform Ascension Skill
     public void WraithformAscension()
     {
-        string player = "white"; // Bishop is always white
-        
-        // Check SP cost (2 SP)
-        if (!SkillManager.Instance.SpendPlayerSP(player, 2))
-        {
-            Debug.LogWarning("[WraithformAscension] Not enough SP to cast.");
-            return;
-        }
-        
-        // Get the selected Bishop (following existing Bishop pattern)
+        // ✅ Get the selected bishop from UIManager (following Queen/Bishop pattern)
         Bishop selectedBishop = null;
+        Chessman cm = null;
+        
         if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
             GameObject selectedPiece = UIManager.Instance.selectedPiece;
             selectedBishop = selectedPiece.GetComponent<Bishop>();
+            cm = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedBishop == null || cm == null)
+            {
+                Debug.LogError($"[WraithformAscension] Selected piece {selectedPiece.name} is not a Bishop or missing Chessman component!");
+                return;
+            }
         }
-        
-        if (selectedBishop == null) 
+        else
         {
-            Debug.LogError("[WraithformAscension] No selected Bishop found!");
+            Debug.LogError("[WraithformAscension] No piece selected via UIManager!");
             return;
         }
+        
+        string player = cm.GetPlayer();
+        Debug.Log($"[WraithformAscension] Attempting activation for {player} player...");
+        
+        // ✅ Check cooldown BEFORE spending SP (using CooldownManager)
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "WraithformAscension"))
+        {
+            Debug.LogWarning($"[WraithformAscension] Skill is on cooldown for {player} — cannot use.");
+            return;
+        }
+        
+        // Check SP cost (2 SP)
+        if (!SkillManager.Instance.SpendPlayerSP(player, 2))
+        {
+            Debug.LogWarning($"[WraithformAscension] Not enough SP for {player} to cast.");
+            return;
+        }
+        
+        // ✅ Set cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "WraithformAscension", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log($"[WraithformAscension] Cooldown activated for {player} - once per battle.");
         
         // Get current turn and calculate expiration
         Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
@@ -441,11 +553,10 @@ public class Bishop : Pieces
         int expirationTurn = currentTurn + 14;
         
         // Add Ethereal status to the selected Bishop
-        Chessman selectedChessman = selectedBishop.GetComponent<Chessman>();
-        if (selectedChessman != null && selectedChessman.statusManager != null)
+        if (cm != null && cm.statusManager != null)
         {
-            selectedChessman.statusManager.AddStatus(StatusType.Ethereal, expirationTurn);
-            Debug.Log($"[WraithformAscension] Bishop gained Ethereal status until turn {expirationTurn}");
+            cm.statusManager.AddStatus(StatusType.Ethereal, expirationTurn);
+            Debug.Log($"[WraithformAscension] {player} Bishop gained Ethereal status until turn {expirationTurn}");
         }
         else
         {
@@ -459,17 +570,15 @@ public class Bishop : Pieces
             SkillTracker.Instance.LogSkillUsage(player, "BISHOP", "WRAITHFORM ASCENSION", 2);
         }
         
-        Debug.Log("[WraithformAscension] Skill activated successfully!");
-                 Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        Debug.Log($"[WraithformAscension] Skill activated successfully for {player}!");
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
             
-foreach (Chessman piece in allPieces)
-{
-    piece.UpdateVisualStatus();
-    foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
-            Destroy(plate);
-}
-
-   
+        foreach (Chessman piece in allPieces)
+        {
+            piece.UpdateVisualStatus();
+            foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
+                Destroy(plate);
+        }
     } 
 
     // Ethereal movement method - can pass through any piece but only land on empty tiles

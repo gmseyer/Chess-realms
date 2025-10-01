@@ -5,13 +5,15 @@ public class SanctuaryMarker : MonoBehaviour
     private Game game;
     private int x, y;
     private int expirationTurn;
+    private string player; // Store the player who created the sanctuary
 
-    public void Setup(Game g, int tileX, int tileY, int turns)
+    public void Setup(Game g, int tileX, int tileY, int turns, string playerName)
     {
         game = g;
         x = tileX; 
         y = tileY;
         expirationTurn = turns;
+        player = playerName;
     }
 
     public int GetX() { return x; }
@@ -30,14 +32,14 @@ public class SanctuaryMarker : MonoBehaviour
     {
         if (!IsActive()) return;
 
-        // Check if the captured piece is an allied piece (white)
-        if (capturedPiece.GetPlayer() != "white") return;
+        // ✅ Check if the captured piece is an allied piece (same player who created sanctuary)
+        if (capturedPiece.GetPlayer() != player) return;
 
-        // Gain 1 SP for the white player using SkillManager
+        // ✅ Gain 1 SP for the correct player using SkillManager
         if (SkillManager.Instance != null)
         {
-            SkillManager.Instance.AddPlayerSP("white", 1);
-            Debug.Log($"[Sanctuary Marker] Allied piece {capturedPiece.name} died in Sacred Zone at ({x},{y}) - gained 1 SP!");
+            SkillManager.Instance.AddPlayerSP(player, 1);
+            Debug.Log($"[Sanctuary Marker] Allied piece {capturedPiece.name} died in Sacred Zone at ({x},{y}) - {player} gained 1 SP!");
         }
     }
 

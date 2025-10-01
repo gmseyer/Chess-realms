@@ -4,15 +4,15 @@ public class EternityPiercePlate : MonoBehaviour
 {
     private Game game;
     private int x, y;
-    private Archbishop archbishop;
+    private string player; // Store the player who cast the skill
     private int distance; // 1st, 2nd, or 3rd tile
 
-    public void Setup(Game gameRef, int xPos, int yPos, Archbishop archbishopRef, int tileDistance)
+    public void Setup(Game gameRef, int xPos, int yPos, string playerName, int tileDistance)
     {
         game = gameRef;
         x = xPos;
         y = yPos;
-        archbishop = archbishopRef;
+        player = playerName;
         distance = tileDistance;
     }
 
@@ -41,21 +41,20 @@ public class EternityPiercePlate : MonoBehaviour
 
     private void ExecuteEternityPierce()
     {
-        // Get current player and calculate SP cost
-        string currentPlayer = game.GetCurrentPlayer();
+        // Calculate SP cost based on distance
         int spCost = distance; // 1 SP for 1st tile, 2 SP for 2nd tile, 3 SP for 3rd tile
 
         // Check if player has enough SP
-        if (SkillManager.Instance.GetPlayerSP(currentPlayer) < spCost)
+        if (SkillManager.Instance.GetPlayerSP(player) < spCost)
         {
-            Debug.LogWarning($"[Eternity Pierce] Not enough SP for {currentPlayer} (cost {spCost}).");
+            Debug.LogWarning($"[Eternity Pierce] Not enough SP for {player} (cost {spCost}).");
             DestroyAllMovePlates();
             return;
         }
 
-        // Deduct SP
-        SkillManager.Instance.SpendPlayerSP(currentPlayer, spCost);
-        Debug.Log($"[Eternity Pierce] SP deducted: {spCost}");
+        // Deduct SP from correct player
+        SkillManager.Instance.SpendPlayerSP(player, spCost);
+        Debug.Log($"[Eternity Pierce] SP deducted from {player}: {spCost}");
 
         // Get Archbishop's position to determine the direction
         GameObject selectedPiece = UIManager.Instance.selectedPiece;
@@ -87,27 +86,32 @@ public class EternityPiercePlate : MonoBehaviour
 
         // Stun all pieces in the line up to the clicked distance
         StunPiecesInLine(archbishopX, archbishopY, dirX, dirY, distance);
-        // Update visual status of all pieces on the board immediately
 
-        // Mark skill as used
-        Archbishop.eternityPierceUsed = true;
-        Debug.Log("[Eternity Pierce] Skill marked as used for this battle.");
+        // ✅ Set cooldown using CooldownManager (following HealingBenediction pattern)
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "EternityPierce", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log($"[Eternity Pierce] Cooldown activated for {player} - once per battle.");
+        
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, "ARCHBISHOP", "ETERNITY PIERCE", spCost);
+        }
 
         // Destroy all moveplates
         DestroyAllMovePlates();
         
-        // In Rook.cs, in AttemptFortify() method:
-if (SkillTracker.Instance != null)
-{
-    SkillTracker.Instance.LogSkillUsage(currentPlayer, "ARCHBISHOP", "ETERNITY PIERCE", spCost);
-}
         // End the Archbishop's turn
         game.NextTurn();
+        
+        // Update visual status of all pieces on the board immediately
         Chessman[] allPieces = FindObjectsOfType<Chessman>();
-foreach (Chessman piece in allPieces)
-{
-    piece.UpdateVisualStatus();
-}
+        foreach (Chessman piece in allPieces)
+        {
+            piece.UpdateVisualStatus();
+        }
     }
 
     private void StunPiecesInLine(int startX, int startY, int dirX, int dirY, int maxDistance)
@@ -130,16 +134,15 @@ foreach (Chessman piece in allPieces)
                 Chessman targetCm = piece.GetComponent<Chessman>();
                 if (targetCm != null)
                 {
-                    // Only stun enemy pieces
-                    string currentPlayer = game.GetCurrentPlayer();
-                    if (targetCm.GetPlayer() != currentPlayer)
+                    // Only stun enemy pieces (compare against the player who cast the skill)
+                    if (targetCm.GetPlayer() != player)
                     {
                         // Apply stunned status
                         StatusManager statusManager = targetCm.GetComponent<StatusManager>();
                         if (statusManager != null)
                         {
                             statusManager.AddStatus(StatusType.Stunned, currentTurn + stunDuration);
-                            Debug.Log($"[Eternity Pierce] Stunned {targetCm.name} at ({targetX},{targetY}) for {stunDuration} turns");
+                            Debug.Log($"[Eternity Pierce] {player} stunned enemy {targetCm.name} at ({targetX},{targetY}) for {stunDuration} turns");
                         }
                     }
                 }

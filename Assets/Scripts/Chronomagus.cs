@@ -368,17 +368,17 @@ public class Chronomagus : MonoBehaviour
         int currentTurn = game.GetTurnCount();
         string currentPlayer = game.GetCurrentPlayer();
 
+        // ✅ Check once-per-battle cooldown BEFORE spending SP
+        if (singularityUsed)
+        {
+            Debug.LogWarning("[Chronomagus] Singularity already used this battle!");
+            return;
+        }
+
         // Check SP cost
         if (!SkillManager.Instance.SpendPlayerSP(currentPlayer, 2))
         {
             Debug.LogWarning("[Chronomagus] Not enough Skill Points for Singularity!");
-            return;
-        }
-
-        // Check once-per-battle cooldown
-        if (singularityUsed)
-        {
-            Debug.LogWarning("[Chronomagus] Singularity already used this battle!");
             return;
         }
 
@@ -617,9 +617,10 @@ public class Chronomagus : MonoBehaviour
         MovePlate oldScript = mp.GetComponent<MovePlate>();
         if (oldScript != null) Destroy(oldScript);
 
-        // Add SoulbindingSummonPlate script (reuse existing one)
+        // Add SoulbindingSummonPlate script (reuse existing one) with player info
+        string currentPlayer = game.GetCurrentPlayer();
         SoulbindingSummonPlate plate = mp.AddComponent<SoulbindingSummonPlate>();
-        plate.Setup(game, x, y, chronomagusCapturedPieceName);
+        plate.Setup(game, x, y, chronomagusCapturedPieceName, currentPlayer);
 
         // Make summon plates visually distinct (green)
         SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();

@@ -88,8 +88,8 @@ public class MovePlate : MonoBehaviour
                 
                 Chessman targetCm = cp.GetComponent<Chessman>();
 
-                // Special check for bishop capture
-                if (cp.name == "white_bishop")
+                // Special check for bishop capture (both white and black)
+                if (cp.name.Contains("bishop") && !cp.name.Contains("arch") && !cp.name.Contains("elemental") && !cp.name.Contains("royal"))
                 {
                     Bishop bishop = cp.GetComponent<Bishop>();
 
@@ -322,20 +322,22 @@ public class MovePlate : MonoBehaviour
                 // Check if the attacking piece is an Archbishop
                 if (movingPiece.name.Contains("arch_bishop"))
                 {
-                    Debug.Log($"[MovePlate] Archbishop {movingPiece.name} captured {cp.name} - checking Soulbinding Conquest!");
+                    // Get the archbishop's player
+                    string archbishopPlayer = movingPiece.GetPlayer();
+                    Debug.Log($"[MovePlate] Archbishop {movingPiece.name} ({archbishopPlayer}) captured {cp.name} - checking Soulbinding Conquest!");
                     
-                    // Check if Soulbinding Conquest can be triggered (not already used)
-                    if (!Archbishop.soulbindingConquestUsed)
+                    // ✅ Check if Soulbinding Conquest can be triggered using CooldownManager (player-specific)
+                    if (CooldownManager.Instance == null || !CooldownManager.Instance.IsOnCooldown(archbishopPlayer, "SoulbindingConquest"))
                     {
                         // Store the original state
-                        bool wasUsed = Archbishop.soulbindingConquestUsed;
                         string originalCapturedPiece = Archbishop.capturedPieceName;
+                        string originalPlayer = Archbishop.capturedPiecePlayer;
                         
-                        // Trigger Soulbinding Conquest passive
-                        Archbishop.TriggerSoulbindingConquest(cp.name);
+                        // Trigger Soulbinding Conquest passive with player info
+                        Archbishop.TriggerSoulbindingConquest(cp.name, archbishopPlayer);
                         
                         // Check if the skill was actually triggered (state changed)
-                        if (Archbishop.soulbindingConquestUsed && Archbishop.capturedPieceName == cp.name)
+                        if (Archbishop.capturedPieceName == cp.name && Archbishop.capturedPiecePlayer == archbishopPlayer)
                         {
                             // Don't end turn yet - spawn summon plates instead
                             movingPiece.DestroyMovePlates();
@@ -374,14 +376,14 @@ public class MovePlate : MonoBehaviour
                         else
                         {
                             // Skill was not triggered (invalid piece), restore original state
-                            Archbishop.soulbindingConquestUsed = wasUsed;
                             Archbishop.capturedPieceName = originalCapturedPiece;
+                            Archbishop.capturedPiecePlayer = originalPlayer;
                             Debug.Log($"[MovePlate] Soulbinding Conquest not triggered for {cp.name} - invalid piece type");
                         }
                     }
                     else
                     {
-                        Debug.Log("[MovePlate] Soulbinding Conquest already used this battle - normal capture.");
+                        Debug.Log($"[MovePlate] Soulbinding Conquest already used this battle for {archbishopPlayer} - normal capture.");
                     }
                 }
                 // --ARCHBISHOP SOULBINDING CONQUEST END -------------------------------------
@@ -761,11 +763,12 @@ public class MovePlate : MonoBehaviour
         else
         {
             // ----------------- Celestial Orb Capture Check -----------------
-            // Check if a Rook moved and captured a celestial orb
-            if (movingPiece.name.Contains("white_rook"))
+            // ✅ Check if any Rook (white or black) moved and captured a celestial orb
+            if (movingPiece.name.Contains("rook") && !movingPiece.name.Contains("royal"))
             {
+                string rookPlayer = movingPiece.GetPlayer();
                 Vector2Int rookPosition = new Vector2Int(matrixX, matrixY);
-                Rook.CheckCelestialOrbCapture(rookPosition);
+                Rook.CheckCelestialOrbCapture(rookPosition, rookPlayer);
             }
             
             // Normal turn ending
@@ -847,7 +850,7 @@ public class MovePlate : MonoBehaviour
         if (tileAtPosition != null && tileAtPosition.name == "tile_ice")
         {
             // Check if it's an Elemental Bishop (immune to ice)
-            if (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "white_king" || movingPiece.name == "black_king")
+            if (movingPiece.name == "white_elemental_bishop" ||movingPiece.name == "black_elemental_bishop" || movingPiece.name == "white_king" || movingPiece.name == "black_king")
             {
                 Debug.Log($"[Tile_Ice] {movingPiece.name} is immune to ice - tile disappears!");
                 
@@ -922,7 +925,7 @@ public class MovePlate : MonoBehaviour
     if (tileAtPosition != null && tileAtPosition.name == "tile_lava")
     {
         // Check if it's an Elemental Bishop (immune to lava) or a spectator piece during Oathbound Gambit
-        bool isImmuneToLava = (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "white_king" || movingPiece.name == "black_king");
+        bool isImmuneToLava = (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "black_elemental_bishop" || movingPiece.name == "white_king" || movingPiece.name == "black_king");
         bool isSpectatorDuringDuel = IsSpectatorPieceDuringOathboundGambit(movingPiece);
         
         if (isImmuneToLava || isSpectatorDuringDuel)
@@ -979,7 +982,7 @@ public class MovePlate : MonoBehaviour
         if (tileAtPosition != null && tileAtPosition.name == "tile_thunder")
         {
             // Check if it's an immune piece (Kings, Elemental Bishop, Chronomagus)
-            if (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "white_king" || 
+            if (movingPiece.name == "white_elemental_bishop" || movingPiece.name == "black_elemental_bishop" || movingPiece.name == "white_king" || 
                 movingPiece.name == "black_king" || movingPiece.name == "white_chronomagus" || 
                 movingPiece.name == "black_chronomagus")
             {
@@ -1156,8 +1159,8 @@ public class MovePlate : MonoBehaviour
         Game game = controller.GetComponent<Game>();
         if (game == null) return;
 
-        // Check if the captured piece is an allied piece (white)
-        if (capturedPiece.GetPlayer() != "white") return;
+        // ✅ Remove hardcoded white player check - let SanctuaryMarker.OnPieceDeath() handle player logic
+        // The SanctuaryMarker already has the correct player information and will only give SP to the right player
 
         // Find sanctuary markers at this position
         SanctuaryMarker[] allSanctuaryMarkers = FindObjectsOfType<SanctuaryMarker>();
@@ -1166,6 +1169,7 @@ public class MovePlate : MonoBehaviour
             if (marker.GetX() == x && marker.GetY() == y && marker.IsActive())
             {
                 // This piece died on an active sanctuary marker
+                // ✅ SanctuaryMarker.OnPieceDeath() will check if the piece belongs to the correct player
                 marker.OnPieceDeath(capturedPiece);
                 break; // Only one marker per position
             }

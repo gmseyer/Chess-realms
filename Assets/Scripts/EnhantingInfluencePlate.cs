@@ -5,14 +5,14 @@ public class EnchantingInfluencePlate : MonoBehaviour
 {
     private Game game;
     private int x, y;
-    private Queen queen;
+    private string player; // Store the player who cast the skill
 
-    public void Setup(Game gameRef, int xPos, int yPos, Queen queenRef)
+    public void Setup(Game gameRef, int xPos, int yPos, string playerName)
     {
         game = gameRef;
         x = xPos;
         y = yPos;
-        queen = queenRef;
+        player = playerName;
     }
 
     public void OnMouseUp()
@@ -39,13 +39,10 @@ public class EnchantingInfluencePlate : MonoBehaviour
             return;
         }
         
-        // Get current player to check if it's an enemy
-        string currentPlayer = game.GetCurrentPlayer();
-        
-        // Check if it's an enemy piece
-        if (targetCm.GetPlayer() == currentPlayer)
+        // Check if it's an enemy piece (compare against the player who cast the skill)
+        if (targetCm.GetPlayer() == player)
         {
-            Debug.Log($"[Enchanting Influence] {targetCm.name} is friendly. Destroying moveplates.");
+            Debug.Log($"[Enchanting Influence] {targetCm.name} is friendly to {player}. Destroying moveplates.");
             DestroyAllMovePlates();
             return;
         }
@@ -78,23 +75,28 @@ public class EnchantingInfluencePlate : MonoBehaviour
         MoveEnemyPiece(pieceAtPosition, targetCm, randomTile.x, randomTile.y);
         
         // NOW deduct SP after successful move
-       const int enchantingInfluenceCost = 2;
-SkillManager.Instance.SpendPlayerSP(currentPlayer, enchantingInfluenceCost);
-Debug.Log($"[Enchanting Influence] SP deducted: {enchantingInfluenceCost}");
+        const int enchantingInfluenceCost = 2;
+        SkillManager.Instance.SpendPlayerSP(player, enchantingInfluenceCost);
+        Debug.Log($"[Enchanting Influence] SP deducted from {player}: {enchantingInfluenceCost}");
 
-// Mark skill as used (once-per-battle)
-queen.hasUsedEnchantingInfluence = true;
-Debug.Log("[Enchanting Influence] Skill marked as used for this battle.");
+        // ✅ Set cooldown using CooldownManager (following HealingBenediction pattern)
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "EnchantingInfluence", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log($"[Enchanting Influence] Cooldown activated for {player} - once per battle.");
+        
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, "QUEEN", "ENCHANTING INFLUENCE", 2);
+        }
 
-// Destroy moveplates immediately after moving enemy
-DestroyAllMovePlates();
-// In Rook.cs, in AttemptFortify() method:
-if (SkillTracker.Instance != null)
-{
-    SkillTracker.Instance.LogSkillUsage(currentPlayer, "QUEEN", "ENCHANTING INFLUENCE", 2);
-}
-// End the Queen's turn
-game.NextTurn();
+        // Destroy moveplates immediately after moving enemy
+        DestroyAllMovePlates();
+        
+        // End the Queen's turn
+        game.NextTurn();
     }
     
     private List<Vector2Int> FindEmptyTilesAround(int centerX, int centerY)

@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections.Generic;
 public class Queen : Pieces
 {
     // Cooldown for the passive (optional, e.g., 20 turns)
@@ -18,8 +18,6 @@ public class Queen : Pieces
     private Chessman chessman;
     private StatusManager statusManager;
 
-    [Header("Enchanting Influence")]
-    public bool hasUsedEnchantingInfluence = false;
    
 
 
@@ -54,7 +52,7 @@ public class Queen : Pieces
     /// </summary>
     public bool IsPassiveAvailable()
     {
-        return passiveCooldownRemaining <= 0;
+        return passiveCooldownRemaining <= 0; 
     }
 
     /// <summary>
@@ -217,28 +215,50 @@ if (SkillTracker.Instance != null)
 
     // start of Enchanting Influence
 
-        // Add this before the closing brace of the Queen class
-// Enchanting Influence skill - Step 1: Generate tiles around the board
+       
+
 public void TriggerEnchantingInfluence()
 {
-    // Check if already used this battle
-    if (hasUsedEnchantingInfluence)
+    // ✅ Get the selected queen from UIManager (following Bishop pattern)
+    Queen selectedQueen = null;
+    Chessman cm = null;
+    
+    if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
     {
-        Debug.LogWarning("[Enchanting Influence] Already used this battle — skill blocked.");
+        GameObject selectedPiece = UIManager.Instance.selectedPiece;
+        selectedQueen = selectedPiece.GetComponent<Queen>();
+        cm = selectedPiece.GetComponent<Chessman>();
+        
+        if (selectedQueen == null || cm == null)
+        {
+            Debug.LogError($"[Enchanting Influence] Selected piece {selectedPiece.name} is not a Queen or missing Chessman component!");
+            return;
+        }
+    }
+    else
+    {
+        Debug.LogError("[Enchanting Influence] No piece selected via UIManager!");
         return;
     }
-
+    
+    string player = cm.GetPlayer();
+    Debug.Log($"[Enchanting Influence] Attempting activation for {player} player from {selectedQueen.gameObject.name}...");
+    
+    // ✅ Check cooldown BEFORE spending SP (using CooldownManager)
+    if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "EnchantingInfluence"))
+    {
+        Debug.LogWarning($"[Enchanting Influence] Skill is on cooldown for {player} — cannot use.");
+        return;
+    }
+    
     // Get game reference
     Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
     
-    // Get current player
-    string currentPlayer = game.GetCurrentPlayer();
-    
-    // Check SP cost (1 SP) - but don't deduct yet, just check if we can afford it
-    const int enchantingInfluenceCost = 1;
-    if (SkillManager.Instance.GetPlayerSP(currentPlayer) < enchantingInfluenceCost)
+    // Check SP cost (2 SP) - but don't deduct yet, just check if we can afford it
+    const int enchantingInfluenceCost = 2;
+    if (SkillManager.Instance.GetPlayerSP(player) < enchantingInfluenceCost)
     {
-        Debug.LogWarning($"[Enchanting Influence] Not enough SP for {currentPlayer} (cost {enchantingInfluenceCost}).");
+        Debug.LogWarning($"[Enchanting Influence] Not enough SP for {player} (cost {enchantingInfluenceCost}).");
         return;
     }
 
@@ -251,15 +271,15 @@ public void TriggerEnchantingInfluence()
     {
         for (int y = 0; y < 8; y++)
         {
-            SpawnEnchantingInfluencePlate(x, y, game);
+            SpawnEnchantingInfluencePlate(x, y, game, player);
         }
     }
 
-    Debug.Log("[Enchanting Influence] Selection tiles generated. Select an enemy piece.");
+    Debug.Log($"[Enchanting Influence] Selection tiles generated for {player} player. Select an enemy piece.");
 }
 
 
-private void SpawnEnchantingInfluencePlate(int x, int y, Game game)
+private void SpawnEnchantingInfluencePlate(int x, int y, Game game, string player)
 {
     // Use the same positioning as other move plates
    float fx = x * 0.57f - 1.98f;
@@ -271,9 +291,9 @@ private void SpawnEnchantingInfluencePlate(int x, int y, Game game)
     MovePlate old = mp.GetComponent<MovePlate>();
     if (old != null) Destroy(old);
 
-    // Add EnchantingInfluencePlate script
+    // Add EnchantingInfluencePlate script with player info
     EnchantingInfluencePlate plate = mp.AddComponent<EnchantingInfluencePlate>();
-    plate.Setup(game, x, y, this);
+    plate.Setup(game, x, y, player);
 
     // Make enchanting influence plates visually distinct (purple)
     SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();

@@ -5,10 +5,19 @@ public class RoyalRook : MonoBehaviour
 {
     public GameObject movePlatePrefab;
     private Game game;
-    private static bool celestialPillarUsed = false; // Once per battle cooldown
+    private Chessman chessman; // ✅ Cache Chessman reference for player info
+    // Removed: private static bool celestialPillarUsed - now using CooldownManager
     
     // Celestial Synergy passive skill
     private bool celestialSynergy = false;
+
+    private void Awake()
+    {
+        // Cache Chessman reference (following Bishop pattern)
+        chessman = GetComponent<Chessman>();
+        if (chessman == null)
+            Debug.LogError("[RoyalRook] Missing Chessman component!");
+    }
 
     private void Start()
     {
@@ -148,29 +157,56 @@ public class RoyalRook : MonoBehaviour
     // Celestial Pillar Skill
     public void CelestialPillar() 
     {
-        Debug.Log("[Royal Rook] Celestial Pillar skill activated!");
+        // ✅ Get the selected royal rook from UIManager (following Bishop/Queen pattern)
+        RoyalRook selectedRoyalRook = null;
+        Chessman cm = null;
         
-        // Check if already used this battle
-        if (celestialPillarUsed)
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            Debug.LogWarning("[Royal Rook] Celestial Pillar already used this battle!");
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedRoyalRook = selectedPiece.GetComponent<RoyalRook>();
+            cm = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedRoyalRook == null || cm == null)
+            {
+                Debug.LogError($"[Celestial Pillar] Selected piece {selectedPiece.name} is not a Royal Rook or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[Celestial Pillar] No piece selected via UIManager!");
+            return;
+        }
+        
+        string player = cm.GetPlayer();
+        Debug.Log($"[Celestial Pillar] Attempting activation for {player} player...");
+        
+        // ✅ Check cooldown BEFORE spending SP (using CooldownManager)
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "CelestialPillar"))
+        {
+            Debug.LogWarning($"[Celestial Pillar] Skill is on cooldown for {player} — cannot use.");
             return;
         }
         
         // Check SP cost (2 SP)
-        if (!SkillManager.Instance.SpendPlayerSP("white", 2))
+        if (!SkillManager.Instance.SpendPlayerSP(player, 2))
         {
-            Debug.LogWarning("[Royal Rook] Not enough SP to use Celestial Pillar!");
+            Debug.LogWarning($"[Celestial Pillar] Not enough SP for {player} to use Celestial Pillar!");
             return;
         }
         
-        // Mark as used
-        celestialPillarUsed = true;
+        // ✅ Set cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "CelestialPillar", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log($"[Celestial Pillar] Cooldown activated for {player} - once per battle.");
         
         // Log skill usage
         if (SkillTracker.Instance != null)
         {
-            SkillTracker.Instance.LogSkillUsage("white", "ROYAL ROOK", "CELESTIAL PILLAR", 2);
+            SkillTracker.Instance.LogSkillUsage(player, "ROYAL ROOK", "CELESTIAL PILLAR", 2);
         }
         
         // Spawn move plates on all empty tiles
@@ -186,31 +222,68 @@ public class RoyalRook : MonoBehaviour
             }
         }
 
-        Debug.Log("[Royal Rook] Celestial Pillar skill activated - choose a location!");
+        Debug.Log($"[Celestial Pillar] Skill activated for {player} - choose a location!");
     }
 
     // Crushing Advance Skill
     public void CrushingAdvance()
     {
-        Debug.Log("[Royal Rook] Crushing Advance skill activated!");
+        // ✅ Get the selected royal rook from UIManager (following Bishop/Queen pattern)
+        RoyalRook selectedRoyalRook = null;
+        Chessman cm = null;
         
-        // Check SP cost (2 SP)
-        if (!SkillManager.Instance.SpendPlayerSP("white", 2))
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            Debug.LogWarning("[Royal Rook] Not enough SP to use Crushing Advance!");
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedRoyalRook = selectedPiece.GetComponent<RoyalRook>();
+            cm = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedRoyalRook == null || cm == null)
+            {
+                Debug.LogError($"[Crushing Advance] Selected piece {selectedPiece.name} is not a Royal Rook or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[Crushing Advance] No piece selected via UIManager!");
             return;
         }
+        
+        string player = cm.GetPlayer();
+        Debug.Log($"[Crushing Advance] Attempting activation for {player} player...");
+        
+        // ✅ Check cooldown BEFORE spending SP (using CooldownManager)
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "CrushingAdvance"))
+        {
+            Debug.LogWarning($"[Crushing Advance] Skill is on cooldown for {player} — cannot use.");
+            return;
+        }
+        
+        // Check SP cost (2 SP)
+        if (!SkillManager.Instance.SpendPlayerSP(player, 2))
+        {
+            Debug.LogWarning($"[Crushing Advance] Not enough SP for {player} to use Crushing Advance!");
+            return;
+        }
+        
+        // ✅ Set cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "CrushingAdvance", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log($"[Crushing Advance] Cooldown activated for {player} - once per battle.");
         
         // Log skill usage
         if (SkillTracker.Instance != null)
         {
-            SkillTracker.Instance.LogSkillUsage("white", "ROYAL ROOK", "CRUSHING ADVANCE", 2);
+            SkillTracker.Instance.LogSkillUsage(player, "ROYAL ROOK", "CRUSHING ADVANCE", 2);
         }
         
         // Spawn direction selection plates
-        SpawnCrushingAdvanceDirectionPlates();
+        selectedRoyalRook.SpawnCrushingAdvanceDirectionPlates();
         
-        Debug.Log("[Royal Rook] Crushing Advance - choose your direction!");
+        Debug.Log($"[Crushing Advance] Skill activated for {player} - choose your direction!");
     }
 
     private void SpawnCrushingAdvanceDirectionPlates()

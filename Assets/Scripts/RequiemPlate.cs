@@ -4,15 +4,17 @@ public class RequiemPlate : MonoBehaviour
 {
     private GameObject royalBishop;
     private int x, y;
+    private string player; // Store the player who cast the skill
     private static int wraithPawnsCreated = 0;
     private static int maxWraithPawns = 2;
     private static string currentSkill = "SoulRequiem"; // Track which skill is active
 
-    public void Setup(GameObject royalBishopRef, int tileX, int tileY)
+    public void Setup(GameObject royalBishopRef, int tileX, int tileY, string playerName)
     {
         royalBishop = royalBishopRef;
         x = tileX;
         y = tileY;
+        player = playerName;
     }
 
     // Method to set which skill is currently active
@@ -57,14 +59,15 @@ public class RequiemPlate : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[RequiemPlate] Creating wraith pawn at ({x},{y}) - {wraithPawnsCreated + 1}/2");
+        Debug.Log($"[RequiemPlate] Creating {player} wraith pawn at ({x},{y}) - {wraithPawnsCreated + 1}/2");
 
-        // Create the wraith pawn
-        GameObject wraithPawn = game.Create("white_wraith_pawn", x, y);
+        // ✅ Create player-specific wraith pawn
+        string wraithPawnName = $"{player}_wraith_pawn";
+        GameObject wraithPawn = game.Create(wraithPawnName, x, y);
         if (wraithPawn != null)
         {
             wraithPawnsCreated++;
-            Debug.Log($"[RequiemPlate] Wraith pawn {wraithPawnsCreated}/2 created successfully at ({x},{y})");
+            Debug.Log($"[RequiemPlate] {player} wraith pawn {wraithPawnsCreated}/2 created successfully at ({x},{y})");
             
             // If this is the second wraith pawn, end the turn
             if (wraithPawnsCreated >= maxWraithPawns)
@@ -74,7 +77,7 @@ public class RequiemPlate : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"[RequiemPlate] Failed to create wraith pawn at ({x},{y})");
+            Debug.LogError($"[RequiemPlate] Failed to create {player} wraith pawn at ({x},{y})");
         }
     }
 
@@ -135,7 +138,7 @@ public class RequiemPlate : MonoBehaviour
         
         // Add SanctuaryMarker script
         SanctuaryMarker marker = sanctuaryMarker.AddComponent<SanctuaryMarker>();
-        marker.Setup(game, tileX, tileY, game.turns + 4); // 4 turn duration
+        marker.Setup(game, tileX, tileY, game.turns + 4, player); // 4 turn duration, pass player
         
         Debug.Log($"[RequiemPlate] Created sanctuary marker at ({tileX},{tileY}) - expires on turn {game.turns + 4}");
     }
@@ -230,11 +233,11 @@ public class RequiemPlate : MonoBehaviour
             }
         }
         
-        // Gain 2 SP for the combo
+        // ✅ Gain 2 SP for the correct player for the combo
         if (SkillManager.Instance != null)
         {
-            SkillManager.Instance.AddPlayerSP("white", 2);
-            Debug.Log("[RequiemPlate] SanctifiedRuin Combo - gained 2 SP!");
+            SkillManager.Instance.AddPlayerSP(player, 2);
+            Debug.Log($"[RequiemPlate] SanctifiedRuin Combo - {player} gained 2 SP!");
         }
         
         // Destroy all sanctuary markers

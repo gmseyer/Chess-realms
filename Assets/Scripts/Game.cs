@@ -86,7 +86,19 @@ private void UpdateLatestMoveUI(string latestMove)
 }
 
 
-
+    private void Awake()
+    {
+        // Initialize singleton instance
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Debug.LogWarning("[Game] Multiple Game instances detected! Destroying duplicate.");
+            Destroy(gameObject);
+        }
+    }
 
     public void Start()
     {
@@ -97,8 +109,8 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_rook", 0, 0), Create("white_knight", 1, 0),
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
-            
-           
+            Create("white_royal_bishop", 2, 2),
+
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
              Create("white_pawn6", 6, 1), Create("white_pawn7", 7, 1)
@@ -107,7 +119,8 @@ private void UpdateLatestMoveUI(string latestMove)
         playerBlack = new GameObject[] { Create("black_rook", 0, 7), Create("black_knight",1,7),
             Create("black_bishop",2,7), Create("black_queen",3,7), Create("black_king",4,7),
             Create("black_bishop",5,7), Create("black_knight",6,7), Create("black_rook",7,7),
-
+          
+            Create("black_royal_bishop", 2, 5),
             Create("black_pawn", 0, 6), Create("black_pawn1", 1, 6), Create("black_pawn2", 2, 6),
             Create("black_pawn3", 3, 6), Create("black_pawn4", 4, 6), Create("black_pawn5", 5, 6),
             Create("black_pawn6", 6, 6), Create("black_pawn7", 7, 6)
@@ -182,7 +195,14 @@ private void UpdateLatestMoveUI(string latestMove)
         cm.statusManager.AddStatus(StatusType.SolidBlock, 999);   // blocks movement
         }   
         
-        if (name.Contains("bishop"))
+        // ✅ Only add Bishop component to regular bishops (not elemental, royal, ice, fire, earth, arch)
+        if (name.Contains("bishop") && 
+            !name.Contains("elemental") && 
+            !name.Contains("royal") && 
+            !name.Contains("ice") && 
+            !name.Contains("fire") && 
+            !name.Contains("earth") && 
+            !name.Contains("arch"))
         {
             if (obj.GetComponent<Bishop>() == null)
             {

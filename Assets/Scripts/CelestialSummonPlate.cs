@@ -25,10 +25,10 @@ public class CelestialSummonPlate : MonoBehaviour
             return;
         }
 
-        // Check if there are already 8 or more white pawns on the board
-        if (CountWhitePawns() >= 8)
+        // Check if there are already 8 or more pawns for this player on the board
+        if (CountPlayerPawns(player) >= 8)
         {
-            Debug.Log("[Celestial Summon] Maximum of 8 white pawns already on board! Stopping summoning.");
+            Debug.Log($"[Celestial Summon] Maximum of 8 {player} pawns already on board! Stopping summoning.");
             EndCelestialSummon();
             return;
         }
@@ -46,12 +46,12 @@ public class CelestialSummonPlate : MonoBehaviour
         // Increment counter
         pawnsSummoned++;
         
-        Debug.Log($"[Celestial Summon] Summoned pawn {pawnsSummoned}/{MAX_PAWNS} at ({x},{y})");
+        Debug.Log($"[Celestial Summon] Summoned pawn {pawnsSummoned}/{MAX_PAWNS} at ({x},{y}) for {player} player");
 
         // If we've reached the maximum, end the turn
         if (pawnsSummoned >= MAX_PAWNS)
         {
-            Debug.Log("[Celestial Summon] All 3 pawns summoned! Ending turn.");
+            Debug.Log($"[Celestial Summon] All 3 pawns summoned for {player}! Ending turn.");
             EndCelestialSummon();
         }
     }
@@ -74,11 +74,12 @@ public class CelestialSummonPlate : MonoBehaviour
         }
     }
 
-    private int CountWhitePawns()
+    // Player-aware pawn counting
+    private int CountPlayerPawns(string player)
     {
-        int whitePawnCount = 0;
+        int pawnCount = 0;
         
-        // Scan the entire board for white pawns
+        // Scan the entire board for this player's pawns
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
@@ -86,20 +87,33 @@ public class CelestialSummonPlate : MonoBehaviour
                 GameObject piece = game.GetPosition(x, y);
                 if (piece == null) continue;
                 
-                // Check if this piece is a white pawn
-                if (piece.name.ToLower().Contains("white") && piece.name.ToLower().Contains("pawn"))
+                // Check if this piece is a pawn for the specified player
+                if (piece.name.ToLower().Contains(player.ToLower()) && piece.name.ToLower().Contains("pawn"))
                 {
-                    whitePawnCount++;
+                    pawnCount++;
                 }
             }
         }
         
-        Debug.Log($"[Celestial Summon] Current white pawn count: {whitePawnCount}");
-        return whitePawnCount;
+        Debug.Log($"[Celestial Summon] Current {player} pawn count: {pawnCount}");
+        return pawnCount;
     }
 
     private void EndCelestialSummon()
     {
+        // ✅ Set cooldown when ending celestial summon (following HealingBenediction pattern)
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "CelestialSummon", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log($"[Celestial Summon] Cooldown activated for {player} - once per battle.");
+        
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, "BISHOP", "CELESTIAL SUMMON", 1);
+        }
+        
         // Destroy all remaining summon tiles
         GameObject[] summonTiles = GameObject.FindGameObjectsWithTag("MovePlate");
         foreach (GameObject tile in summonTiles)
@@ -116,12 +130,6 @@ public class CelestialSummonPlate : MonoBehaviour
         // End the turn
         game.NextTurn();
         
-        Debug.Log("[Celestial Summon] Celestial Summon completed! Turn ended.");
-        // In Rook.cs, in AttemptFortify() method:
-if (SkillTracker.Instance != null)
-{
-    SkillTracker.Instance.LogSkillUsage(game.GetCurrentPlayer(), "BISHOP", "CELESTIAL SUMMON", 2);
-}
-
+        Debug.Log($"[Celestial Summon] Celestial Summon completed for {player}! Turn ended.");
     }
 }

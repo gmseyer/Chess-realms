@@ -29,30 +29,27 @@ public class Chessman : MonoBehaviour
     public Sprite white_queen, white_knight, white_bishop, white_king, white_rook, white_pawn;
 
     //summoned units
-    public Sprite white_elemental_bishop;
-    public Sprite white_arch_bishop;
-    public Sprite white_wraith_pawn;
+    public Sprite white_elemental_bishop, black_elemental_bishop;
+    public Sprite white_arch_bishop, black_arch_bishop;
 
-    public Sprite white_spectral_herald;
-    public Sprite black_spectral_herald;
+    public Sprite white_wraith_pawn, black_wraith_pawn;
+    public Sprite white_spectral_herald, black_spectral_herald;
+    public Sprite white_mist_knight, black_mist_knight;
 
-    public Sprite white_ice_bishop;
-    public Sprite white_earth_bishop;
-    public Sprite white_fire_bishop;
+    public Sprite white_ice_bishop, black_ice_bishop;
+    public Sprite white_earth_bishop, black_earth_bishop;
+    public Sprite white_fire_bishop, black_fire_bishop;
     
 
     //Royal Units
-    public Sprite white_royal_pawn;
-    public Sprite white_royal_rook;
-    public Sprite white_royal_bishop;
-    public Sprite white_royal_knight;
-    public Sprite white_mist_knight;
+    public Sprite white_royal_pawn, black_royal_pawn;
+    public Sprite white_royal_rook, black_royal_rook;
+    public Sprite white_royal_bishop, black_royal_bishop;
+    public Sprite white_royal_knight, black_royal_knight;
+    public Sprite white_chronomagus, black_chronomagus;
+   
+
     
-
-    public Sprite white_chronomagus;
-    public Sprite black_chronomagus;
-
-    public Sprite black_royal_pawn;
 
     //Elemental Tiles
     public Sprite tile_lava;
@@ -61,7 +58,7 @@ public class Chessman : MonoBehaviour
     public Sprite tile_thunder;
     public Sprite tile_void;
 
-    public Sprite tile_altar;
+    public Sprite tile_altar;//removed
     public Sprite white_ashen_pyre;
     public Sprite tile_terra_ward;
     
@@ -417,16 +414,35 @@ if (game != null)
                 case "white_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = white_arch_bishop; player = "white"; break;
                 case "white_wraith_pawn": this.GetComponent<SpriteRenderer>().sprite = white_wraith_pawn; player = "white"; break;
                 case "white_spectral_herald": this.GetComponent<SpriteRenderer>().sprite = white_spectral_herald; player = "white"; break;
-                case "black_spectral_herald": this.GetComponent<SpriteRenderer>().sprite = black_spectral_herald; player = "black"; break;
+                 case "white_mist_knight": this.GetComponent<SpriteRenderer>().sprite = white_mist_knight; player = "white"; break;
                 //Royal Units
                 case "white_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = white_royal_pawn; player = "white"; break;
                 case "white_royal_rook": this.GetComponent<SpriteRenderer>().sprite = white_royal_rook; player = "white"; break;
                 case "white_royal_bishop": this.GetComponent<SpriteRenderer>().sprite = white_royal_bishop; player = "white"; break;
                 case "white_royal_knight": this.GetComponent<SpriteRenderer>().sprite = white_royal_knight; player = "white"; break;
-                case "white_mist_knight": this.GetComponent<SpriteRenderer>().sprite = white_mist_knight; player = "white"; break;
-                case "black_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = black_royal_pawn; player = "black"; break;
+               
                 case "white_chronomagus": this.GetComponent<SpriteRenderer>().sprite = white_chronomagus; player = "white"; break;
+
+
+                //black summoned units
+                case "black_elemental_bishop": this.GetComponent<SpriteRenderer>().sprite = black_elemental_bishop; player = "black"; break;
+                case "black_ice_bishop": this.GetComponent<SpriteRenderer>().sprite = black_ice_bishop; player = "black"; break;
+                case "black_earth_bishop": this.GetComponent<SpriteRenderer>().sprite = black_earth_bishop; player = "black"; break;
+                case "black_fire_bishop": this.GetComponent<SpriteRenderer>().sprite = black_fire_bishop; player = "black"; break;
+                case "black_arch_bishop": this.GetComponent<SpriteRenderer>().sprite = black_arch_bishop; player = "black"; break;
+                case "black_wraith_pawn": this.GetComponent<SpriteRenderer>().sprite = black_wraith_pawn; player = "black"; break;
+                case "black_spectral_herald": this.GetComponent<SpriteRenderer>().sprite = black_spectral_herald; player = "black"; break;
+                case "black_mist_knight": this.GetComponent<SpriteRenderer>().sprite = black_mist_knight; player = "black"; break;
+
+                //black royal units
+                case "black_royal_pawn": this.GetComponent<SpriteRenderer>().sprite = black_royal_pawn; player = "black"; break;
+                case "black_royal_rook": this.GetComponent<SpriteRenderer>().sprite = black_royal_rook; player = "black"; break;
+                case "black_royal_bishop": this.GetComponent<SpriteRenderer>().sprite = black_royal_bishop; player = "black"; break;
+                case "black_royal_knight": this.GetComponent<SpriteRenderer>().sprite = black_royal_knight; player = "black"; break;
                 case "black_chronomagus": this.GetComponent<SpriteRenderer>().sprite = black_chronomagus; player = "black"; break;
+
+
+
                 //Elemental Tiles
                 case "tile_lava": this.GetComponent<SpriteRenderer>().sprite = tile_lava; player = "neutral"; break;
                 case "tile_ice": this.GetComponent<SpriteRenderer>().sprite = tile_ice; break;
@@ -683,7 +699,7 @@ if (game != null)
             }
         }
 
-        else if (this.name.StartsWith("white_pawn")|| this.name.StartsWith("white_wraith_pawn"))
+        else if (this.name.StartsWith("white_pawn")|| this.name.StartsWith("white_wraith_pawn")|| this.name.StartsWith("black_wraith_pawn"))
         {
             // Check for Solidarity status (Queen movement for last pawn)
             if (statusManager.HasStatus(StatusType.Solidarity, game.turns))
@@ -745,6 +761,7 @@ if (game != null)
                     }
                     break;
                 case "white_royal_rook":
+                case "black_royal_rook":
                     if (fortifyActive)
                         SurroundMovePlate();
                     else
@@ -766,8 +783,10 @@ if (game != null)
 
                 case "black_knight": LMovePlate(); break;
                 case "white_knight": LMovePlate(); break;
-                case "white_royal_knight": LMovePlate(); break;
-                case "black_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case "white_royal_knight":
+                case "black_royal_knight": LMovePlate(); break;
+
+                case "black_bishop":
                 case "white_bishop": 
                     // Check for Ethereal status
                     if (statusManager.HasStatus(StatusType.Ethereal, game.turns))
@@ -790,10 +809,15 @@ if (game != null)
                         LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1);
                     }
                     break;
-                case "white_elemental_bishop": 
-                case "white_ice_bishop": 
-                case "white_earth_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
-                case "white_fire_bishop": 
+                case "white_elemental_bishop" :
+                case "black_elemental_bishop": 
+                case "white_ice_bishop":
+                case "black_ice_bishop": 
+                case "white_earth_bishop" :
+                case "black_earth_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+
+                case "white_fire_bishop":
+                case "black_fire_bishop": 
                     // Check for Phoenix Resurrection enhanced abilities
                     if (statusManager.HasStatus(StatusType.PhoenixResurrection, game.turns))
                     {
@@ -808,10 +832,14 @@ if (game != null)
                         LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1);
                     }
                     break;
-                case "white_arch_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
-                case "white_royal_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
-                case "white_chronomagus": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+                case "white_arch_bishop" :
+                case "black_arch_bishop": 
+                case "white_royal_bishop" :
+                case "black_royal_bishop": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+
+                case "white_chronomagus" :
                 case "black_chronomagus": LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
+
                 case "black_queen":
                     LineMovePlate(1, 0); LineMovePlate(-1, 0); LineMovePlate(0, 1); LineMovePlate(0, -1);
                     LineMovePlate(1, 1); LineMovePlate(-1, -1); LineMovePlate(-1, 1); LineMovePlate(1, -1); break;
@@ -880,7 +908,7 @@ if (game != null)
                     if (targetCm.name == "tile_earth")
                     {
                         // Check if this is an Elemental Bishop or Earthbound Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop" || this.name == "white_earth_bishop" || name.Contains("king"))
+                        if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_earth_bishop" || name.Contains("king"))
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             x += xIncrement;
@@ -1063,7 +1091,7 @@ if (game != null)
                 if (targetCm.name == "tile_earth")
                 {
                     // Check if this is an Elemental Bishop, Earthbound Bishop, or other pieces that can pass through boulders
-                    if (this.name == "white_elemental_bishop" || this.name == "white_earth_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
+                    if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_earth_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                     {
                         Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
@@ -1167,7 +1195,7 @@ if (game != null)
                     if (targetCm.name == "tile_earth")
                     {
                         // Check if this is an Elemental Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
+                        if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                         {
                           //  Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
@@ -1235,7 +1263,7 @@ if (game != null)
                     if (targetCm.name == "tile_earth")
                     {
                         // Check if this is an Elemental Bishop (can pass through boulders)
-                        if (this.name == "white_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
+                        if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                         {
                             Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue

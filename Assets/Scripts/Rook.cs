@@ -7,10 +7,11 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
     public GameObject movePlatePrefab; // optional, keep if you want later
     public GameObject celestialOrbPrefab; // Add this field for the orb marker prefab
     
-    // Celestial Orb tracking
+    // Celestial Orb tracking (player-aware)
     private static List<Vector2Int> celestialOrbLocations = new List<Vector2Int>();
     private static List<bool> celestialOrbCaptured = new List<bool>();
     private static List<GameObject> celestialOrbObjects = new List<GameObject>();
+    private static string celestialOrbPlayer = ""; // Track which player created the orbs
 
     // small helper used during testing
     public void TestSkill()
@@ -156,7 +157,7 @@ public void AttemptFortify()
     GameObject selectedPiece = UIManager.Instance.selectedPiece;
     if (selectedPiece == null)
     {
-        Debug.Log("FortifySelected: no piece selected.");
+        Debug.Log("FortifySelected: no piece selected."); 
         return;
     }
 
@@ -291,6 +292,15 @@ public void royalRook()
     }
     
     string player = rookCm.GetPlayer();
+    Debug.Log($"[Royal Rook] Attempting activation for {player} player...");
+    
+    // ✅ Check cooldown BEFORE spending SP (using CooldownManager)
+    if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "RoyalRook"))
+    {
+        Debug.LogWarning($"[Royal Rook] Skill is on cooldown for {player} — cannot use.");
+        return;
+    }
+    
     if (SkillManager.Instance != null)
     {
         if (!SkillManager.Instance.SpendPlayerSP(player, 2))
@@ -309,8 +319,18 @@ public void royalRook()
         return;
     }
     
+    // ✅ Set cooldown using CooldownManager
+    if (CooldownManager.Instance != null)
+    {
+        CooldownManager.Instance.StartCooldown(player, "RoyalRook", CooldownManager.CooldownType.OncePerBattle);
+    }
+    Debug.Log($"[Royal Rook] Cooldown activated for {player} - once per battle.");
+    
     // Clear any existing celestial orbs
     ClearCelestialOrbs();
+    
+    // ✅ Store which player created these orbs
+    celestialOrbPlayer = player;
          
     
     Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
@@ -364,9 +384,11 @@ public void royalRook()
     
     Debug.Log($"[Royal Rook] Spawned 3 Celestial Orbs on tiles: {string.Join(", ", selectedTiles)}");
    
-    // End the Rook's turn
-    
-    
+    // Log skill usage
+    if (SkillTracker.Instance != null)
+    {
+        SkillTracker.Instance.LogSkillUsage(player, "ROOK", "ROYAL ROOK", 2);
+    }
     
     // Hide UI panels before ending turn
     if (UIManager.Instance != null)
@@ -442,11 +464,20 @@ private void ClearCelestialOrbs()
     celestialOrbLocations.Clear();
     celestialOrbCaptured.Clear();
     celestialOrbObjects.Clear();
+    celestialOrbPlayer = ""; // ✅ Clear player tracking
+    Debug.Log("[Royal Rook] Cleared all existing celestial orbs.");
 }
 
-// Check if Rook is on a celestial orb location
-public static void CheckCelestialOrbCapture(Vector2Int rookPosition)
+// Check if Rook is on a celestial orb location (player-aware)
+public static void CheckCelestialOrbCapture(Vector2Int rookPosition, string rookPlayer)
 {
+    // ✅ Only allow the rook that created the orbs to capture them
+    if (celestialOrbPlayer != rookPlayer)
+    {
+        Debug.Log($"[Royal Rook] {rookPlayer} rook cannot capture {celestialOrbPlayer}'s orbs!");
+        return;
+    }
+    
     for (int i = 0; i < celestialOrbLocations.Count; i++)
     {
         if (celestialOrbLocations[i] == rookPosition && !celestialOrbCaptured[i])
@@ -464,7 +495,7 @@ public static void CheckCelestialOrbCapture(Vector2Int rookPosition)
                 }
             }
             
-            Debug.Log($"[Royal Rook] Celestial Orb captured at ({rookPosition.x},{rookPosition.y})!");
+            Debug.Log($"[Royal Rook] {rookPlayer} Rook captured Celestial Orb at ({rookPosition.x},{rookPosition.y})!");
             
             // Check if all orbs are captured
             bool allCaptured = true;
@@ -479,7 +510,7 @@ public static void CheckCelestialOrbCapture(Vector2Int rookPosition)
             
             if (allCaptured)
             {
-                Debug.Log("[Royal Rook] Ready for promotion!");
+                Debug.Log($"[Royal Rook] {rookPlayer} Rook ready for promotion!");
                 
                 // Find the Rook that captured the last orb
                 GameObject rookToPromote = FindRookAtPosition(rookPosition);
@@ -490,7 +521,7 @@ public static void CheckCelestialOrbCapture(Vector2Int rookPosition)
                     
                     // Destroy the current Rook
                     Destroy(rookToPromote);
-                    Debug.Log($"[Royal Rook] Destroyed Rook at ({promotionPosition.x},{promotionPosition.y})");
+                    Debug.Log($"[Royal Rook] Destroyed {rookPlayer} Rook at ({promotionPosition.x},{promotionPosition.y})");
                     
                     // Destroy all celestial orbs
                     foreach (GameObject orb in celestialOrbObjects)
@@ -502,19 +533,21 @@ public static void CheckCelestialOrbCapture(Vector2Int rookPosition)
                     }
                     Debug.Log("[Royal Rook] Destroyed all celestial orbs");
                     
-                    // Create white_royal_rook at the last orb's position
+                    // ✅ Create player-specific royal_rook at the last orb's position
                     Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
-                    GameObject royalRook = game.Create("white_royal_rook", promotionPosition.x, promotionPosition.y);
+                    string royalRookName = $"{rookPlayer}_royal_rook";
+                    GameObject royalRook = game.Create(royalRookName, promotionPosition.x, promotionPosition.y);
                     
                     if (royalRook != null)
                     {
-                        Debug.Log($"[Royal Rook] Created white_royal_rook at ({promotionPosition.x},{promotionPosition.y})");
+                        Debug.Log($"[Royal Rook] Created {royalRookName} at ({promotionPosition.x},{promotionPosition.y})");
                     }
                     
                     // Clear celestial orb tracking
                     celestialOrbLocations.Clear();
                     celestialOrbCaptured.Clear();
                     celestialOrbObjects.Clear();
+                    celestialOrbPlayer = "";
                     
                   
                 }

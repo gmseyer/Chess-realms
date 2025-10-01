@@ -3,12 +3,22 @@ using UnityEngine;
 public class Archbishop : MonoBehaviour
 {
     private Game game;
-    private static bool temporalShiftUsed = false; // ✅ shared flag for whole battle
-    public static bool eternityPierceUsed = false; // ✅ shared flag for whole battle
-    public static bool soulbindingConquestUsed = false; // ✅ shared flag for whole battle
+    private Chessman chessman; // ✅ Cache Chessman reference for player info
+    // Removed: private static bool temporalShiftUsed - now using CooldownManager
+    // Removed: public static bool eternityPierceUsed - now using CooldownManager
+    // Removed: public static bool soulbindingConquestUsed - now using CooldownManager per player
     public static string capturedPieceName = ""; // Store the name of the captured piece
+    public static string capturedPiecePlayer = ""; // Store which player captured the piece
 
     public GameObject movePlatePrefab; // Add this field
+
+    private void Awake()
+    {
+        // Cache Chessman reference (following Bishop pattern)
+        chessman = GetComponent<Chessman>();
+        if (chessman == null)
+            Debug.LogError("[Archbishop] Missing Chessman component!");
+    }
 
     private void Start() 
     {
@@ -17,57 +27,117 @@ public class Archbishop : MonoBehaviour
 
     public void TemporalShiftButton()
     {
-        // ✅ Prevent multiple uses per battle
-        if (temporalShiftUsed)
+        // ✅ Get the selected archbishop from UIManager (following Queen/Bishop pattern)
+        Archbishop selectedArchbishop = null;
+        Chessman cm = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            Debug.LogWarning("[Archbishop] Temporal Shift already used this battle!");
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedArchbishop = selectedPiece.GetComponent<Archbishop>();
+            cm = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedArchbishop == null || cm == null)
+            {
+                Debug.LogError($"[Temporal Shift] Selected piece {selectedPiece.name} is not an Archbishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[Temporal Shift] No piece selected via UIManager!");
+            return;
+        }
+        
+        string player = cm.GetPlayer();
+        string enemyPlayer = (player == "white") ? "black" : "white";
+        Debug.Log($"[Temporal Shift] Attempting activation for {player} player...");
+        
+        // ✅ Check cooldown BEFORE spending SP (using CooldownManager)
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "TemporalShift"))
+        {
+            Debug.LogWarning($"[Temporal Shift] Skill is on cooldown for {player} — cannot use.");
             return;
         }
 
-        // ✅ Deduct SP
-        if (!SkillManager.Instance.SpendPlayerSP("white", 2)) 
+        // ✅ Deduct SP from correct player
+        if (!SkillManager.Instance.SpendPlayerSP(player, 2)) 
         {
-            Debug.LogWarning("[Archbishop] Not enough SP to use Temporal Shift!");
+            Debug.LogWarning($"[Temporal Shift] Not enough SP for {player} to use Temporal Shift!");
             return;
         }
 
-        temporalShiftUsed = true; // ✅ Mark as used
-        Debug.Log("[Archbishop] Temporal Shift activated by white!");
+        // ✅ Set cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "TemporalShift", CooldownManager.CooldownType.OncePerBattle);
+        }
+        Debug.Log($"[Temporal Shift] Skill activated by {player} - restricting {enemyPlayer} player!");
 
-        game.SetPlayerRestriction("black", 1);
+        // Restrict enemy player to pawns only for 1 turn
+        game.SetPlayerRestriction(enemyPlayer, 1);
+        
+        // Log skill usage
+        if (SkillTracker.Instance != null)
+        {
+            SkillTracker.Instance.LogSkillUsage(player, "ARCHBISHOP", "TEMPORAL SHIFT", 2);
+        }
 
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
             Destroy(plate);
 
         game.NextTurn();
+        
         // Update visual status of all pieces on the board immediately 
-Chessman[] allPieces = FindObjectsOfType<Chessman>();
-foreach (Chessman piece in allPieces)
-{
-    piece.UpdateVisualStatus();
-}
+        Chessman[] allPieces = FindObjectsOfType<Chessman>();
+        foreach (Chessman piece in allPieces)
+        {
+            piece.UpdateVisualStatus();
+        }
     }
 
     // Eternity Pierce skill
     public void TriggerEternityPierce()
     {
-        // Check if already used this battle
-        if (eternityPierceUsed)
+        // ✅ Get the selected archbishop from UIManager (following TemporalShift pattern)
+        Archbishop selectedArchbishop = null;
+        Chessman cm = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            Debug.LogWarning("[Eternity Pierce] Already used this battle — skill blocked.");
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedArchbishop = selectedPiece.GetComponent<Archbishop>();
+            cm = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedArchbishop == null || cm == null)
+            {
+                Debug.LogError($"[Eternity Pierce] Selected piece {selectedPiece.name} is not an Archbishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[Eternity Pierce] No piece selected via UIManager!");
+            return;
+        }
+        
+        string player = cm.GetPlayer();
+        Debug.Log($"[Eternity Pierce] Attempting activation for {player} player...");
+        
+        // ✅ Check cooldown BEFORE spending SP (using CooldownManager)
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "EternityPierce"))
+        {
+            Debug.LogWarning($"[Eternity Pierce] Skill is on cooldown for {player} — cannot use.");
             return;
         }
 
-        // Get game reference (following Queen pattern)
+        // Get game reference
         Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
-        
-        // Get current player
-        string currentPlayer = game.GetCurrentPlayer();
 
-        // Check SP cost (minimum 1 SP)
-        if (SkillManager.Instance.GetPlayerSP(currentPlayer) < 1)
+        // Check SP cost (minimum 1 SP) - but don't spend yet, plates will handle SP cost
+        if (SkillManager.Instance.GetPlayerSP(player) < 1)
         {
-            Debug.LogWarning($"[Eternity Pierce] Not enough SP for {currentPlayer} (minimum 1 SP).");
+            Debug.LogWarning($"[Eternity Pierce] Not enough SP for {player} (minimum 1 SP).");
             return;
         }
 
@@ -76,12 +146,12 @@ foreach (Chessman piece in allPieces)
             Destroy(plate);
 
         // Spawn Eternity Pierce plates in all 4 diagonal directions
-        SpawnEternityPiercePlates(game);
+        SpawnEternityPiercePlates(game, player);
 
-        Debug.Log("[Eternity Pierce] Direction selection tiles generated. Choose your firing direction.");
+        Debug.Log($"[Eternity Pierce] Direction selection tiles generated for {player}. Choose your firing direction.");
     }
 
-    private void SpawnEternityPiercePlates(Game game)
+    private void SpawnEternityPiercePlates(Game game, string player)
     {
         // Get Archbishop's position using UIManager pattern (following Queen/Bishop pattern)
         GameObject selectedPiece = UIManager.Instance.selectedPiece;
@@ -102,13 +172,13 @@ foreach (Chessman piece in allPieces)
         int archbishopY = archbishopCm.GetYBoard();
 
         // Spawn plates in all 4 diagonal directions (3 tiles each)
-        SpawnEternityPierceDirection(game, archbishopX, archbishopY, 1, 1);   // NE
-        SpawnEternityPierceDirection(game, archbishopX, archbishopY, 1, -1);  // SE
-        SpawnEternityPierceDirection(game, archbishopX, archbishopY, -1, 1);  // NW
-        SpawnEternityPierceDirection(game, archbishopX, archbishopY, -1, -1); // SW
+        SpawnEternityPierceDirection(game, archbishopX, archbishopY, 1, 1, player);   // NE
+        SpawnEternityPierceDirection(game, archbishopX, archbishopY, 1, -1, player);  // SE
+        SpawnEternityPierceDirection(game, archbishopX, archbishopY, -1, 1, player);  // NW
+        SpawnEternityPierceDirection(game, archbishopX, archbishopY, -1, -1, player); // SW
     }
 
-    private void SpawnEternityPierceDirection(Game game, int startX, int startY, int xIncrement, int yIncrement)
+    private void SpawnEternityPierceDirection(Game game, int startX, int startY, int xIncrement, int yIncrement, string player)
     {
         for (int i = 1; i <= 3; i++) // Only 3 tiles per direction
         {
@@ -119,11 +189,11 @@ foreach (Chessman piece in allPieces)
             if (!game.PositionOnBoard(x, y)) break;
 
             // Spawn the Eternity Pierce plate
-            SpawnEternityPiercePlate(game, x, y, i); // i = distance (1st, 2nd, 3rd tile)
+            SpawnEternityPiercePlate(game, x, y, i, player); // i = distance (1st, 2nd, 3rd tile)
         }
     }
 
-    private void SpawnEternityPiercePlate(Game game, int x, int y, int distance)
+    private void SpawnEternityPiercePlate(Game game, int x, int y, int distance, string player)
     {
         // Use the same positioning as other move plates
         float fx = x * 0.57f - 1.98f;
@@ -135,9 +205,9 @@ foreach (Chessman piece in allPieces)
         MovePlate old = mp.GetComponent<MovePlate>();
         if (old != null) Destroy(old);
 
-        // Add EternityPiercePlate script
+        // Add EternityPiercePlate script with player info
         EternityPiercePlate plate = mp.AddComponent<EternityPiercePlate>();
-        plate.Setup(game, x, y, this, distance);
+        plate.Setup(game, x, y, player, distance);
 
         // Make eternity pierce plates visually distinct (red)
         SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();
@@ -149,13 +219,13 @@ foreach (Chessman piece in allPieces)
 
     }
 
-    // Soulbinding Conquest passive skill
-    public static void TriggerSoulbindingConquest(string capturedPiece)
+    // Soulbinding Conquest passive skill (player-aware)
+    public static void TriggerSoulbindingConquest(string capturedPiece, string player)
     {
-        // Check if already used this battle
-        if (soulbindingConquestUsed)
+        // ✅ Check if already used this battle using CooldownManager (player-specific)
+        if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "SoulbindingConquest"))
         {
-            Debug.LogWarning("[Soulbinding Conquest] Already used this battle — skill blocked.");
+            Debug.LogWarning($"[Soulbinding Conquest] Already used this battle for {player} — skill blocked.");
             return;
         }
 
@@ -166,11 +236,17 @@ foreach (Chessman piece in allPieces)
             return;
         }
 
-        // Store the captured piece name and mark as used
+        // Store the captured piece name, player, and mark as used
         capturedPieceName = capturedPiece;
-        soulbindingConquestUsed = true;
+        capturedPiecePlayer = player;
+        
+        // ✅ Set cooldown using CooldownManager
+        if (CooldownManager.Instance != null)
+        {
+            CooldownManager.Instance.StartCooldown(player, "SoulbindingConquest", CooldownManager.CooldownType.OncePerBattle);
+        }
 
-        Debug.Log($"[Soulbinding Conquest] Captured {capturedPiece} - summoning tiles will be created!");
+        Debug.Log($"[Soulbinding Conquest] {player} Archbishop captured {capturedPiece} - summoning tiles will be created!");
     }
 
     private static bool IsValidPieceForSummoning(string pieceName)
@@ -185,7 +261,7 @@ foreach (Chessman piece in allPieces)
     {
         Game game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
         string currentPlayer = game.GetCurrentPlayer();
-
+ 
         // Get all vacant tiles on the player's side
         Vector2Int[] playerSidePositions = GetPlayerSidePositions(currentPlayer);
         
@@ -237,9 +313,10 @@ foreach (Chessman piece in allPieces)
         MovePlate oldScript = mp.GetComponent<MovePlate>();
         if (oldScript != null) Destroy(oldScript);
 
-        // Add SoulbindingSummonPlate script
+        // Add SoulbindingSummonPlate script with current player info
+        string currentPlayer = game.GetCurrentPlayer();
         SoulbindingSummonPlate plate = mp.AddComponent<SoulbindingSummonPlate>();
-        plate.Setup(game, x, y, capturedPieceName);
+        plate.Setup(game, x, y, capturedPieceName, currentPlayer);
 
         // Make summon plates visually distinct (green)
         SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();

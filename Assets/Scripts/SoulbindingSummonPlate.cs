@@ -5,18 +5,20 @@ public class SoulbindingSummonPlate : MonoBehaviour
     private Game game;
     private int x, y;
     private string pieceToSummon;
+    private string player; // Store the player who will summon
 
-    public void Setup(Game g, int tileX, int tileY, string pieceName)
+    public void Setup(Game g, int tileX, int tileY, string pieceName, string playerName)
     {
         game = g;
         x = tileX;
         y = tileY;
         pieceToSummon = pieceName;
+        player = playerName;
     }
 
     private void OnMouseUp() 
     {
-        Debug.Log($"[SoulbindingSummonPlate] Clicked at ({x},{y}) to summon {pieceToSummon}");
+        Debug.Log($"[SoulbindingSummonPlate] Clicked at ({x},{y}) to summon {pieceToSummon} for {player} player");
 
         // Check if tile is still empty
         if (game.GetPosition(x, y) != null)
@@ -25,11 +27,11 @@ public class SoulbindingSummonPlate : MonoBehaviour
             return;
         }
 
-        // Convert captured piece to white version
-        string whitePieceName = ConvertToWhitePiece(pieceToSummon);
+        // Convert captured piece to current player's version
+        string playerPieceName = ConvertToPlayerPiece(pieceToSummon, player);
         
         // Check if conversion was successful
-        if (whitePieceName == null)
+        if (playerPieceName == null)
         {
             Debug.LogError($"[SoulbindingSummonPlate] Cannot summon {pieceToSummon} - invalid piece type!");
             
@@ -42,23 +44,22 @@ public class SoulbindingSummonPlate : MonoBehaviour
             return;
         }
         
-        // Create the white version of the captured piece on the chosen tile
-        GameObject summonedPiece = game.Create(whitePieceName, x, y);
+        // Create the current player's version of the captured piece on the chosen tile
+        GameObject summonedPiece = game.Create(playerPieceName, x, y);
         
         if (summonedPiece != null)
         {
-            Debug.Log($"[SoulbindingSummonPlate] Successfully summoned {whitePieceName} (converted from {pieceToSummon}) at ({x},{y})");
+            Debug.Log($"[SoulbindingSummonPlate] Successfully summoned {playerPieceName} (converted from {pieceToSummon}) at ({x},{y}) for {player} player");
             
             // Log skill usage if SkillTracker is available
             if (SkillTracker.Instance != null)
             {
-                string currentPlayer = game.GetCurrentPlayer();
-                SkillTracker.Instance.LogSkillUsage(currentPlayer, "ARCHBISHOP", "SOULBINDING CONQUEST", 0);
+                SkillTracker.Instance.LogSkillUsage(player, "ARCHBISHOP", "SOULBINDING CONQUEST", 0);
             }
         }
         else
         {
-            Debug.LogError($"[SoulbindingSummonPlate] Failed to create {pieceToSummon} at ({x},{y})");
+            Debug.LogError($"[SoulbindingSummonPlate] Failed to create {playerPieceName} at ({x},{y})");
         }
 
         // Clean up all summon plates
@@ -69,26 +70,26 @@ public class SoulbindingSummonPlate : MonoBehaviour
         game.NextTurn();
     }
 
-    private string ConvertToWhitePiece(string capturedPiece)
+    // ✅ Convert captured piece to current player's version (player-aware)
+    private string ConvertToPlayerPiece(string capturedPiece, string player)
     {
-        // Convert any captured piece to its white equivalent
+        // Convert any captured piece to the current player's equivalent
         if (capturedPiece.Contains("pawn"))
         {
-            // For pawns, we need to determine which white pawn to create
-            // Since we don't have specific pawn numbers, we'll create a generic white_pawn
-            return "white_pawn";
+            // For pawns, create a generic pawn for the current player
+            return $"{player}_pawn";
         }
         else if (capturedPiece.Contains("knight"))
         {
-            return "white_knight";
+            return $"{player}_knight";
         }
         else if (capturedPiece.Contains("rook"))
         {
-            return "white_rook";
+            return $"{player}_rook";
         }
         else if (capturedPiece.Contains("bishop"))
         {
-            return "white_bishop";
+            return $"{player}_bishop";
         }
         
         // If we reach here, the piece is not valid for summoning (queen, king, etc.)

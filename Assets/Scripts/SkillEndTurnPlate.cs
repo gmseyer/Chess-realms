@@ -11,7 +11,7 @@ public class SkillEndTurnPlate : MonoBehaviour
     {
         game = g;
         x = tileX;
-        y = tileY;
+        y = tileY; 
         tileName = name; 
     }
 

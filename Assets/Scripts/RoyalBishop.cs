@@ -20,33 +20,42 @@ public class RoyalBishop : Pieces
     // SoulRequiem Skill - Summon 2 Wraith Pawns in diagonal range
     public void SoulRequiem()
     {
-        string player = "white"; // Royal Bishop is always white
+        // ✅ Get the selected Royal Bishop from UIManager (following Bishop pattern)
+        RoyalBishop selectedRoyalBishop = null;
+        Chessman cm = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
+        {
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedRoyalBishop = selectedPiece.GetComponent<RoyalBishop>();
+            cm = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedRoyalBishop == null || cm == null)
+            {
+                Debug.LogError($"[SoulRequiem] Selected piece {selectedPiece.name} is not a Royal Bishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[SoulRequiem] No piece selected via UIManager!");
+            return;
+        }
+        
+        string player = cm.GetPlayer();
+        Debug.Log($"[SoulRequiem] Attempting activation for {player} player...");
         
         // Check cooldown (24 turns)
         if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "SoulRequiem"))
         {
-            Debug.LogWarning("[SoulRequiem] Skill is on cooldown - cannot use.");
+            Debug.LogWarning($"[SoulRequiem] Skill is on cooldown for {player} - cannot use.");
             return;
         }
         
         // Check SP cost (2 SP)
         if (!SkillManager.Instance.SpendPlayerSP(player, 2))
         { 
-            Debug.LogWarning("[SoulRequiem] Not enough SP to cast.");
-            return;
-        }
-        
-        // Get the selected Royal Bishop (following existing Bishop pattern)
-        RoyalBishop selectedRoyalBishop = null;
-        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
-        {
-            GameObject selectedPiece = UIManager.Instance.selectedPiece;
-            selectedRoyalBishop = selectedPiece.GetComponent<RoyalBishop>();
-        }
-        
-        if (selectedRoyalBishop == null)
-        {
-            Debug.LogError("[SoulRequiem] No selected Royal Bishop found!");
+            Debug.LogWarning($"[SoulRequiem] Not enough SP for {player} to cast.");
             return;
         }
         
@@ -70,42 +79,51 @@ public class RoyalBishop : Pieces
         if (CooldownManager.Instance != null)
         {
             CooldownManager.Instance.StartCooldown(player, "SoulRequiem", CooldownManager.CooldownType.TurnBased, 24);
-            Debug.Log("[SoulRequiem] Skill activated - now on cooldown for 24 turns!");
+            Debug.Log($"[SoulRequiem] Skill activated for {player} - now on cooldown for 24 turns!");
         }
         
-        Debug.Log("[SoulRequiem] Skill activated - diagonal range plates generated!");
+        Debug.Log($"[SoulRequiem] Skill activated for {player} - diagonal range plates generated!");
     }
 
     // SanctifiedRuin Skill - Create a Sacred Zone on a 3×3 area centered on a diagonal tile
     public void SanctifiedRuin()
     {
-        string player = "white"; // Royal Bishop is always white
+        // ✅ Get the selected Royal Bishop from UIManager (following Bishop pattern)
+        RoyalBishop selectedRoyalBishop = null;
+        Chessman cm = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
+        {
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedRoyalBishop = selectedPiece.GetComponent<RoyalBishop>();
+            cm = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedRoyalBishop == null || cm == null)
+            {
+                Debug.LogError($"[SanctifiedRuin] Selected piece {selectedPiece.name} is not a Royal Bishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[SanctifiedRuin] No piece selected via UIManager!");
+            return;
+        }
+        
+        string player = cm.GetPlayer();
+        Debug.Log($"[SanctifiedRuin] Attempting activation for {player} player...");
         
         // Check cooldown (24 turns)
         if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "SanctifiedRuin"))
         {
-            Debug.LogWarning("[SanctifiedRuin] Skill is on cooldown - cannot use.");
+            Debug.LogWarning($"[SanctifiedRuin] Skill is on cooldown for {player} - cannot use.");
             return;
         }
         
         // Check SP cost (2 SP)
         if (!SkillManager.Instance.SpendPlayerSP(player, 2))
         { 
-            Debug.LogWarning("[SanctifiedRuin] Not enough SP to cast.");
-            return;
-        }
-        
-        // Get the selected Royal Bishop (following existing Bishop pattern)
-        RoyalBishop selectedRoyalBishop = null;
-        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
-        {
-            GameObject selectedPiece = UIManager.Instance.selectedPiece;
-            selectedRoyalBishop = selectedPiece.GetComponent<RoyalBishop>();
-        }
-        
-        if (selectedRoyalBishop == null)
-        {
-            Debug.LogError("[SanctifiedRuin] No selected Royal Bishop found!");
+            Debug.LogWarning($"[SanctifiedRuin] Not enough SP for {player} to cast.");
             return;
         }
         
@@ -129,10 +147,10 @@ public class RoyalBishop : Pieces
         if (CooldownManager.Instance != null)
         {
             CooldownManager.Instance.StartCooldown(player, "SanctifiedRuin", CooldownManager.CooldownType.TurnBased, 24);
-            Debug.Log("[SanctifiedRuin] Skill activated - now on cooldown for 24 turns!");
+            Debug.Log($"[SanctifiedRuin] Skill activated for {player} - now on cooldown for 24 turns!");
         }
         
-        Debug.Log("[SanctifiedRuin] Skill activated - diagonal range plates generated for zone selection!");
+        Debug.Log($"[SanctifiedRuin] Skill activated for {player} - diagonal range plates generated for zone selection!");
     }
 
     // Divinity Passive - gains 1 turn invulnerability when capturing pieces
@@ -257,7 +275,7 @@ public class RoyalBishop : Pieces
         
         // Add RequiemPlate script
         RequiemPlate requiemScript = mp.AddComponent<RequiemPlate>();
-        requiemScript.Setup(gameObject, matrixX, matrixY);
+        requiemScript.Setup(gameObject, matrixX, matrixY, chessman.GetPlayer());
         
         // Make requiem plates visually distinct (purple color)
         SpriteRenderer sr = mp.GetComponent<SpriteRenderer>();

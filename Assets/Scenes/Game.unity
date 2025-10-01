@@ -232,7 +232,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -173.89, y: -43.76}
+  m_AnchoredPosition: {x: 6, y: -43.76}
   m_SizeDelta: {x: 157.38, y: 36.68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &12787347
@@ -1985,7 +1985,19 @@ MonoBehaviour:
       piece would be captured, the Knight teleports to its tile and is captured instead.
     onActivate:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 1841563198}
+          m_TargetAssemblyTypeName: Knight, Assembly-CSharp
+          m_MethodName: ChivalricGuard
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
   - skillName: TRIAL OF VALOR
     skillType: PROMOTION
     spCost: 2
@@ -4026,7 +4038,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5411182, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -13.181976, y: 0.000016212463}
+  m_AnchoredPosition: {x: -13.182007, y: 0.000016212463}
   m_SizeDelta: {x: 15.169998, y: 33.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &102826238
@@ -9752,6 +9764,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 254577380}
   m_CullTransparentMesh: 1
+--- !u!1 &255317190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 255317192}
+  - component: {fileID: 255317191}
+  m_Layer: 0
+  m_Name: EarthBishop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &255317191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255317190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b5b2dc711883a1479d69c31d25e00b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &255317192
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 255317190}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.56060517, y: -1.916039, z: -0.0164919}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &258220319
 GameObject:
   m_ObjectHideFlags: 0
@@ -14470,7 +14526,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -3.1837158, y: -273.77515}
+  m_AnchoredPosition: {x: -3.1835938, y: -273.7754}
   m_SizeDelta: {x: 105.15015, y: -543.6598}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &404968316
@@ -17022,7 +17078,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &473715466
 RectTransform:
   m_ObjectHideFlags: 0
@@ -26801,7 +26857,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "INFERNAL \nBRAND"
+  m_text: 'SEISMIC
+
+    SEAL'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -30455,14 +30513,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 72916002}
-        m_TargetAssemblyTypeName: SkillManagerTMP, Assembly-CSharp
-        m_MethodName: OpenSkillPanel
-        m_Mode: 3
+      - m_Target: {fileID: 255317191}
+        m_TargetAssemblyTypeName: EarthboundBishop, Assembly-CSharp
+        m_MethodName: SeismicSeal
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 6
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -43147,14 +43205,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 72916002}
-        m_TargetAssemblyTypeName: SkillManagerTMP, Assembly-CSharp
-        m_MethodName: OpenSkillPanel
-        m_Mode: 3
+      - m_Target: {fileID: 255317191}
+        m_TargetAssemblyTypeName: EarthboundBishop, Assembly-CSharp
+        m_MethodName: Polarity
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 7
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -50821,7 +50879,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -173.89, y: -43.76}
+  m_AnchoredPosition: {x: 189, y: -43.76}
   m_SizeDelta: {x: 157.38, y: 36.68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1513085670
@@ -59933,7 +59991,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -75.39, y: 1.2799988}
+  m_AnchoredPosition: {x: -75.38989, y: 1.2799988}
   m_SizeDelta: {x: -224.75, y: -41.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1760649351
@@ -70888,21 +70946,31 @@ MonoBehaviour:
   white_pawn: {fileID: 21300000, guid: da81633aa03645145ae1b41587366583, type: 3}
   white_elemental_bishop: {fileID: 21300000, guid: 61d2c75d5d05f3f4bb1b2750fca98e6f,
     type: 3}
+  black_elemental_bishop: {fileID: 0}
   white_arch_bishop: {fileID: 21300000, guid: 80595f560b1427e4aaf468daa9974fc1, type: 3}
+  black_arch_bishop: {fileID: 0}
   white_wraith_pawn: {fileID: 0}
+  black_wraith_pawn: {fileID: 0}
   white_spectral_herald: {fileID: 0}
   black_spectral_herald: {fileID: 0}
-  white_ice_bishop: {fileID: 0}
-  white_earth_bishop: {fileID: 0}
-  white_fire_bishop: {fileID: 0}
-  white_royal_pawn: {fileID: 21300000, guid: 831bab5e114e9c14eabb1793ecf69336, type: 3}
-  white_royal_rook: {fileID: 0}
-  white_royal_bishop: {fileID: 0}
-  white_royal_knight: {fileID: 0}
   white_mist_knight: {fileID: 0}
+  black_mist_knight: {fileID: 0}
+  white_ice_bishop: {fileID: 0}
+  black_ice_bishop: {fileID: 0}
+  white_earth_bishop: {fileID: 0}
+  black_earth_bishop: {fileID: 0}
+  white_fire_bishop: {fileID: 0}
+  black_fire_bishop: {fileID: 0}
+  white_royal_pawn: {fileID: 21300000, guid: 831bab5e114e9c14eabb1793ecf69336, type: 3}
+  black_royal_pawn: {fileID: 0}
+  white_royal_rook: {fileID: 0}
+  black_royal_rook: {fileID: 0}
+  white_royal_bishop: {fileID: 0}
+  black_royal_bishop: {fileID: 0}
+  white_royal_knight: {fileID: 0}
+  black_royal_knight: {fileID: 0}
   white_chronomagus: {fileID: 0}
   black_chronomagus: {fileID: 0}
-  black_royal_pawn: {fileID: 0}
   tile_lava: {fileID: 21300000, guid: f0c2abfac604f1345864039cd1e5dd5c, type: 3}
   tile_ice: {fileID: 21300000, guid: 263aa9c96d379b14c9805d6aa62510e2, type: 3}
   tile_earth: {fileID: 21300000, guid: bbfd5c64bda093e4a839e1433b8b1b71, type: 3}
@@ -70910,6 +70978,7 @@ MonoBehaviour:
   tile_void: {fileID: 0}
   tile_altar: {fileID: 0}
   white_ashen_pyre: {fileID: 0}
+  tile_terra_ward: {fileID: 0}
   celestial_pillar: {fileID: 0}
   tile_sanctuary: {fileID: 0}
   fortifyActive: 0
@@ -73535,6 +73604,7 @@ SceneRoots:
   - {fileID: 1422114242}
   - {fileID: 1811307014}
   - {fileID: 714150903}
+  - {fileID: 255317192}
   - {fileID: 298031822}
   - {fileID: 1783933381}
   - {fileID: 1206980337}

@@ -60,8 +60,8 @@ public static bool pawnsGambitUsed = false; // Track if Pawn's Gambit has been u
         {
             Instance = this;
             // Force set SP to 0 (overrides Inspector values)
-            whiteSkillPoints = 5;
-            blackSkillPoints = 0;
+            whiteSkillPoints = 5; // FORCE WORKING
+            blackSkillPoints = 5;
             lastProcessedTurn = 0;
             UpdateSPUI(); // initialize text at start
             Debug.Log("[SkillManager] SP system initialized: Both players start with 0 SP");
