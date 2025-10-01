@@ -13,6 +13,7 @@ public class IceBishop : MonoBehaviour
     
     // Frostbound tracking
     private static int frostboundEndTurn = -1;
+    private static string frostboundCaster = "";
     
     // Helper class to track pieces by position and name
     private class AbsoluteZeroPiece
@@ -40,11 +41,25 @@ public class IceBishop : MonoBehaviour
     // Cryostasis Surge Passive - triggers after moving
     public void CryostasisSurge()
     {
-        // Find the actual IceBishop piece on the board (not the script GameObject)
-        Chessman iceBishopChessman = FindIceBishopPiece();
-        if (iceBishopChessman == null)
+        // ✅ Get the selected ice bishop from UIManager (following Archbishop pattern)
+        IceBishop selectedIceBishop = null;
+        Chessman iceBishopChessman = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            Debug.LogError("[CryostasisSurge] Could not find IceBishop piece on board!");
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedIceBishop = selectedPiece.GetComponent<IceBishop>();
+            iceBishopChessman = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedIceBishop == null || iceBishopChessman == null)
+            {
+                Debug.LogError($"[CryostasisSurge] Selected piece {selectedPiece.name} is not an IceBishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[CryostasisSurge] No piece selected via UIManager!");
             return;
         }
         
@@ -158,15 +173,14 @@ public class IceBishop : MonoBehaviour
     /// <returns>True if Glacial Mirror was triggered, false otherwise</returns>
     public bool TryTriggerGlacialMirror()
     {
-        // Find the actual IceBishop piece on the board (not the script GameObject)
-        Chessman iceBishopChessman = FindIceBishopPiece();
-        if (iceBishopChessman == null)
+        // ✅ Use the current ice bishop instance (this is called from MovePlate on the specific piece being captured)
+        if (chessman == null)
         {
-            Debug.LogError("[GlacialMirror] Could not find IceBishop piece on board!");
+            Debug.LogError("[GlacialMirror] No Chessman component found on this IceBishop!");
             return false;
         }
         
-        string player = iceBishopChessman.GetPlayer();
+        string player = chessman.GetPlayer();
         
         // Check if Glacial Mirror is on cooldown
         if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "GlacialMirror"))
@@ -175,13 +189,13 @@ public class IceBishop : MonoBehaviour
             return false;
         }
         
-        Debug.Log($"[GlacialMirror] {iceBishopChessman.name} activates Glacial Mirror! Attack negated, entering frozen state for 4 turns.");
+        Debug.Log($"[GlacialMirror] {chessman.name} activates Glacial Mirror! Attack negated, entering frozen state for 4 turns.");
         
         // Apply frozen status to self (4 turns duration)
-        iceBishopChessman.statusManager.AddStatus(StatusType.Frozen, game.turns + 4);
+        chessman.statusManager.AddStatus(StatusType.Frozen, game.turns + 4);
         
         // Update visual status immediately for real-time effect
-        iceBishopChessman.UpdateVisualStatus();
+        chessman.UpdateVisualStatus();
         
         // Start cooldown (30 turns)
         if (CooldownManager.Instance != null)
@@ -198,11 +212,25 @@ public class IceBishop : MonoBehaviour
     /// </summary>
     public void AbsoluteZero()
     {
-        // Find the actual IceBishop piece on the board (not the script GameObject)
-        Chessman iceBishopChessman = FindIceBishopPiece();
-        if (iceBishopChessman == null)
+        // ✅ Get the selected ice bishop from UIManager (following Archbishop pattern)
+        IceBishop selectedIceBishop = null;
+        Chessman iceBishopChessman = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            Debug.LogError("[AbsoluteZero] Could not find IceBishop piece on board!");
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedIceBishop = selectedPiece.GetComponent<IceBishop>();
+            iceBishopChessman = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedIceBishop == null || iceBishopChessman == null)
+            {
+                Debug.LogError($"[AbsoluteZero] Selected piece {selectedPiece.name} is not an IceBishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[AbsoluteZero] No piece selected via UIManager!");
             return;
         }
         
@@ -354,11 +382,25 @@ public class IceBishop : MonoBehaviour
     /// </summary>
     public void Frostbound()
     {
-        // Find the actual IceBishop piece on the board (not the script GameObject)
-        Chessman iceBishopChessman = FindIceBishopPiece();
-        if (iceBishopChessman == null)
+        // ✅ Get the selected ice bishop from UIManager (following Archbishop pattern)
+        IceBishop selectedIceBishop = null;
+        Chessman iceBishopChessman = null;
+        
+        if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
         {
-            Debug.LogError("[Frostbound] Could not find IceBishop piece on board!");
+            GameObject selectedPiece = UIManager.Instance.selectedPiece;
+            selectedIceBishop = selectedPiece.GetComponent<IceBishop>();
+            iceBishopChessman = selectedPiece.GetComponent<Chessman>();
+            
+            if (selectedIceBishop == null || iceBishopChessman == null)
+            {
+                Debug.LogError($"[Frostbound] Selected piece {selectedPiece.name} is not an IceBishop or missing Chessman component!");
+                return;
+            }
+        }
+        else
+        {
+            Debug.LogError("[Frostbound] No piece selected via UIManager!");
             return;
         }
         
@@ -381,8 +423,9 @@ public class IceBishop : MonoBehaviour
         // Deduct SP
         SkillManager.Instance.SpendPlayerSP(player, 2);
         
-        // Set Frostbound duration (4 turns)
+        // Set Frostbound duration (4 turns) and track the caster
         frostboundEndTurn = game.turns + 4;
+        frostboundCaster = player;
         
         // Start cooldown (15 turns)
         if (CooldownManager.Instance != null)
@@ -406,6 +449,14 @@ public class IceBishop : MonoBehaviour
     }
     
     /// <summary>
+    /// Get the player who cast Frostbound
+    /// </summary>
+    public static string GetFrostboundCaster()
+    {
+        return frostboundCaster;
+    }
+    
+    /// <summary>
     /// Check if Frostbound period has ended and reset tracking
     /// </summary>
     public static void CheckFrostboundExpiry(int currentTurn)
@@ -414,6 +465,7 @@ public class IceBishop : MonoBehaviour
         {
             Debug.Log("[Frostbound] Period ended - no longer active.");
             frostboundEndTurn = -1;
+            frostboundCaster = "";
         }
     }
 }
