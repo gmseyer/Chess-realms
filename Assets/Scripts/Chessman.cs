@@ -60,6 +60,7 @@ public class Chessman : MonoBehaviour
 
     public Sprite tile_altar;//removed
     public Sprite white_ashen_pyre;
+    public Sprite black_ashen_pyre;
     public Sprite tile_terra_ward;
     
     public Sprite celestial_pillar;
@@ -452,6 +453,7 @@ if (game != null)
                 case "tile_sanctuary": this.GetComponent<SpriteRenderer>().sprite = tile_sanctuary; player = "neutral"; break;
                 case "tile_altar": this.GetComponent<SpriteRenderer>().sprite = tile_altar; player = "white"; break;
                 case "white_ashen_pyre": this.GetComponent<SpriteRenderer>().sprite = white_ashen_pyre; player = "white"; break;
+                case "black_ashen_pyre": this.GetComponent<SpriteRenderer>().sprite = black_ashen_pyre; player = "black"; break;
                 case "tile_terra_ward": this.GetComponent<SpriteRenderer>().sprite = tile_terra_ward; player = "neutral"; break;
                 case "celestial_pillar": this.GetComponent<SpriteRenderer>().sprite = celestial_pillar; player = "neutral"; break;
             }

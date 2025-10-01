@@ -3,29 +3,32 @@ using UnityEngine;
 public class AltarSummonPlate : MonoBehaviour
 {
     private int x, y;
+    private string player; // Store the player who created the altar
 
-    public void Setup(int tileX, int tileY)
+    public void Setup(int tileX, int tileY, string playerName)
     {
         x = tileX;
         y = tileY;
+        player = playerName;
     }
 
     private void OnMouseUp()
     {
         Debug.Log($"[AltarSummonPlate] Altar summon plate clicked at ({x},{y})!");
         
-        // Create altar at this position
-        FireBishop.CreateAltar(x, y);
+        // Create altar at this position for the correct player
+        FireBishop.CreateAltar(x, y, player);
         
         // Destroy all altar summon plates
         AltarSummonPlate[] altarPlates = FindObjectsOfType<AltarSummonPlate>();
         foreach (AltarSummonPlate plate in altarPlates)
         {
+
             if (plate != null && plate.gameObject != null)
                 Destroy(plate.gameObject);
         }
         
-        // Hide UI panels
+        // Hide UI panels 
         if (UIManager.Instance != null)
         {
             UIManager.Instance.pawnPanel?.SetActive(false);
