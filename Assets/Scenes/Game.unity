@@ -1525,7 +1525,7 @@ MonoBehaviour:
     duration: 1
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: dd69bc2aead43c141b323aef9b674d98, type: 3}
-    effect: Grant all adjacent allied pieces invulnerability for 1 turn.
+    effect: GRANT ALL ADJACENT ALLIED PIECES INVULNERABILITY FOR 1 TURN.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1548,8 +1548,8 @@ MonoBehaviour:
     duration: 1
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: 0baca41e6bee39649b08a590f0cee9a0, type: 3}
-    effect: The Rook and King switch places, ignoring previous moves, other pieces,
-      or potential checks.
+    effect: THE ROOK AND KING SWITCH PLACES, IGNORING PREVIOUS MOVES, OTHER PIECES,
+      OR POTENTIAL CHECKS.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1572,8 +1572,8 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: b9e2d73a2c4820b43a3cbb7076e41bce, type: 3}
-    effect: "Revive Pawns, Rooks, or Knights at their starting positions. Using this
-      skill ends the Bishop\u2019s turn."
+    effect: "REVIVE PAWNS, ROOKS, OR KNIGHTS AT THEIR STARTING POSITIONS. USING THIS
+      SKILL ENDS THE BISHOP\u2019S TURN."
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1596,8 +1596,8 @@ MonoBehaviour:
     duration: 1
     limitation: 
     icon: {fileID: 21300000, guid: 06c086f1c422e7a479f9911d4868226d, type: 3}
-    effect: "Gain a new move tiles for its turn. The Knight can move inside a 3x3
-      tile \u2013 last corners. "
+    effect: "GAIN A NEW MOVE TILES FOR ITS TURN. THE KNIGHT CAN MOVE INSIDE A 3X3
+      TILE \u2013 LAST CORNERS. "
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1620,8 +1620,8 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: c57c31217ccf3f2409b10a042218ec2a, type: 3}
-    effect: Move to any unoccupied square on the board without capturing. Allows
-      rapid traversal across the battlefield.
+    effect: MOVE TO ANY UNOCCUPIED SQUARE ON THE BOARD WITHOUT CAPTURING. ALLOWS
+      RAPID TRAVERSAL ACROSS THE BATTLEFIELD.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1644,8 +1644,8 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: acaac44b3e0232845bf1f56613351414, type: 3}
-    effect: "Immediately ends the player\u2019s turn. During the opponent\u2019s
-      next turn, they can only move Pawn pieces."
+    effect: "IMMEDIATELY ENDS THE PLAYER\u2019S TURN. DURING THE OPPONENT\u2019S
+      NEXT TURN, THEY CAN ONLY MOVE PAWN PIECES."
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1666,11 +1666,11 @@ MonoBehaviour:
     spCost: 1
     cooldown: 5
     duration: 5
-    limitation: 
+    limitation: ELEMENTAL VARIANTS AND KING CAN NORMALLY ATTACK THE TILE.
     icon: {fileID: 21300000, guid: c1fab34b5615fa9469a2374cdc496da8, type: 3}
-    effect: "Convert 1\u20132 tiles into Lava Tiles. Any piece stepping on Lava is
-      destroyed. Lava can be placed under occupied tiles but activates only when
-      the piece leaves the tile."
+    effect: "CONVERT 1\u20132 TILES INTO LAVA TILES. ANY PIECE STEPPING ON LAVA IS
+      DESTROYED. LAVA CAN BE PLACED UNDER OCCUPIED TILES BUT ACTIVATES ONLY WHEN
+      THE PIECE LEAVES THE TILE."
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1691,10 +1691,10 @@ MonoBehaviour:
     spCost: 1
     cooldown: 5
     duration: 5
-    limitation: 
+    limitation: ELEMENTAL VARIANTS AND KING CAN NORMALLY ATTACK THE TILE.
     icon: {fileID: 21300000, guid: 29a4bc94228933541b0aba13a325fa18, type: 3}
-    effect: "Convert 1\u20132 tiles into Ice Tiles. Any piece stepping on Ice slides
-      randomly to an adjacent empty tile."
+    effect: "CONVERT 1\u20132 TILES INTO ICE TILES. ANY PIECE STEPPING ON ICE SLIDES
+      RANDOMLY TO AN ADJACENT EMPTY TILE."
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1715,10 +1715,9 @@ MonoBehaviour:
     spCost: 1
     cooldown: 5
     duration: 5
-    limitation: 
+    limitation: ELEMENTAL BISHOP VARIANTS AND KING ARE UNAFFECTED.
     icon: {fileID: 21300000, guid: 6184ca6d47104844da92afd87df5362b, type: 3}
-    effect: Place a Boulder Tile on an empty tile. Invulnerable and blocks all movement
-      (including Knights). Lasts 4 turns.
+    effect: 'PLACE A BOULDER TILE ON AN EMPTY TILE. INVULNERABLE AND BLOCKS ALL MOVEMENT. '
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1741,8 +1740,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 4aa1e4e49308f8243862cee8415a46bd, type: 3}
-    effect: When the Queen is about to be captured, a Pawn on its starting tile is
-      sacrificed first to prevent her capture.
+    effect: WHEN THE QUEEN IS ABOUT TO BE CAPTURED, A PAWN ON ITS STARTING TILE IS
+      SACRIFICED FIRST TO PREVENT HER CAPTURE.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -1753,8 +1752,8 @@ MonoBehaviour:
     duration: 2
     limitation: 
     icon: {fileID: 21300000, guid: a1fab049ec3f7f146ad16c083654a54e, type: 3}
-    effect: Sacrifice one pawn to gain invulnerability until the next turn, does
-      not consume turn.
+    effect: SACRIFICE ONE PAWN TO GAIN INVULNERABILITY UNTIL THE NEXT TURN, DOES
+      NOT CONSUME TURN.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1777,7 +1776,7 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 6b0bbb5674c2981428136c9d13b671cf, type: 3}
-    effect: When only 1 pawn remains on a team, that pawn gains Queen movement.
+    effect: WHEN ONLY 1 PAWN REMAINS ON A TEAM, THAT PAWN GAINS QUEEN MOVEMENT.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -1788,8 +1787,8 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: d3ace0a2b69e84540b27676be7facf61, type: 3}
-    effect: Select 1 opponent piece (Except King and Queen). Randomly move them to
-      1 empty tile around them.
+    effect: SELECT 1 OPPONENT PIECE (EXCEPT KING AND QUEEN). RANDOMLY MOVE THEM TO
+      1 EMPTY TILE AROUND THEM.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1812,8 +1811,8 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: 860ecf937afbc7143a05d676af38fd8c, type: 3}
-    effect: When bishop is captured, Choose a Specific tile to summon Archbishop
-      or Elemental Bishop
+    effect: WHEN BISHOP IS CAPTURED, CHOOSE A SPECIFIC TILE TO SUMMON ARCHBISHOP
+      OR ELEMENTAL BISHOP
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -1824,8 +1823,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: d8562ca90a1741a4d84f1de1577dde88, type: 3}
-    effect: After knight successfully captures a piece, he can retreat in a friendly
-      tile.
+    effect: AFTER KNIGHT SUCCESSFULLY CAPTURES A PIECE, HE CAN RETREAT IN A FRIENDLY
+      TILE.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -1836,7 +1835,7 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: d5bb6ab0446a665419a70948be802da9, type: 3}
-    effect: Sacrifices itself to summon three pawns on any empty tiles in the battlefield.
+    effect: SACRIFICES ITSELF TO SUMMON THREE PAWNS ON ANY EMPTY TILES IN THE BATTLEFIELD.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1859,7 +1858,7 @@ MonoBehaviour:
     duration: 0
     limitation: Only 1 Royal Acolyte can exist.
     icon: {fileID: 21300000, guid: 21ea4c00035a367408daba87fbdeba2b, type: 3}
-    effect: 'Condition: Pawn reaches the last rank. Activate the skill to Promote.'
+    effect: 'CONDITION: PAWN REACHES THE LAST RANK. ACTIVATE THE SKILL TO PROMOTE.'
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1882,8 +1881,8 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: 4805aaf160de8fa44a531d4ee394e960, type: 3}
-    effect: Spend 1-3 SP to Stunn Enemy pieces in front of the archbishop depending
-      on the SP spent
+    effect: SPEND 1-3 SP TO STUN ENEMY PIECES IN FRONT OF THE ARCHBISHOP DEPENDING
+      ON THE SP SPENT.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1906,7 +1905,7 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: 25bb21946fc440746a2149ddab85c671, type: 3}
-    effect: Adds a 1 SP bounty on a random black and white pawn.
+    effect: ADDS A 1 SP BOUNTY ON A RANDOM BLACK AND WHITE PAWN.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -1929,22 +1928,22 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: a1b493eeadd62e84a819742752759ef8, type: 3}
-    effect: 'Effect: The pawn spins the Russian roulette to gain 1 of this 6 effects.
+    effect: 'THE PAWN SPINS THE RUSSIAN ROULETTE TO GAIN 1 OF THIS 6 EFFECTS.
 
-      1.Destroy
-      the pawn itself
+      1.DESTROY
+      THE PAWN ITSELF
 
-      2.Destroy 1 pawn on enemy side
+      2.DESTROY 1 PAWN ON ENEMY SIDE
 
-      3.Stun random
-      3 enemy pawns for 1 turn
+      3.STUN RANDOM
+      3 ENEMY PAWNS FOR 1 TURN
 
-      4.Put Bounty 1 SP on 3 random allied white
-      pawns.
+      4.PUT BOUNTY 1 SP ON 3 RANDOM ALLIED WHITE
+      PAWNS.
 
-      5.Transform into rook
+      5.TRANSFORM INTO ROOK
 
-      6.Gain King movements for 3 turns.
+      6.GAIN KING MOVEMENTS FOR 3 TURNS.
 
 '
     onActivate:
@@ -1969,7 +1968,7 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: c99261833bc7e6a4691e9e3dcc968619, type: 3}
-    effect: Return up to 4 pawns to their original starting positions on the board.
+    effect: RETURN UP TO 4 PAWNS TO THEIR ORIGINAL STARTING POSITIONS ON THE BOARD.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -1980,8 +1979,8 @@ MonoBehaviour:
     duration: 3
     limitation: CAN ONLY GUARD (1) PIECE.
     icon: {fileID: 21300000, guid: 6a78cf9667cdfe245a3ca3b6eadc89ce, type: 3}
-    effect: Select an adjacent allied piece to guard for 3 turns. If the guarded
-      piece would be captured, the Knight teleports to its tile and is captured instead.
+    effect: SELECT AN ADJACENT ALLIED PIECE TO GUARD FOR 3 TURNS. IF THE GUARDED
+      PIECE WOULD BE CAPTURED, THE KNIGHT TELEPORTS TO ITS TILE AND IS CAPTURED INSTEAD.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2005,8 +2004,8 @@ MonoBehaviour:
     limitation: Upon reaching 3 Charges, the Knight transforms into Royal Knight
       at the start of its next turn.
     icon: {fileID: 21300000, guid: ea1d9cdbac0b0a0429a1d0a9cc93c41b, type: 3}
-    effect: Complete the Trial of Valor quest to gain stacks. Giving a check, Capturing
-      a pawn, or any pieces die adjacent to knight gives him 1 stack.
+    effect: COMPLETE THE TRIAL OF VALOR QUEST TO GAIN STACKS. GIVING A CHECK, CAPTURING
+      A PAWN, OR ANY PIECES DIE ADJACENT TO KNIGHT GIVES HIM 1 STACK.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2027,12 +2026,12 @@ MonoBehaviour:
     spCost: 2
     cooldown: 0
     duration: 7
-    limitation: If no enemy reaches 3 Soulbrand Stacks by the end of 7 turns, the
-      Bishop vanishes from the board (self-sacrifice)
+    limitation: IF NO ENEMY REACHES 3 SOULBRAND STACKS BY THE END OF 7 TURNS, THE
+      BISHOP VANISHES FROM THE BOARD (SELF-SACRIFICE)
     icon: {fileID: 21300000, guid: 9b586bc8eb87d334aaea823ed2c67d71, type: 3}
-    effect: "Becomes Ethereal for 7 turns. Each enemy piece passed through gains
-      1 Soulbrand Stack. o\tWhen a piece reaches 3 Soulbrand Stacks, it is destroyed
-      and promotes to Royal Bishop."
+    effect: BECOMES ETHEREAL FOR 7 TURNS. EACH ENEMY PIECE PASSED THROUGH GAINS 1
+      SOULBRAND STACK. WHEN A PIECE REACHES 3 SOULBRAND STACKS, IT IS DESTROYED AND
+      PROMOTES TO ROYAL BISHOP.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2053,11 +2052,10 @@ MonoBehaviour:
     spCost: 0
     cooldown: 5
     duration: 0
-    limitation: If no enemy reaches 3 Soulbrand Stacks by the end of 7 turns, the
-      Bishop vanishes from the board (self-sacrifice)
+    limitation: ONLY LIMITED TO HORIZONTAL/VERTICAL TILE.
     icon: {fileID: 21300000, guid: 35678276f441a3d448124342713cc770, type: 3}
-    effect: When an adjacent allied piece is captured, the Rook performs a counterattack.
-      This effect is limited to horizontal and diagonal tiles.
+    effect: WHEN AN ADJACENT ALLIED PIECE IS CAPTURED, THE ROOK PERFORMS A COUNTERATTACK.
+      THIS EFFECT IS LIMITED TO HORIZONTAL AND DIAGONAL TILES.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2066,10 +2064,11 @@ MonoBehaviour:
     spCost: 2
     cooldown: 999
     duration: 0
-    limitation: Consumes turn on activation.
+    limitation: CONSUMES TURN ON ACTIVATION. ATTACKING ENEMY INSIDE THE TILE WILL
+      NOT ACTIVATE THE ORB.
     icon: {fileID: 21300000, guid: cf59723df3d9cd04b9ebf881e641a20a, type: 3}
-    effect: The Rook must capture all three orbs. After capturing the last orb, it
-      transforms into a Royal Rook.
+    effect: THE ROOK MUST CAPTURE ALL THREE ORBS. AFTER CAPTURING THE LAST ORB, IT
+      TRANSFORMS INTO A ROYAL ROOK.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2092,8 +2091,8 @@ MonoBehaviour:
     duration: 0
     limitation: Once per Battle.
     icon: {fileID: 21300000, guid: de5458adb317f664da955d42c9d711a6, type: 3}
-    effect: Revert the game state to the previous turn, preventing the opponent from
-      repeating the same actions.
+    effect: REVERT THE GAME STATE TO THE PREVIOUS TURN, PREVENTING THE OPPONENT FROM
+      REPEATING THE SAME ACTIONS.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2102,11 +2101,11 @@ MonoBehaviour:
     spCost: 5
     cooldown: 0
     duration: 0
-    limitation: "Once per Battle. o\tIf no King exists for 2 turns, the player loses
-      the game."
+    limitation: Once per Battle. If no King exists for 2 turns, the player loses
+      the game.
     icon: {fileID: 21300000, guid: 733fa1ea205e40a4fba5a851a3c960dd, type: 3}
-    effect: Queen must capture 2 Royal Pieces (friend or foe).Queen must capture
-      your own King. If both requirements are fulfilled, you can activate the skill.
+    effect: QUEEN MUST CAPTURE 2 ROYAL PIECES (FRIEND OR FOE).QUEEN MUST CAPTURE
+      YOUR OWN KING. IF BOTH REQUIREMENTS ARE FULFILLED, YOU CAN ACTIVATE THE SKILL.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2117,9 +2116,9 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 9bf8944a4066b754c913afc8386ef93b, type: 3}
-    effect: The King is invulnerable for the first 10 turns of the game. From turn
-      40 onwards, if you have fewer pieces than the opponent, the King gains a 1-turn
-      invulnerability shield every 5 turns.
+    effect: THE KING IS INVULNERABLE FOR THE FIRST 10 TURNS OF THE GAME. FROM TURN
+      40 ONWARDS, IF YOU HAVE FEWER PIECES THAN THE OPPONENT, THE KING GAINS A 1-TURN
+      INVULNERABILITY SHIELD EVERY 8 TURNS.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2130,8 +2129,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 2b43d4788bc65da4abfc13a6f5dfd191, type: 3}
-    effect: Triggered whenever the King is in check. The King gains additional move
-      tiles based on the number of fallen Pawns.
+    effect: TRIGGERED WHENEVER THE KING IS IN CHECK. THE KING GAINS ADDITIONAL MOVE
+      TILES BASED ON THE NUMBER OF FALLEN PAWNS.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2142,7 +2141,7 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 7b90cdedb786d214b83e19c6d9efe2e7, type: 3}
-    effect: The King becomes immune to all elemental hazards except Void tiles
+    effect: THE KING BECOMES IMMUNE TO ALL ELEMENTAL HAZARDS EXCEPT VOID TILES
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2153,8 +2152,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: e2836f7414eed104e845d0b063d49713, type: 3}
-    effect: Activates Different passive skills, if the enemy has a Royal Piece and
-      you have none on the board.
+    effect: ACTIVATES DIFFERENT PASSIVE SKILLS, IF THE ENEMY HAS A ROYAL PIECE AND
+      YOU HAVE NONE ON THE BOARD.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2165,8 +2164,8 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: 87788247faa0a77419f981a43cc77ab8, type: 3}
-    effect: When the Archbishop captures an enemy piece, it may summon that piece
-      onto any vacant tile on the player's side. Can trigger only once per battle.
+    effect: WHEN THE ARCHBISHOP CAPTURES AN ENEMY PIECE, IT MAY SUMMON THAT PIECE
+      ONTO ANY VACANT TILE ON THE PLAYER'S SIDE. CAN TRIGGER ONLY ONCE PER BATTLE.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2175,13 +2174,13 @@ MonoBehaviour:
     spCost: 0
     cooldown: 0
     duration: 0
-    limitation: Will only activate if both Archbishop and Elemental Bishop are on
-      required tiles.
+    limitation: WILL ONLY ACTIVATE IF BOTH ARCHBISHOP AND ELEMENTAL BISHOP ARE ON
+      REQUIRED TILES.
     icon: {fileID: 21300000, guid: 11460c91994d338479a82df60c4ad5d9, type: 3}
-    effect: "Move both pieces to any two opposite corners of the board.Once positioned,
-      a 3-turn survival countdown begins. \u2022\tIf both survive until the end of
-      the 3rd turn, they merge into a single Chronomagus, which can be placed on
-      any empty tile of the player\u2019s choosing."
+    effect: "MOVE BOTH PIECES TO ANY TWO OPPOSITE CORNERS OF THE BOARD.ONCE POSITIONED,
+      A 3-TURN SURVIVAL COUNTDOWN BEGINS. \u2022\tIF BOTH SURVIVE UNTIL THE END OF
+      THE 3RD TURN, THEY MERGE INTO A SINGLE CHRONOMAGUS, WHICH CAN BE PLACED ON
+      ANY EMPTY TILE OF THE PLAYER\u2019S CHOOSING."
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2202,13 +2201,13 @@ MonoBehaviour:
     spCost: 0
     cooldown: 0
     duration: 0
-    limitation: Will only activate if both Archbishop and Elemental Bishop are on
-      required tiles.
+    limitation: WILL ONLY ACTIVATE IF BOTH ARCHBISHOP AND ELEMENTAL BISHOP ARE ON
+      REQUIRED TILES.
     icon: {fileID: 21300000, guid: 8bde68f6f50c0d94ca8698cab8e94c28, type: 3}
-    effect: "Move both pieces to any two opposite corners of the board.Once positioned,
-      a 3-turn survival countdown begins. \u2022\tIf both survive until the end of
-      the 3rd turn, they merge into a single Chronomagus, which can be placed on
-      any empty tile of the player\u2019s choosing."
+    effect: "MOVE BOTH PIECES TO ANY TWO OPPOSITE CORNERS OF THE BOARD.ONCE POSITIONED,
+      A 3-TURN SURVIVAL COUNTDOWN BEGINS. \u2022\tIF BOTH SURVIVE UNTIL THE END OF
+      THE 3RD TURN, THEY MERGE INTO A SINGLE CHRONOMAGUS, WHICH CAN BE PLACED ON
+      ANY EMPTY TILE OF THE PLAYER\u2019S CHOOSING."
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2229,12 +2228,12 @@ MonoBehaviour:
     spCost: 0
     cooldown: 0
     duration: 0
-    limitation: Fire and Ice tiles disappear after triggering their effects.
+    limitation: FIRE AND ICE TILES DISAPPEAR AFTER TRIGGERING THEIR EFFECTS.
     icon: {fileID: 21300000, guid: cfcac2c58dbcb4046861e33c0a2b48a1, type: 3}
-    effect: "Immune to Lava and Ice tile effects; can pass through Boulder tiles.
-      Maximum of 7 Elemental Tiles on the battlefield. \n\nCan be Activated after
-      casting a single skill 5 times in Succession. Transforming to a higher Elemental
-      Bishop."
+    effect: "IMMUNE TO LAVA AND ICE TILE EFFECTS; CAN PASS THROUGH BOULDER TILES.
+      MAXIMUM OF 7 ELEMENTAL TILES ON THE BATTLEFIELD. \r\n\r\nCAN BE ACTIVATED AFTER
+      CASTING A SINGLE SKILL 5 TIMES IN SUCCESSION. TRANSFORMING TO A HIGHER ELEMENTAL
+      BISHOP."
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2257,8 +2256,8 @@ MonoBehaviour:
     duration: 999
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: dfa466d5ed95cd7478d8dbf065677485, type: 3}
-    effect: Creates a celestial pillar on chosen tile. The pillar blocks all pieces
-      movements and can be use to interact with Royal Rook other skills.
+    effect: CREATES A CELESTIAL PILLAR ON CHOSEN TILE. THE PILLAR BLOCKS ALL PIECES
+      MOVEMENTS AND CAN BE USE TO INTERACT WITH ROYAL ROOK OTHER SKILLS.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2281,8 +2280,8 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: efac6b3d8351ed3449254f31e09dc390, type: 3}
-    effect: Charges 4 tiles in a chosen direction. Any pieces caught on the path
-      will be displaced. If the pieces has no where else to move, they are destroyed.
+    effect: CHARGES 4 TILES IN A CHOSEN DIRECTION. ANY PIECES CAUGHT ON THE PATH
+      WILL BE DISPLACED. IF THE PIECES HAS NO WHERE ELSE TO MOVE, THEY ARE DESTROYED.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2305,7 +2304,7 @@ MonoBehaviour:
     duration: 0
     limitation: MUST BE ADJACENT WITH THE CELESTIAL PILLAR
     icon: {fileID: 21300000, guid: 5d78d789f506135419ec88bec4bb2fc0, type: 3}
-    effect: When adjacent with the celestial pillar, Gain queen movements.
+    effect: WHEN ADJACENT WITH THE CELESTIAL PILLAR, GAIN QUEEN MOVEMENTS.
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2316,8 +2315,8 @@ MonoBehaviour:
     duration: 0
     limitation: MUST CAPTURE ENEMY PIECES.
     icon: {fileID: 21300000, guid: 877668208ccae554981678a580cf45a6, type: 3}
-    effect: Each time the Royal Bishop captures a piece afterward, gains 1 turn of
-      invulnerability
+    effect: EACH TIME THE ROYAL BISHOP CAPTURES A PIECE AFTERWARD, GAINS 1 TURN OF
+      INVULNERABILITY
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2351,8 +2350,11 @@ MonoBehaviour:
     duration: 3
     limitation: CAN ONLY SUMMON ON ROYAL BISHOP'S RANGE
     icon: {fileID: 21300000, guid: 94f85fbc14d9d704280c53021ddf6f66, type: 3}
-    effect: "Create a Sacred Zone on a 3\xD73 area centered on a diagonal tile within
-      the Bishop\u2019s movement range"
+    effect: "CREATE A SACRED ZONE ON A 3\xD73 AREA CENTERED ON A DIAGONAL TILE WITHIN
+      THE BISHOP\u2019S MOVEMENT RANGE.\nIF A MINOR PIECE DIES INSIDE: THE ROYAL
+      BISHOP IMMEDIATELY GAINS 1 SP\r\nWHEN THE SANCTIFIED RUIN HITS ANY WRAITH PAWN,
+      IMMEDIATELY ACTIVATE THE DEATHBURST AND GAIN 2 SP THEN THE SANCTIFIED RUIN
+      WILL EXPIRE.\r\n\n\n"
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2376,11 +2378,12 @@ MonoBehaviour:
     limitation: ONLY EXPLODES WHEN CAPTURED, DOES NOT TRIGGER WHEN DYING IN OTHER
       WAY
     icon: {fileID: 21300000, guid: 3fc233746ab298f40b1eac8de519a7bc, type: 3}
-    effect: 'Wraith Pawn explodes in a 3x3 area when captured by any enemy pieces.
+    effect: 'WRAITH PAWN EXPLODES IN A 3X3 AREA WHEN CAPTURED BY ANY ENEMY PIECES.
 
+      
 
-      Destroys
-      any pawn in the area.'
+      DESTROYS
+      ANY PAWN IN THE AREA.'
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2391,8 +2394,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 76a70f43672ad794687a743ceb0cc52c, type: 3}
-    effect: When a Wraith Pawn captures a minor enemy pieces (rook, knight,bishop)
-      the player gains 1 SP. Capturing Major pieces gives 2 SP
+    effect: WHEN A WRAITH PAWN CAPTURES A MINOR ENEMY PIECES (ROOK, KNIGHT,BISHOP)
+      THE PLAYER GAINS 1 SP. CAPTURING MAJOR PIECES GIVES 2 SP
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2403,8 +2406,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: d8e796a57b76d5d438b7a760406824c6, type: 3}
-    effect: 'All allied Pawns, including the Royal Acolyte, gain Crown Step: Moveset
-      like a king.
+    effect: 'ALL ALLIED PAWNS, INCLUDING THE ROYAL ACOLYTE, GAIN CROWN STEP: MOVESET
+      LIKE A KING.
 
 '
     onActivate:
@@ -2417,8 +2420,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 401c69fc332f3af45b2e0a60abd023c4, type: 3}
-    effect: 'Spawn Condition: Appears on any empty original Pawn tile, respecting
-      the 8-Pawn limit when the Royal Acolyte spawns.'
+    effect: 'SPAWN CONDITION: APPEARS ON ANY EMPTY ORIGINAL PAWN TILE, RESPECTING
+      THE 8-PAWN LIMIT WHEN THE ROYAL ACOLYTE SPAWNS.'
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2429,13 +2432,13 @@ MonoBehaviour:
     duration: 5
     limitation: 
     icon: {fileID: 21300000, guid: 20b792fa1fa791c48b7f6c93cc63a5a3, type: 3}
-    effect: 'Royal Acolyte and all Spectral HeraLds gain a 3-tile Rook-style range
-      (straight lines only)
+    effect: 'ROYAL ACOLYTE AND ALL SPECTRAL HERALDS GAIN A 3-TILE ROOK-STYLE RANGE
+      (STRAIGHT LINES ONLY)
 
-      Both units become Phased, allowing them to move
-      through other pieces
+      BOTH UNITS BECOME PHASED, ALLOWING THEM TO MOVE
+      THROUGH OTHER PIECES
 
-      Enemy pieces phased through gain 1 Curse stack
+      ENEMY PIECES PHASED THROUGH GAIN 1 CURSE STACK
 
 '
     onActivate:
@@ -2448,7 +2451,7 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: b7394ec6c4182d84f84f1caef8545d4d, type: 3}
-    effect: Sacrifice a spectral herald. Transforming them into void tile.
+    effect: SACRIFICE A SPECTRAL HERALD. TRANSFORMING THEM INTO VOID TILE.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2471,12 +2474,12 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE when used.
     icon: {fileID: 21300000, guid: 9b7dce9fb4f5f2244a974edec9f7c699, type: 3}
-    effect: 'Effect: Leaves a Mist Knight illusion on its previous square when moving.
+    effect: 'LEAVES A MIST KNIGHT ILLUSION ON ITS PREVIOUS SQUARE WHEN MOVING.
 
-      If
-      the Royal Knight is threatened with capture, it may swap positions with the
-      Mist Knight, destroying the illusion. Can be cast on allied piece, giving them
-      PhantomGuard buff for 2 turns.
+      IF
+      THE ROYAL KNIGHT IS THREATENED WITH CAPTURE, IT MAY SWAP POSITIONS WITH THE
+      MIST KNIGHT, DESTROYING THE ILLUSION. CAN BE CAST ON ALLIED PIECE, GIVING THEM
+      PHANTOMGUARD BUFF FOR 2 TURNS.
 
 '
     onActivate:
@@ -2501,13 +2504,13 @@ MonoBehaviour:
     duration: 6
     limitation: ONCE PER BATTLE when used.
     icon: {fileID: 21300000, guid: 23847c9c33f8c304181b6df9d4ce1ea8, type: 3}
-    effect: 'Select any enemy piece (except the King) as the Oath Target for 4 turns.
+    effect: 'SELECT ANY ENEMY PIECE (EXCEPT THE KING) AS THE OATH TARGET FOR 4 TURNS.
 
-      While
-      active:
+      WHILE
+      ACTIVE:
 
-      Both players can only move pieces bound by the Oathbound gambit
-      for 6 turns.
+      BOTH PLAYERS CAN ONLY MOVE PIECES BOUND BY THE OATHBOUND GAMBIT
+      FOR 6 TURNS.
 
 '
     onActivate:
@@ -2532,8 +2535,8 @@ MonoBehaviour:
     duration: 0
     limitation: IF NO TARGET AFTER MOVING, COOLDOWN WILL NOT START.
     icon: {fileID: 21300000, guid: 0ca4fc9b1f0fa674b9679693e89e7ead, type: 3}
-    effect: "After moving, the Ice Bishop releases a burst of frost in a 3\xD73 area
-      centered on itself. "
+    effect: "AFTER MOVING, THE ICE BISHOP RELEASES A BURST OF FROST IN A 3\xD73 AREA
+      CENTERED ON ITSELF. "
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2556,8 +2559,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 4afd564f0fd8f07449901901ea079b26, type: 3}
-    effect: 'When an enemy attempts to attack the Frostwrought Bishop, negate the
-      attack. The Frost bishop will enter frozen state for 3 turns. '
+    effect: 'WHEN AN ENEMY ATTEMPTS TO ATTACK THE FROSTWROUGHT BISHOP, NEGATE THE
+      ATTACK. THE FROST BISHOP WILL ENTER FROZEN STATE FOR 3 TURNS. '
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2580,10 +2583,10 @@ MonoBehaviour:
     duration: 0
     limitation: ONCE PER BATTLE
     icon: {fileID: 21300000, guid: 5903bf7fbff567d49beceb739c9dd3fd, type: 3}
-    effect: Ice Bishop lowers the temperature to absolute zero for 20 turns. Any
-      piece that does not move at least once during that period becomes Frozen. Ice
-      Bishop is immune to all Frozen effects and unaffected by Glacial Path during
-      this time.
+    effect: ICE BISHOP LOWERS THE TEMPERATURE TO ABSOLUTE ZERO FOR 20 TURNS. ANY
+      PIECE THAT DOES NOT MOVE AT LEAST ONCE DURING THAT PERIOD BECOMES FROZEN. ICE
+      BISHOP IS IMMUNE TO ALL FROZEN EFFECTS AND UNAFFECTED BY GLACIAL PATH DURING
+      THIS TIME.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2606,8 +2609,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 38495ebde897f4247b954a9321ba6591, type: 3}
-    effect: For the next 4 turns, any piece that activates an Active skill becomes
-      Frozen immediately after the skill resolves.
+    effect: FOR THE NEXT 4 TURNS, ANY PIECE THAT ACTIVATES AN ACTIVE SKILL BECOMES
+      FROZEN IMMEDIATELY AFTER THE SKILL RESOLVES.
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2630,11 +2633,11 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 970eb3e2f7c73724e918640713e6c20d, type: 3}
-    effect: "When the Fire Bishop dies, summon an Ashen Pyre on any empty tile.\r\nIf
-      the Pyre is not destroyed in 5 turns, the Fire Bishop is reborn on that tile.\r\nIf
-      destroyed via Phoenix Pyre, the rebirth timer is reduced to 3 turns.\r\nIn
-      addition to diagonal moves, the Fire Bishop can also move 1 tile in any direction,
-      like a King.\t\r\n"
+    effect: "WHEN THE FIRE BISHOP DIES, SUMMON AN ASHEN PYRE ON ANY EMPTY TILE.\r\nIF
+      THE PYRE IS NOT DESTROYED IN 5 TURNS, THE FIRE BISHOP IS REBORN ON THAT TILE.\r\nIF
+      DESTROYED VIA PHOENIX PYRE, THE REBIRTH TIMER IS REDUCED TO 3 TURNS.\r\nIN
+      ADDITION TO DIAGONAL MOVES, THE FIRE BISHOP CAN ALSO MOVE 1 TILE IN ANY DIRECTION,
+      LIKE A KING.\t\r\n"
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2645,11 +2648,11 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: d1756a06a7a55cc46b5aca81165f9baf, type: 3}
-    effect: "The Fire Bishop becomes immobilized for 5 turns. On activation, it releases
-      a 3\xD73 Fire Aura centered on itself. Enemies inside the aura are crippled,
-      and can only move 1 tile in any direction for their next turn. On subsequent
-      turns while immobilized, the aura expands till the final pulse reaches 7 x
-      7 area.  "
+    effect: "THE FIRE BISHOP BECOMES IMMOBILIZED FOR 5 TURNS. ON ACTIVATION, IT RELEASES
+      A 3\xD73 FIRE AURA CENTERED ON ITSELF. ENEMIES INSIDE THE AURA ARE CRIPPLED,
+      AND CAN ONLY MOVE 1 TILE IN ANY DIRECTION FOR THEIR NEXT TURN. ON SUBSEQUENT
+      TURNS WHILE IMMOBILIZED, THE AURA EXPANDS TILL THE FINAL PULSE REACHES 7 X
+      7 AREA.  "
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2672,10 +2675,10 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 1e73e7ac0c66d72449a8bec8d8024b41, type: 3}
-    effect: Destroys the Flameforge bishop. Create a 3 x 3 area of fire ember around
-      it. Enemy units who stay on the fire ember for 2 turns gets destroyed. Can
-      trigger Eternal Flame if its not on cooldown. Giving it additional effect if
-      died in this way
+    effect: DESTROYS THE FLAMEFORGE BISHOP. CREATE A 3 X 3 AREA OF FIRE EMBER AROUND
+      IT. ENEMY UNITS WHO STAY ON THE FIRE EMBER FOR 2 TURNS GETS DESTROYED. CAN
+      TRIGGER ETERNAL FLAME IF ITS NOT ON COOLDOWN. GIVING IT ADDITIONAL EFFECT IF
+      DIED IN THIS WAY
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2698,11 +2701,13 @@ MonoBehaviour:
     duration: 999
     limitation: ONLY 1 TERRA WARD CAN EXIST AT A TIME.
     icon: {fileID: 21300000, guid: a3c78d9df96797943ab2bb06dacdbf12, type: 3}
-    effect: "\u2022\tGains the ability to phase through any stone-type tiles (Boulders,
-      Wards, Pillars) without obstruction.\r\n\u2022\tAfter the Stonebound Bishop
-      moves, it creates a Terra Ward on an adjacent tile before ending its turn.
-      When the Bishop moves again, the current Terra Ward is destroyed and a new
-      one is placed on an adjacent tile. "
+    effect: 'GAINS THE ABILITY TO PHASE THROUGH ANY STONE-TYPE TILES (BOULDERS, WARDS,
+      PILLARS) WITHOUT OBSTRUCTION.
+
+      AFTER THE STONEBOUND BISHOP MOVES, IT
+      CREATES A TERRA WARD ON AN ADJACENT TILE BEFORE ENDING ITS TURN. WHEN THE BISHOP
+      MOVES AGAIN, THE CURRENT TERRA WARD IS DESTROYED AND A NEW ONE IS PLACED ON
+      AN ADJACENT TILE. '
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -2725,17 +2730,17 @@ MonoBehaviour:
     duration: 2
     limitation: ONLY 1 TERRA WARD CAN EXIST AT A TIME.
     icon: {fileID: 21300000, guid: 5ac660490b5ed3446ae7fa2bbe8cd22a, type: 3}
-    effect: 'Empty tile : Summons a Terra Ward on that location. Permanent. Max 3.
+    effect: 'EMPTY TILE : SUMMONS A TERRA WARD ON THAT LOCATION. PERMANENT. MAX 3.
 
-      Ally/Enemy
-      Piece : Target gains Stone Sentinel property. Lasts 2 turns.
+      ALLY/ENEMY
+      PIECE : TARGET GAINS STONE SENTINEL PROPERTY. LASTS 2 TURNS.
 
-      Any Boulder
-      variant: Any piece within the 3 x 3 area centered on that tile gains Stone
-      Sentinel property. Lasts 2 turns.
+      ANY BOULDER
+      VARIANT: ANY PIECE WITHIN THE 3 X 3 AREA CENTERED ON THAT TILE GAINS STONE
+      SENTINEL PROPERTY. LASTS 2 TURNS.
 
-      Self cast : Stonebound bishop gains
-      the Stone Sentinel property, but can move but cannot attack. Lasts 4 turns.
+      SELF CAST : STONEBOUND BISHOP GAINS
+      THE STONE SENTINEL PROPERTY, BUT CAN MOVE BUT CANNOT ATTACK. LASTS 4 TURNS.
 
 '
     onActivate:
@@ -2760,16 +2765,16 @@ MonoBehaviour:
     duration: 2
     limitation: ONLY 1 TERRA WARD CAN EXIST AT A TIME.
     icon: {fileID: 21300000, guid: 1caec2c099ebfa44cb299545c7818766, type: 3}
-    effect: 'Select any Boulder or Terra Ward on the board. Generate straight + diagonal
-      paths from it. Choose one direction and relocate the Boulder to any tile along
-      that line.
+    effect: 'SELECT ANY BOULDER OR TERRA WARD ON THE BOARD. GENERATE STRAIGHT + DIAGONAL
+      PATHS FROM IT. CHOOSE ONE DIRECTION AND RELOCATE THE BOULDER TO ANY TILE ALONG
+      THAT LINE.
 
-      If the Bishop has Stone Sentinel property, it can target
-      itself instead, propelling in a chosen direction along the generated lines.
+      IF THE BISHOP HAS STONE SENTINEL PROPERTY, IT CAN TARGET
+      ITSELF INSTEAD, PROPELLING IN A CHOSEN DIRECTION ALONG THE GENERATED LINES.
 
-      If
-      enemies are adjacent to the landing point of the Boulder (or the Bishop if
-      self-propelled), they are Stunned for 2 turn.
+      IF
+      ENEMIES ARE ADJACENT TO THE LANDING POINT OF THE BOULDER (OR THE BISHOP IF
+      SELF-PROPELLED), THEY ARE STUNNED FOR 2 TURN.
 
 '
     onActivate:
@@ -2794,8 +2799,8 @@ MonoBehaviour:
     duration: 0
     limitation: 
     icon: {fileID: 21300000, guid: 43d083a6704738540a0ca76706290cf9, type: 3}
-    effect: "At the end of Chronomagus\u2019 turn, reduce the cooldown of all friendly
-      skills by 1"
+    effect: "AT THE END OF CHRONOMAGUS\u2019 TURN, REDUCE THE COOLDOWN OF ALL FRIENDLY
+      SKILLS BY 1"
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2806,8 +2811,8 @@ MonoBehaviour:
     duration: 2
     limitation: 
     icon: {fileID: 21300000, guid: e8615eb263c46144fa4ccce7f1615890, type: 3}
-    effect: "When an allied piece is captured, the enemy piece responsible is locked
-      in time for 2 turns \u2014 invulnerable and unable to move."
+    effect: "WHEN AN ALLIED PIECE IS CAPTURED, THE ENEMY PIECE RESPONSIBLE IS LOCKED
+      IN TIME FOR 2 TURNS \u2014 INVULNERABLE AND UNABLE TO MOVE."
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2818,7 +2823,7 @@ MonoBehaviour:
     duration: 3
     limitation: 
     icon: {fileID: 21300000, guid: 75275636810f1e846886138ade32a4f4, type: 3}
-    effect: "Creates a 3\xD73 Elemental Sanctuary at a chosen area.\n"
+    effect: "CREATES A 3\xD73 ELEMENTAL SANCTUARY AT A CHOSEN AREA.\r\n"
     onActivate:
       m_PersistentCalls:
         m_Calls: []
@@ -2829,8 +2834,8 @@ MonoBehaviour:
     duration: 3
     limitation: MAXIMUM OF 3 TILE PER ELEMENT WHEN CASTED.
     icon: {fileID: 21300000, guid: 714f5834b4e0e8c47b73450dd5f323e9, type: 3}
-    effect: Turns 9 random tiles on the board into random Elemental Tiles (Flame,
-      Thunder, Ice, Celestial Pillar)
+    effect: TURNS 9 RANDOM TILES ON THE BOARD INTO RANDOM ELEMENTAL TILES (FLAME,
+      THUNDER, ICE, CELESTIAL PILLAR)
     onActivate:
       m_PersistentCalls:
         m_Calls:
@@ -3640,7 +3645,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -610.23, y: 697}
+  m_AnchoredPosition: {x: -600.12994, y: 782.0001}
   m_SizeDelta: {x: 42.7, y: 1.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &83672644
@@ -4355,81 +4360,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 99998327}
-  m_CullTransparentMesh: 1
---- !u!1 &102826236
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 102826237}
-  - component: {fileID: 102826239}
-  - component: {fileID: 102826238}
-  m_Layer: 5
-  m_Name: Status1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &102826237
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 102826236}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1760649350}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5411182, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -13.182007, y: 0.000016212463}
-  m_SizeDelta: {x: 15.169998, y: 33.25}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &102826238
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 102826236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0661f7eef1dad374db36e5c97190fb22, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &102826239
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 102826236}
   m_CullTransparentMesh: 1
 --- !u!1 &104590670
 GameObject:
@@ -6406,8 +6336,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 173, y: -70.4}
-  m_SizeDelta: {x: 817.4, y: 189.1}
+  m_AnchoredPosition: {x: 186.95, y: -90}
+  m_SizeDelta: {x: 834, y: 319}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &163365298
 MonoBehaviour:
@@ -6429,20 +6359,32 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Move both pieces to any two opposite corners of the board.Once positioned,
-    a 3-turn survival countdown begins. \nIf both survive until the end of the 3rd
-    turn, they merge into a single Chronomagus, which can be placed on any empty
-    tile of the player\u2019s choosing."
+  m_text: 'Effect varies depending on the chosen target tile:
+
+    Empty tile :
+    Summons a Terra Ward on that location. Permanent. Max 3.
+
+    Ally/Enemy Piece
+    : Target gains Stone Sentinel property. Lasts 2 turns.
+
+    Any Boulder variant:
+    Any piece within the 3 x 3 area centered on that tile gains Stone Sentinel property.
+    Lasts 2 turns.
+
+    Self cast : Stonebound bishop gains the Stone Sentinel property,
+    but can move but cannot attack. Lasts 4 turns.
+
+'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
-  m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
+  m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -6459,19 +6401,19 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24.03
-  m_fontSizeBase: 24.03
+  m_fontSize: 28.14
+  m_fontSizeBase: 28.14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 11.9
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -6495,7 +6437,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 2.0793836}
+  m_margin: {x: 0, y: 13.086075, z: 0, w: -14.224466}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -8286,8 +8228,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -18.100006}
-  m_SizeDelta: {x: 50.3, y: 36.2}
+  m_AnchoredPosition: {x: 12.325012, y: -8.899994}
+  m_SizeDelta: {x: -24.65, y: -17.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &203484644
 MonoBehaviour:
@@ -8309,7 +8251,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4ff1b14cceead5e4f9453aacf6cc30b3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7cf9e83315e12044587f6f872545d3d9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8705,7 +8647,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -289.10004, y: 697}
+  m_AnchoredPosition: {x: -279, y: 782}
   m_SizeDelta: {x: 42.7, y: 1.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &213897582
@@ -9064,8 +9006,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 4.7, y: -2.1}
-  m_SizeDelta: {x: 847.2, y: 322.9}
+  m_AnchoredPosition: {x: 4.7, y: 3.7}
+  m_SizeDelta: {x: 1178.6, y: 98.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &230194611
 MonoBehaviour:
@@ -9087,7 +9029,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: NOT ENOUGH SKILL POINTS.
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9114,8 +9056,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 92.09
-  m_fontSizeBase: 92.09
+  m_fontSize: 43
+  m_fontSizeBase: 43
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -11769,6 +11711,56 @@ RectTransform:
   m_AnchoredPosition: {x: 82, y: 236}
   m_SizeDelta: {x: 92.1, y: 99.6}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &326287193
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 326287195}
+  - component: {fileID: 326287194}
+  m_Layer: 0
+  m_Name: UI Logger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &326287194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 326287193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c18cbb8a77d5a74ba83ce2ce6f84244, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cooldownPanel: {fileID: 0}
+  skillPointPanel: {fileID: 0}
+  turnPanel: {fileID: 0}
+  movePanel: {fileID: 230194611}
+  messageDisplayTime: 3
+  showTimestamp: 1
+--- !u!4 &326287195
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 326287193}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.2259455, y: -2.1354954, z: -0.010292182}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &327359225
 GameObject:
   m_ObjectHideFlags: 0
@@ -12909,8 +12901,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.1, y: -1.3}
-  m_SizeDelta: {x: 346.7, y: 87.8}
+  m_AnchoredPosition: {x: -0.98, y: -4.39}
+  m_SizeDelta: {x: 348.47, y: 108.13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &354717656
 MonoBehaviour:
@@ -16893,6 +16885,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4679097396921fa469ab6c479ab01e77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  invulnerableIconSprite: {fileID: 21300000, guid: 5eba82acbf1ab0d4c8bf9058e3dc3bd1,
+    type: 3}
+  bountyIconSprite: {fileID: 21300000, guid: a63504042c9a477448ee42aad8ea753f, type: 3}
+  summonedIconSprite: {fileID: 21300000, guid: 525f9735d7195574a82876af2d5d41e2, type: 3}
+  stunnedIconSprite: {fileID: 21300000, guid: cc664156949f0414ea16cbad39ebd028, type: 3}
+  kingMovementIconSprite: {fileID: 21300000, guid: d003d391c35f1ae49983b96149da3c73,
+    type: 3}
+  crippledIconSprite: {fileID: 21300000, guid: a2609ab6e7758834ca3445fef7a9f81a, type: 3}
+  phoenixResurrectionIconSprite: {fileID: 21300000, guid: da03fe0af64556a4e877ae0a1889c72d,
+    type: 3}
+  guardIconSprite: {fileID: 21300000, guid: 46255907d5a2664408ea2aecbd89be73, type: 3}
+  solidarityIconSprite: {fileID: 21300000, guid: cd6bfe8c795e08c4f853ad38980b541c,
+    type: 3}
+  iconOffset: {x: 0.3, y: 0.3, z: -1}
+  iconScale: 0.5
+  iconColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &466292680
 Transform:
   m_ObjectHideFlags: 0
@@ -18855,8 +18863,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.15010908}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 74.57, y: 48.84}
-  m_SizeDelta: {x: 118.85, y: 144.64}
+  m_AnchoredPosition: {x: 76.41, y: 49.16}
+  m_SizeDelta: {x: 103.86, y: 131.26}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &540378525
 MonoBehaviour:
@@ -19954,81 +19962,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 564071288}
-  m_CullTransparentMesh: 1
---- !u!1 &565956699
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 565956700}
-  - component: {fileID: 565956702}
-  - component: {fileID: 565956701}
-  m_Layer: 5
-  m_Name: Panel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &565956700
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 565956699}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 631916881}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 171.6, y: 2.0999985}
-  m_SizeDelta: {x: 819, y: 366.2}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &565956701
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 565956699}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e2823fb2f7b24c74491450f502dc27c7, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &565956702
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 565956699}
   m_CullTransparentMesh: 1
 --- !u!1 &566363960
 GameObject:
@@ -22925,8 +22858,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 565956700}
+  m_Children: []
   m_Father: {fileID: 203484643}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -25000,8 +24932,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -103.23, y: 115.49002}
-  m_SizeDelta: {x: 217.33, y: 38.5}
+  m_AnchoredPosition: {x: -82.3, y: 201}
+  m_SizeDelta: {x: 272.24, y: 38.53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &712606975
 MonoBehaviour:
@@ -25025,15 +24957,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'COST: 1 SP'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
-  m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
+  m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -25050,8 +24982,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 35
+  m_fontSizeBase: 35
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -28180,7 +28112,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -70.7, y: 155}
+  m_AnchoredPosition: {x: 173, y: 242}
   m_SizeDelta: {x: 282.39, y: 54.35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &811956443
@@ -28205,15 +28137,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: ACTIVE SKILL
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
-  m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
+  m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -28230,14 +28162,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30.7
-  m_fontSizeBase: 30.7
+  m_fontSize: 37.17
+  m_fontSizeBase: 37.17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -29703,8 +29635,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -183.02, y: -123.46}
+  m_AnchoredPosition: {x: -1866, y: -607}
+  m_SizeDelta: {x: -207, y: -105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &865600657
 MonoBehaviour:
@@ -32145,7 +32077,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -456.99994, y: 22}
+  m_AnchoredPosition: {x: -406.23993, y: -8.899994}
   m_SizeDelta: {x: -1146.36, y: -575.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &945271637
@@ -36165,7 +36097,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 21.349998, y: 697}
+  m_AnchoredPosition: {x: 31.450035, y: 782.0001}
   m_SizeDelta: {x: 42.7, y: 1.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1086673160
@@ -36315,8 +36247,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 191.08006, y: 60.2}
-  m_SizeDelta: {x: 805.95, y: 72.1}
+  m_AnchoredPosition: {x: 186.95, y: 84.118}
+  m_SizeDelta: {x: 834, y: 86.125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1089442511
 MonoBehaviour:
@@ -36338,17 +36270,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'LIMITATIONS: NONE'
+  m_text: 'LIMITATIONS: BOTH ARCHBISHOP AND ELEMENTAL BISHOP MUST BE ON BOARD'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
-  m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
+  m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -36373,7 +36305,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -36401,7 +36333,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: -0.7657623}
+  m_margin: {x: 3.2868042, y: 0, z: 3.2868347, w: -0.7657623}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -39591,8 +39523,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 114.08, y: 115.49005}
-  m_SizeDelta: {x: 253.6, y: 38.5}
+  m_AnchoredPosition: {x: -68.277, y: 154.43001}
+  m_SizeDelta: {x: 300.2, y: 54.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1160215722
 MonoBehaviour:
@@ -39616,15 +39548,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'CD: 2 TURNS'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
-  m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
+  m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -39641,14 +39573,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 35
+  m_fontSizeBase: 35
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -42933,7 +42865,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1804252108}
   - {fileID: 404968315}
   - {fileID: 1859732475}
   - {fileID: 1478031874}
@@ -42957,6 +42888,7 @@ RectTransform:
   - {fileID: 1458762754}
   - {fileID: 1577628621}
   - {fileID: 1637996282}
+  - {fileID: 1804252108}
   - {fileID: 261894094}
   - {fileID: 1834674485}
   m_Father: {fileID: 728448602}
@@ -43835,7 +43767,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 405.56, y: 115.5}
+  m_AnchoredPosition: {x: 429.38, y: 162.48}
   m_SizeDelta: {x: 329.36, y: 38.501}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1283116934
@@ -43860,15 +43792,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'DURATION: 1 TURNS'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
-  m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
+  m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -43885,8 +43817,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 35
+  m_fontSizeBase: 35
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -45283,7 +45215,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -457, y: -271}
+  m_AnchoredPosition: {x: -404.13, y: -298.60007}
   m_SizeDelta: {x: 238.95, y: 95.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1329264648
@@ -45700,7 +45632,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 526.14996, y: 697}
+  m_AnchoredPosition: {x: 517.79974, y: 782.0001}
   m_SizeDelta: {x: 42.7, y: 1.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1334240741
@@ -46287,7 +46219,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1366046461
 RectTransform:
   m_ObjectHideFlags: 0
@@ -49495,7 +49427,7 @@ MonoBehaviour:
   whiteRoyalKnightPanel: {fileID: 1602699120}
   whiteMistKnightPanel: {fileID: 2119306633}
   statusPanel: {fileID: 457827326}
-  statusIconParent: {fileID: 102826237}
+  statusIconParent: {fileID: 1760649350}
   invulnerableSprite: {fileID: 21300000, guid: 5eba82acbf1ab0d4c8bf9058e3dc3bd1, type: 3}
   summonedSprite: {fileID: 21300000, guid: 525f9735d7195574a82876af2d5d41e2, type: 3}
   phaseSprite: {fileID: 21300000, guid: a2609ab6e7758834ca3445fef7a9f81a, type: 3}
@@ -53554,8 +53486,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -456.99994, y: 233}
-  m_SizeDelta: {x: -1044.8401, y: -716.88}
+  m_AnchoredPosition: {x: -406.23993, y: 213}
+  m_SizeDelta: {x: -1051.91, y: -696.55}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1587770385
 MonoBehaviour:
@@ -60059,8 +59991,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 102826237}
+  m_Children: []
   m_Father: {fileID: 1637996282}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -60081,14 +60012,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 66c5dfed9b9772540ad00a00e68f8d4d, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -62134,7 +62065,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1804252108
 RectTransform:
   m_ObjectHideFlags: 0
@@ -62152,8 +62083,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -279}
-  m_SizeDelta: {x: -345, y: -848.9}
+  m_AnchoredPosition: {x: 28.900024, y: 1931.0999}
+  m_SizeDelta: {x: 22.8, y: -1113.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1804252109
 MonoBehaviour:
@@ -62168,7 +62099,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.92156863}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -65647,8 +65578,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 3.7249756, y: 0.010009766}
-  m_SizeDelta: {x: -7.45, y: 0.02002}
+  m_AnchoredPosition: {x: 0, y: 37}
+  m_SizeDelta: {x: 0, y: 73.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1922826996
 MonoBehaviour:
@@ -67886,10 +67817,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 83672643}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2.9, y: 36.3}
-  m_SizeDelta: {x: 221.3, y: 190.5}
+  m_AnchorMin: {x: 0.10685204, y: 0.3073513}
+  m_AnchorMax: {x: 0.8752782, y: 0.8984865}
+  m_AnchoredPosition: {x: -0.40000153, y: 5.800003}
+  m_SizeDelta: {x: 6.300003, y: 15.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1981543716
 MonoBehaviour:
@@ -70917,6 +70848,7 @@ MonoBehaviour:
   isInvulnerable: 0
   invulnerableUntilTurn: -1
   statusManager: {fileID: 0}
+  uiBuffManager: {fileID: 0}
   originalColor: {r: 0, g: 0, b: 0, a: 0}
   skillPoints: 4
 --- !u!4 &2078043202
@@ -71657,7 +71589,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -457.87, y: -167}
+  m_AnchoredPosition: {x: -405, y: -195.6}
   m_SizeDelta: {x: 237.2, y: 95.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2095506778
@@ -72594,7 +72526,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2119306634
 RectTransform:
   m_ObjectHideFlags: 0
@@ -73552,6 +73484,7 @@ SceneRoots:
   - {fileID: 1396465291}
   - {fileID: 72916003}
   - {fileID: 466292680}
+  - {fileID: 326287195}
   - {fileID: 1895310620}
   - {fileID: 1386972595}
   - {fileID: 593866064}

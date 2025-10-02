@@ -135,7 +135,7 @@ private void UpdateLatestMoveUI(string latestMove)
         if (thunderTile != null)
         {
             Chessman thunderChessman = thunderTile.GetComponent<Chessman>();
-            Debug.Log($"[Game] Thunder tile created at (2,3): {thunderTile.name}, Player: {thunderChessman?.GetPlayer()}");
+          //  Debug.Log($"[Game] Thunder tile created at (2,3): {thunderTile.name}, Player: {thunderChessman?.GetPlayer()}");
         }
 
         //Set all piece positions on the positions board
@@ -168,7 +168,7 @@ private void UpdateLatestMoveUI(string latestMove)
         else if (name.StartsWith("tile"))
         {
             cm.SetPlayer("neutral");
-            Debug.Log($"[Game] {name} set to neutral player via StartsWith('tile')");
+           // Debug.Log($"[Game] {name} set to neutral player via StartsWith('tile')");
         }
 
         else if (name == "tile_earth")
@@ -180,13 +180,13 @@ private void UpdateLatestMoveUI(string latestMove)
         else if (name == "tile_thunder")
         {
             cm.SetPlayer("neutral");          // neutral tile
-            Debug.Log($"[Game] {name} set to neutral player via specific case");
+          //   Debug.Log($"[Game] {name} set to neutral player via specific case");
         }
         else if (name == "tile_void")
         {
             cm.SetPlayer("neutral");          // neutral tile
             cm.statusManager.AddStatus(StatusType.specialTile, 999); // permanent special tile status
-            Debug.Log($"[Game] {name} set to neutral player - void tile created");
+          //  Debug.Log($"[Game] {name} set to neutral player - void tile created");
         }
         else if (name == "celestial_pillar")
         {
@@ -222,7 +222,7 @@ private void UpdateLatestMoveUI(string latestMove)
             }
             // ✅ Add Summoned status to ElementalBishop (permanent, never expires)
             cm.statusManager.AddStatus(StatusType.Summoned, 999);
-            Debug.Log($"[Game] {name} marked as Summoned (ElementalBishop)");
+            //Debug.Log($"[Game] {name} marked as Summoned (ElementalBishop)");
         }
 
         if (name.Contains("ice_bishop"))
@@ -230,7 +230,7 @@ private void UpdateLatestMoveUI(string latestMove)
             if (obj.GetComponent<IceBishop>() == null)
             {
                 IceBishop ib = obj.AddComponent<IceBishop>();
-                Debug.Log($"[Game] IceBishop component added for {name} at ({x},{y})");
+              //  Debug.Log($"[Game] IceBishop component added for {name} at ({x},{y})");
             }
         }
 
@@ -239,7 +239,7 @@ private void UpdateLatestMoveUI(string latestMove)
             if (obj.GetComponent<FireBishop>() == null)
             {
                 FireBishop fb = obj.AddComponent<FireBishop>();
-                Debug.Log($"[Game] FireBishop component added for {name} at ({x},{y})");
+              //  Debug.Log($"[Game] FireBishop component added for {name} at ({x},{y})");
             }
         }
 
@@ -248,7 +248,7 @@ private void UpdateLatestMoveUI(string latestMove)
             if (obj.GetComponent<EarthboundBishop>() == null)
             {
                 EarthboundBishop eb = obj.AddComponent<EarthboundBishop>();
-                Debug.Log($"[Game] EarthboundBishop component added for {name} at ({x},{y})");
+              //  Debug.Log($"[Game] EarthboundBishop component added for {name} at ({x},{y})");
             }
         }
 
@@ -256,7 +256,7 @@ private void UpdateLatestMoveUI(string latestMove)
         {
             // Ashen pyre is a normal white piece that can be attacked
             // No special components needed - just a normal piece
-            Debug.Log($"[Game] {name} created as normal white piece at ({x},{y})");
+         //  Debug.Log($"[Game] {name} created as normal white piece at ({x},{y})");
         }
 
         if (name.Contains("arch_bishop"))
@@ -270,7 +270,7 @@ private void UpdateLatestMoveUI(string latestMove)
             }
             // ✅ Add Summoned status to Archbishop (permanent, never expires)
             cm.statusManager.AddStatus(StatusType.Summoned, 999);
-            Debug.Log($"[Game] {name} marked as Summoned (Archbishop)");
+            //Debug.Log($"[Game] {name} marked as Summoned (Archbishop)");
         }
 
         if (name.Contains("royal_rook"))
@@ -351,7 +351,7 @@ private void UpdateLatestMoveUI(string latestMove)
             {
                 RoyalKnight rk = obj.AddComponent<RoyalKnight>();
                 rk.movePlatePrefab = movePlatePrefabReference;
-                Debug.Log($"[Game] RoyalKnight component added for {name} at ({x},{y})");
+               // Debug.Log($"[Game] RoyalKnight component added for {name} at ({x},{y})");
             }
         }
 
@@ -469,7 +469,7 @@ foreach (WraithPawn wraithPawn in wraithPawns)
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"[Game] Error notifying WraithPawn of turn change: {e.Message}");
+         //   Debug.LogError($"[Game] Error notifying WraithPawn of turn change: {e.Message}");
         }
     }
 }
@@ -488,7 +488,7 @@ foreach (WraithPawn wraithPawn in wraithPawns)
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[Game] Error updating King Last Stand movement: {e.Message}");
+             //   Debug.LogError($"[Game] Error updating King Last Stand movement: {e.Message}");
             }
         }
     }
@@ -505,7 +505,7 @@ foreach (WraithPawn wraithPawn in wraithPawns)
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[Game] Error updating Pawn Solidarity: {e.Message}");
+             //  Debug.LogError($"[Game] Error updating Pawn Solidarity: {e.Message}");
             }
         }
     }
@@ -522,7 +522,7 @@ foreach (WraithPawn wraithPawn in wraithPawns)
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[Game] Error updating RoyalAcolyte Solidarity: {e.Message}");
+            //    Debug.LogError($"[Game] Error updating RoyalAcolyte Solidarity: {e.Message}");
             }
         }
     }
@@ -533,7 +533,7 @@ foreach (WraithPawn wraithPawn in wraithPawns)
         if (Knight.chivalricGuardKnight.gameObject == null)
         {
             Knight.ClearChivalricGuardReference();
-            Debug.Log("[Game] Cleared ChivalricGuard reference - knight no longer exists");
+          //  Debug.Log("[Game] Cleared ChivalricGuard reference - knight no longer exists");
         }
     }
     // Update the Turn UI with player
@@ -660,7 +660,7 @@ foreach (WraithPawn wraithPawn in wraithPawns)
 {
     restrictedToPawnsPlayer = player;
     restrictionExpiresOnTurn = turns + durationTurns;
-    Debug.Log($"[Game] Player '{player}' restricted to pawns until turn {restrictionExpiresOnTurn} (current turn {turns})");
+  //  Debug.Log($"[Game] Player '{player}' restricted to pawns until turn {restrictionExpiresOnTurn} (current turn {turns})");
 }
 
     // Query helper

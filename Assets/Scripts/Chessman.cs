@@ -290,6 +290,7 @@ if (game != null)
 }
 
         Debug.Log($"{name} MOVED: {notation}");
+        UILogger.Log("keyMove", $"{name} moved: {notation}");
     }
     else
     {
@@ -469,41 +470,41 @@ if (game != null)
         if (this.name == "white_king")
         {
             statusManager.AddStatus(StatusType.Invulnerable, 10); // invulnerable until end of turn 10
-            Debug.Log($"{name} is invulnerable until turn 10");
+           // Debug.Log($"{name} is invulnerable until turn 10");
         }
         else if (this.name == "black_king")
         {
             statusManager.AddStatus(StatusType.Invulnerable, 10); // invulnerable until end of turn 10
-            Debug.Log($"{name} is invulnerable until turn 10");
+            //Debug.Log($"{name} is invulnerable until turn 10");
         }
         else if (this.name == "tile_lava")
         {
             statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
-            Debug.Log($"{name} is a special tile.");
+           // Debug.Log($"{name} is a special tile.");
 
         }
         else if (this.name == "tile_ice")
         {
             statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
-            Debug.Log($"{name} is a special tile.");
+           // Debug.Log($"{name} is a special tile.");
 
         }
         else if (this.name == "tile_earth")
         {
             statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
             statusManager.AddStatus(StatusType.Invulnerable, 99); // immovable tile status
-            Debug.Log($"{name} is a special tileeee.");
+          //  Debug.Log($"{name} is a special tileeee.");
 
         }
         else if (this.name == "tile_thunder")
         {
             statusManager.AddStatus(StatusType.specialTile, 99); // special tile status
-            Debug.Log($"{name} is a special tile.");
+            //Debug.Log($"{name} is a special tile.");
         }
         else if (this.name == "tile_void")
         {
             statusManager.AddStatus(StatusType.specialTile, 999); // permanent special tile status
-            Debug.Log($"{name} is a void tile - destroys any piece that enters or passes through.");
+            //Debug.Log($"{name} is a void tile - destroys any piece that enters or passes through.");
         }
         UpdateVisualStatus();
     }
@@ -623,7 +624,7 @@ if (game != null)
         {
             if (!name.Contains("pawn"))
             {
-                Debug.Log($"[TemporalShift] {name} cannot move this turn.");
+               // Debug.Log($"[TemporalShift] {name} cannot move this turn.");
                 return; // no move plates
             }
         }
@@ -632,14 +633,14 @@ if (game != null)
         // Check if piece is stunned
         if (statusManager.HasStatus(StatusType.Stunned, game.turns))
         {
-            Debug.Log($"[Stunned] {name} is stunned and cannot move this turn.");
+           // Debug.Log($"[Stunned] {name} is stunned and cannot move this turn.");
             return; // no move plates
         }
 
         // Check if piece is frozen
         if (statusManager.HasStatus(StatusType.Frozen, game.turns))
         {
-            Debug.Log($"[Frozen] {name} is frozen - generating unfreeze move plate.");
+           // Debug.Log($"[Frozen] {name} is frozen - generating unfreeze move plate.");
             // Generate a move plate on the frozen piece's own location for unfreezing
             MovePlateSpawn(xBoard, yBoard);
             return; // Only unfreeze move plate, no other move plates
@@ -648,7 +649,7 @@ if (game != null)
         // Check if piece has Stone Sentinel status
         if (statusManager.HasStatus(StatusType.StoneSentinel, game.turns))
         {
-            Debug.Log($"[StoneSentinel] {name} has Stone Sentinel - cannot move or attack.");
+           // Debug.Log($"[StoneSentinel] {name} has Stone Sentinel - cannot move or attack.");
             // Pieces with Stone Sentinel cannot move or attack
             // They are invulnerable and cannot perform actions
             return; // No move plates at all
@@ -660,12 +661,12 @@ if (game != null)
             // Pawns are immune to crippled effect
             if (name.ToLower().Contains("pawn"))
             {
-                Debug.Log($"[Crippled] {name} is immune to crippled effect.");
+              //  Debug.Log($"[Crippled] {name} is immune to crippled effect.");
                 return; // No movement plates at all
             }
             
             // For other pieces, crippled movement is handled in LineMovePlate method
-            Debug.Log($"[Crippled] {name} is crippled - movement will be limited to 1 tile per direction.");
+            //Debug.Log($"[Crippled] {name} is crippled - movement will be limited to 1 tile per direction.");
         }
 
         if (this.name.StartsWith("black_pawn"))
@@ -915,7 +916,7 @@ if (game != null)
                         // Check if this is an Elemental Bishop or Earthbound Bishop (can pass through boulders)
                         if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_earth_bishop" || this.name == "black_earth_bishop" || name.Contains("king"))
                         {
-                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                           // Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             x += xIncrement;
                             y += yIncrement;
                             movesMade++;
@@ -923,7 +924,7 @@ if (game != null)
                         }
                         else
                         {
-                            Debug.Log($"{targetCm.name} is a solid block. Cannot pass or land.");
+                           // Debug.Log($"{targetCm.name} is a solid block. Cannot pass or land.");
                             break; // stop movement
                         }
                     }
@@ -934,7 +935,7 @@ if (game != null)
                         // Check if this is an Earthbound Bishop (can pass through Terra Wards)
                         if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop")
                         {
-                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                           // Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             x += xIncrement;
                             y += yIncrement;
                             movesMade++;
@@ -942,7 +943,7 @@ if (game != null)
                         }
                         else
                         {
-                            Debug.Log($"{targetCm.name} is a solid block. Cannot pass or land.");
+                           // Debug.Log($"{targetCm.name} is a solid block. Cannot pass or land.");
                             break; // stop movement
                         }
                     }
@@ -956,7 +957,7 @@ if (game != null)
                             continue; // pass through and continue
                         }
                         else{
-                            Debug.Log($"{targetCm.name} is a celestial pillar. Cannot move here.");
+                           // Debug.Log($"{targetCm.name} is a celestial pillar. Cannot move here.");
                            break; // stop movement
                         }
                      }
@@ -964,7 +965,7 @@ if (game != null)
                     // Special tile like lava/ice: can land and pass
                     if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
                     {
-                        Debug.Log($"{targetCm.name} is a special tile. Landing allowed, passing through.");
+                      //  Debug.Log($"{targetCm.name} is a special tile. Landing allowed, passing through.");
                         MovePlateSpawn(x, y); // can land
                         x += xIncrement;
                         y += yIncrement;
@@ -975,19 +976,19 @@ if (game != null)
                     // Regular invulnerable piece
                     if (targetCm.statusManager.HasStatus(StatusType.Invulnerable, sc.turns))
                     {
-                        Debug.Log($"{targetCm.name} is invulnerable. Skipping attack.");
+                      //  Debug.Log($"{targetCm.name} is invulnerable. Skipping attack.");
                         break;
                     }
 
                     // Enemy piece
                     if (targetCm.player != player && !targetCm.isInvulnerable)
                     {
-                        Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated.");
+                      //  Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated.");
                         MovePlateAttackSpawn(x, y);
                     }
                     else
                     {
-                        Debug.Log($"{targetCm.name} is friendly. Cannot move there.");
+                       // Debug.Log($"{targetCm.name} is friendly. Cannot move there.");
                     }
 
                     break; // stop after hitting any piece
@@ -1098,12 +1099,12 @@ if (game != null)
                     // Check if this is an Elemental Bishop, Earthbound Bishop, or other pieces that can pass through boulders
                     if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_earth_bishop" || this.name == "black_earth_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                     {
-                        Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                       // Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
                     }
                     else
                     {
-                        Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
+                       // Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
                         return; // cannot land or pass
                     }
                 }
@@ -1114,12 +1115,12 @@ if (game != null)
                     // Check if this is an Earthbound Bishop (can pass through Terra Wards)
                     if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop")
                     {
-                        Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                       // Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
                     }
                     else
                     {
-                        Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
+                    //    Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
                         return; // cannot land or pass
                     }
                 }
@@ -1130,12 +1131,12 @@ if (game != null)
                     // Check if this is an Earthbound Bishop or Chronomagus (can pass through pillars)
                     if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                     {
-                        Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                      //  Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                         return; // pass through but don't land
                     }
                     else
                     {
-                        Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
+                       // Debug.Log($"{targetCm.name} is a solid block. Cannot move here.");
                         return; // cannot land or pass
                     }
                 }
@@ -1143,25 +1144,25 @@ if (game != null)
                 // Special tile like lava/ice → can land
                 if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
                 {
-                    Debug.Log($"{targetCm.name} is a special tile. Landing allowed.");
+                   // Debug.Log($"{targetCm.name} is a special tile. Landing allowed.");
                     MovePlateSpawn(x, y);
                     return;
                 }
 
                 if (targetCm.statusManager.HasStatus(StatusType.Invulnerable, sc.turns))
                 {
-                    Debug.Log($"{targetCm.name} is invulnerable. Skipping attack.");
+                   // Debug.Log($"{targetCm.name} is invulnerable. Skipping attack.");
                     return;
                 }
 
                 if (targetCm.player != player && !targetCm.isInvulnerable)
                 {
-                    Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated.");
+                   // Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated.");
                     MovePlateAttackSpawn(x, y);
                 }
                 else
                 {
-                    Debug.Log($"{targetCm.name} is friendly. Cannot move there.");
+                  //  Debug.Log($"{targetCm.name} is friendly. Cannot move there.");
                 }
 
                 return;
@@ -1218,12 +1219,12 @@ if (game != null)
                         // Check if this is an Earthbound Bishop (can pass through Terra Wards)
                         if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop")
                         {
-                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                           // Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
                         }
                         else
                         {
-                            Debug.Log($"{targetCm.name} is a solid block. Pawn cannot move forward.");
+                           // Debug.Log($"{targetCm.name} is a solid block. Pawn cannot move forward.");
                             break; // stop movement
                         }
                     }
@@ -1270,12 +1271,12 @@ if (game != null)
                         // Check if this is an Elemental Bishop (can pass through boulders)
                         if (this.name == "white_elemental_bishop" || this.name == "black_elemental_bishop" || this.name == "white_king" || this.name == "black_king" || this.name == "white_chronomagus" || this.name == "black_chronomagus")
                         {
-                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                           // Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
                         }
                         else
                         {
-                            Debug.Log($"{targetCm.name} is a solid block. Pawn cannot attack.");
+                        //    Debug.Log($"{targetCm.name} is a solid block. Pawn cannot attack.");
                             continue;
                         }
                     }
@@ -1286,12 +1287,12 @@ if (game != null)
                         // Check if this is an Earthbound Bishop (can pass through Terra Wards)
                         if (this.name == "white_earth_bishop" || this.name == "black_earth_bishop")
                         {
-                            Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
+                          //  Debug.Log($"{this.name} can pass through {targetCm.name}. Continuing movement.");
                             continue; // pass through and continue
                         }
                         else
                         {
-                            Debug.Log($"{targetCm.name} is a solid block. Pawn cannot attack.");
+                           // Debug.Log($"{targetCm.name} is a solid block. Pawn cannot attack.");
                             continue;
                         }
                     }
@@ -1299,19 +1300,19 @@ if (game != null)
                     // Special tile → skip attack
                     if (targetCm.statusManager.HasStatus(StatusType.specialTile, sc.turns))
                     {
-                        Debug.Log($"{targetCm.name} is a special tile on diagonal. Pawn cannot attack, skip.");
+                       // Debug.Log($"{targetCm.name} is a special tile on diagonal. Pawn cannot attack, skip.");
                         continue;
                     }
 
                     if (targetCm.statusManager.HasStatus(StatusType.Invulnerable, sc.turns))
                     {
-                        Debug.Log($"{targetCm.name} is invulnerable. Skipping pawn attack.");
+                       // Debug.Log($"{targetCm.name} is invulnerable. Skipping pawn attack.");
                         continue;
                     }
 
                     if (targetCm.player != player)
                     {
-                        Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated for pawn diagonal.");
+                      //  Debug.Log($"{targetCm.name} is enemy. MovePlateAttackSpawn activated for pawn diagonal.");
                         MovePlateAttackSpawn(tx, ty);
                     }
                 }
