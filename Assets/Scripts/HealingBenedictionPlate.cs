@@ -48,7 +48,7 @@ public class HealingBenedictionPlate : MonoBehaviour
         }
         Debug.Log($"[HealingBenedictionPlate] Bishop state AFTER revive: cooldown started for {player}");
 
-        game.NextTurn();
+      //  game.NextTurn();
     }
     else
     {

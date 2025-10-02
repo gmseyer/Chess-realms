@@ -333,25 +333,47 @@ public bool IsInvocationReady() => fireStack >= INVOCATION_THRESHOLD || iceStack
 public void Invocation()
 {
     Debug.Log("[Invocation] Invocation button pressed!");
-    Debug.Log($"[Invocation] Current stacks - Fire: {fireStack}, Ice: {iceStack}, Earth: {earthStack}");
+    
+    // Get the selected ElementalBishop from UIManager
+    ElementalBishop selectedBishop = null;
+    Chessman cm = null;
+    if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
+    {
+        GameObject selectedPiece = UIManager.Instance.selectedPiece;
+        selectedBishop = selectedPiece.GetComponent<ElementalBishop>();
+        cm = selectedPiece.GetComponent<Chessman>();
+        if (selectedBishop == null || cm == null)
+        {
+            Debug.LogError($"[Invocation] Selected piece {selectedPiece.name} is not an ElementalBishop or missing Chessman component!");
+            return;
+        }
+    }
+    else
+    {
+        Debug.LogError("[Invocation] No piece selected via UIManager!");
+        return;
+    }
+    
+    string player = cm.GetPlayer();
+    Debug.Log($"[Invocation] Current stacks - Fire: {selectedBishop.fireStack}, Ice: {selectedBishop.iceStack}, Earth: {selectedBishop.earthStack}");
     
     // Check which stack has 5 or more
     string newPieceName = "";
     string invocationType = "";
     
-    if (fireStack >= INVOCATION_THRESHOLD)
+    if (selectedBishop.fireStack >= INVOCATION_THRESHOLD)
     {
-        newPieceName = "white_fire_bishop";
+        newPieceName = $"{player}_fire_bishop";
         invocationType = "🔥 FIRE INVOCATION";
     }
-    else if (iceStack >= INVOCATION_THRESHOLD)
+    else if (selectedBishop.iceStack >= INVOCATION_THRESHOLD)
     {
-        newPieceName = "white_ice_bishop";
+        newPieceName = $"{player}_ice_bishop";
         invocationType = "❄️ ICE INVOCATION";
     }
-    else if (earthStack >= INVOCATION_THRESHOLD)
+    else if (selectedBishop.earthStack >= INVOCATION_THRESHOLD)
     {
-        newPieceName = "white_earth_bishop"; 
+        newPieceName = $"{player}_earth_bishop"; 
         invocationType = "🌍 EARTH INVOCATION";
     }
     else
@@ -363,7 +385,7 @@ public void Invocation()
     Debug.Log($"[Invocation] {invocationType} - Transforming into {newPieceName}");
     
     // Use Pawn.cs promotion logic for transformation
-    TransformElementalBishop(newPieceName, invocationType);
+    selectedBishop.TransformElementalBishop(newPieceName, invocationType);
 }
 
 private void TransformElementalBishop(string newPieceName, string invocationType)
@@ -374,30 +396,31 @@ private void TransformElementalBishop(string newPieceName, string invocationType
         return;
     }
 
-    // Find the Elemental Bishop's position by searching the board (since Chessman component might not exist)
-    int x = -1, y = -1;
-    
-    for (int searchX = 0; searchX < 8; searchX++)
+    // Get the selected ElementalBishop from UIManager to get position and player
+    ElementalBishop selectedBishop = null;
+    Chessman cm = null;
+    if (UIManager.Instance != null && UIManager.Instance.selectedPiece != null)
     {
-        for (int searchY = 0; searchY < 8; searchY++)
+        GameObject selectedPiece = UIManager.Instance.selectedPiece;
+        selectedBishop = selectedPiece.GetComponent<ElementalBishop>();
+        cm = selectedPiece.GetComponent<Chessman>();
+        if (selectedBishop == null || cm == null)
         {
-            GameObject pieceAtPos = game.GetPosition(searchX, searchY);
-            if (pieceAtPos != null && pieceAtPos.name.Contains("white_elemental_bishop"))
-            {
-                x = searchX;
-                y = searchY;
-                Debug.Log($"[Invocation] Found white_elemental_bishop at ({x},{y})");
-                break;
-            }
+            Debug.LogError($"[Invocation] Selected piece {selectedPiece.name} is not an ElementalBishop or missing Chessman component!");
+            return;
         }
-        if (x != -1) break;
     }
-    
-    if (x == -1 || y == -1)
+    else
     {
-        Debug.LogError("[Invocation] Could not find white_elemental_bishop on board!");
+        Debug.LogError("[Invocation] No piece selected via UIManager!");
         return;
     }
+    
+    string player = cm.GetPlayer();
+    int x = cm.GetXBoard();
+    int y = cm.GetYBoard();
+    
+    Debug.Log($"[Invocation] Found {player}_elemental_bishop at ({x},{y})");
     
     Debug.Log($"[Invocation] {invocationType} - Transforming Elemental Bishop at ({x},{y}) into {newPieceName}");
     
