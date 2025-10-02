@@ -238,9 +238,13 @@ public void AttemptFortify()
 
             if (targetCm.GetPlayer() == rookCm.GetPlayer())
             {
-                targetCm.isInvulnerable = true;
-                targetCm.invulnerableUntilTurn = game.turns + 2;
-                Debug.Log($"{targetCm.name} is now invulnerable until turn {targetCm.invulnerableUntilTurn}");
+                // Add invulnerable status to StatusManager (standardized approach)
+                targetCm.statusManager.AddStatus(StatusType.Invulnerable, game.turns + 2);
+                
+                // Update visual status to show any visual effects
+                targetCm.UpdateVisualStatus();
+                
+                Debug.Log($"{targetCm.name} is now invulnerable until turn {game.turns + 2}");
             }
         }
     }
@@ -556,7 +560,7 @@ public static void CheckCelestialOrbCapture(Vector2Int rookPosition, string rook
                     Debug.LogError("[Royal Rook] Could not find Rook to promote!");
                 }
             }
-            
+             
             break;
         }
     }

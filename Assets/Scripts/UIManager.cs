@@ -174,18 +174,36 @@ public Button fortifyButton;
             return;
         }
 
+        // Get the UIBuffManager to access the same sprites
+        UIBuffManager uiBuffManager = selectedPiece.GetComponent<UIBuffManager>();
+        
         // Check each status type and create icons for active ones
         StatusType[] allStatusTypes = {
-            StatusType.Invulnerable, StatusType.Summoned, StatusType.Phase, StatusType.Locked,
-            StatusType.Stunned, StatusType.Ethereal, StatusType.Soulbrand, StatusType.Bounty,
-            StatusType.KingMovement, StatusType.Solidarity, StatusType.specialTile, StatusType.SolidBlock
+            StatusType.Invulnerable, StatusType.Bounty, StatusType.Summoned, StatusType.Stunned,
+            StatusType.KingMovement, StatusType.Crippled, StatusType.PhoenixResurrection,
+            StatusType.Guard, StatusType.Solidarity, StatusType.Phase, StatusType.Locked,
+            StatusType.Ethereal, StatusType.Soulbrand, StatusType.specialTile, StatusType.SolidBlock
         };
 
+        int iconIndex = 0;
         foreach (StatusType statusType in allStatusTypes)
         {
-            if (chessman.statusManager.HasStatus(statusType, game.turns))
+            bool hasStatus = false;
+            
+            // Check if piece has this status
+            if (statusType == StatusType.Bounty)
             {
-                CreateStatusIcon(statusType);
+                hasStatus = chessman.statusManager.HasBounty(game.turns);
+            }
+            else
+            {
+                hasStatus = chessman.statusManager.HasStatus(statusType, game.turns);
+            }
+            
+            if (hasStatus)
+            {
+                CreateStatusIcon(statusType, iconIndex, uiBuffManager);
+                iconIndex++;
             }
         }
     }
@@ -202,12 +220,12 @@ public Button fortifyButton;
         }
     }
 
-    private void CreateStatusIcon(StatusType statusType)
+    private void CreateStatusIcon(StatusType statusType, int iconIndex, UIBuffManager uiBuffManager)
     {
         if (statusIconParent == null) return;
 
-        // Get the appropriate sprite for this status
-        Sprite statusSprite = GetStatusSprite(statusType);
+        // Get the appropriate sprite for this status from UIBuffManager
+        Sprite statusSprite = GetStatusSpriteFromUIBuffManager(statusType, uiBuffManager);
         if (statusSprite == null) return;
 
         // Create a new GameObject for the status icon
@@ -219,9 +237,42 @@ public Button fortifyButton;
         image.sprite = statusSprite;
         image.preserveAspect = true;
 
-        // Set size (you can adjust this as needed)
+        // Set size and position for horizontal layout
         RectTransform rectTransform = statusIcon.GetComponent<RectTransform>();
         rectTransform.sizeDelta = new Vector2(50, 50); // 50x50 pixels
+        
+        // Position horizontally with spacing
+        float spacing = 60f; // Space between icons
+        float startX = spacing * 0; // Start position (adjust as needed)
+        float xPosition = startX + (iconIndex * spacing);
+        
+        rectTransform.anchoredPosition = new Vector2(xPosition, 0f); // Same Y position for all icons
+    }
+
+    private Sprite GetStatusSpriteFromUIBuffManager(StatusType statusType, UIBuffManager uiBuffManager)
+    {
+        if (uiBuffManager == null) return GetStatusSprite(statusType); // Fallback to old method
+        
+        switch (statusType)
+        {
+            case StatusType.Invulnerable: return uiBuffManager.invulnerableIconSprite;
+            case StatusType.Bounty: return uiBuffManager.bountyIconSprite;
+            case StatusType.Summoned: return uiBuffManager.summonedIconSprite;
+            case StatusType.Stunned: return uiBuffManager.stunnedIconSprite;
+            case StatusType.KingMovement: return uiBuffManager.kingMovementIconSprite;
+            case StatusType.Crippled: return uiBuffManager.crippledIconSprite;
+            case StatusType.PhoenixResurrection: return uiBuffManager.phoenixResurrectionIconSprite;
+            case StatusType.Guard: return uiBuffManager.guardIconSprite;
+            case StatusType.Solidarity: return uiBuffManager.solidarityIconSprite;
+            // Fallback to old sprites for statuses not in UIBuffManager
+            case StatusType.Phase: return phaseSprite;
+            case StatusType.Locked: return lockedSprite;
+            case StatusType.Ethereal: return etherealSprite;
+            case StatusType.Soulbrand: return soulbrandSprite;
+            case StatusType.specialTile: return specialTileSprite;
+            case StatusType.SolidBlock: return solidBlockSprite;
+            default: return null;
+        }
     }
 
     private Sprite GetStatusSprite(StatusType statusType)
@@ -291,6 +342,11 @@ public Button fortifyButton;
         chessman.statusManager.AddStatus(StatusType.Invulnerable, game.turns + 5);
         chessman.statusManager.AddStatus(StatusType.Stunned, game.turns + 3);
         chessman.statusManager.AddBountyStatus(2, game.turns + 10);
+        chessman.statusManager.AddStatus(StatusType.Summoned, game.turns + 7);
+        chessman.statusManager.AddStatus(StatusType.Guard, game.turns + 4);
+        
+        // Update the status panel to show the new statuses
+        UpdateStatusPanel();
         
         Debug.Log("[Status Panel Test] Added test statuses to selected piece. Check the status panel!");
     }

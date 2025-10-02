@@ -463,9 +463,8 @@ public class King : MonoBehaviour
             statusManager.AddStatus(StatusType.Invulnerable, monarchShieldExpiresOnTurn);
         }
         
-        // Also set the Chessman invulnerable flag for compatibility
-        chessman.isInvulnerable = true;
-        chessman.invulnerableUntilTurn = monarchShieldExpiresOnTurn;
+        // Update visual status to show any visual effects
+        chessman.UpdateVisualStatus();
         
         Debug.Log($"[King] {chessman.GetPlayer()} King activated Monarch Shield until turn {monarchShieldExpiresOnTurn}");
     }

@@ -71,6 +71,7 @@ public class Chessman : MonoBehaviour
     [HideInInspector] public bool isInvulnerable = false;        
     [HideInInspector] public int invulnerableUntilTurn = -1;      // inclusive turn when it expires
     [HideInInspector] public StatusManager statusManager;
+    [HideInInspector] public UIBuffManager uiBuffManager;
     [HideInInspector] public Color originalColor; // Store original color for stunned pieces
 
 
@@ -134,6 +135,7 @@ public static class ChessNotation
      private void Awake()
     {
         statusManager = gameObject.AddComponent<StatusManager>();
+        uiBuffManager = gameObject.AddComponent<UIBuffManager>();
     }
 
     private void Start()
@@ -166,6 +168,7 @@ public static class ChessNotation
         bool isEthereal = statusManager.HasStatus(StatusType.Ethereal, game.turns);
         bool hasBounty = statusManager.HasBounty(game.turns);
         bool hasKingMovement = statusManager.HasStatus(StatusType.KingMovement, game.turns);
+        bool isInvulnerable = statusManager.HasStatus(StatusType.Invulnerable, game.turns);
         
         if (sr != null)
         {
@@ -217,6 +220,7 @@ else if (isTemporalShifted)
     // Set to yellow for Bounty
     sr.color = Color.yellow;
 }
+
 else if (hasKingMovement)
 {
     // Store original color if not already stored
@@ -242,13 +246,16 @@ else
     if (originalColor != Color.clear)
         sr.color = originalColor;
 
-    // Reset invulnerability when status effects end
-    isInvulnerable = false;
+    // Note: Invulnerability is now handled entirely by StatusManager
 }
 
         }
 
-       
+        // Update UI buff icons
+        if (uiBuffManager != null)
+        {
+            uiBuffManager.UpdateBuffIcons();
+        }
     }
 
 
@@ -462,16 +469,12 @@ if (game != null)
         if (this.name == "white_king")
         {
             statusManager.AddStatus(StatusType.Invulnerable, 10); // invulnerable until end of turn 10
-            isInvulnerable = true;
-            invulnerableUntilTurn = 10;
-            Debug.Log($"{name} is invulnerable until turn {invulnerableUntilTurn}");
+            Debug.Log($"{name} is invulnerable until turn 10");
         }
         else if (this.name == "black_king")
         {
             statusManager.AddStatus(StatusType.Invulnerable, 10); // invulnerable until end of turn 10
-            isInvulnerable = true;
-            invulnerableUntilTurn = 10;
-            Debug.Log($"{name} is invulnerable until turn {invulnerableUntilTurn}");
+            Debug.Log($"{name} is invulnerable until turn 10");
         }
         else if (this.name == "tile_lava")
         {

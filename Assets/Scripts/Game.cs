@@ -110,7 +110,7 @@ private void UpdateLatestMoveUI(string latestMove)
             Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0),
             Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0),
             
-
+           
             Create("white_pawn", 0, 1), Create("white_pawn1", 1, 1), Create("white_pawn2", 2, 1),
              Create("white_pawn3", 3, 1), Create("white_pawn4", 4, 1), Create("white_pawn5", 5, 1),
              Create("white_pawn6", 6, 1), Create("white_pawn7", 7, 1)
@@ -367,6 +367,35 @@ private void UpdateLatestMoveUI(string latestMove)
          q.movePlatePrefab = movePlatePrefabReference;
         }
         cm.Activate();
+        
+        // Assign sprites to UIBuffManager if available
+        UIBuffManager uiBuffManager = obj.GetComponent<UIBuffManager>();
+        if (uiBuffManager != null)
+        {
+            // Try to find sprites from any existing UIBuffManager
+            UIBuffManager[] allManagers = FindObjectsOfType<UIBuffManager>();
+            foreach (UIBuffManager manager in allManagers)
+            {
+                if (uiBuffManager.invulnerableIconSprite == null && manager.invulnerableIconSprite != null)
+                    uiBuffManager.invulnerableIconSprite = manager.invulnerableIconSprite;
+                if (uiBuffManager.bountyIconSprite == null && manager.bountyIconSprite != null)
+                    uiBuffManager.bountyIconSprite = manager.bountyIconSprite;
+                if (uiBuffManager.summonedIconSprite == null && manager.summonedIconSprite != null)
+                    uiBuffManager.summonedIconSprite = manager.summonedIconSprite;
+                if (uiBuffManager.stunnedIconSprite == null && manager.stunnedIconSprite != null)
+                    uiBuffManager.stunnedIconSprite = manager.stunnedIconSprite;
+                if (uiBuffManager.kingMovementIconSprite == null && manager.kingMovementIconSprite != null)
+                    uiBuffManager.kingMovementIconSprite = manager.kingMovementIconSprite;
+                if (uiBuffManager.crippledIconSprite == null && manager.crippledIconSprite != null)
+                    uiBuffManager.crippledIconSprite = manager.crippledIconSprite;
+                if (uiBuffManager.phoenixResurrectionIconSprite == null && manager.phoenixResurrectionIconSprite != null)
+                    uiBuffManager.phoenixResurrectionIconSprite = manager.phoenixResurrectionIconSprite;
+                if (uiBuffManager.guardIconSprite == null && manager.guardIconSprite != null)
+                    uiBuffManager.guardIconSprite = manager.guardIconSprite;
+                if (uiBuffManager.solidarityIconSprite == null && manager.solidarityIconSprite != null)
+                    uiBuffManager.solidarityIconSprite = manager.solidarityIconSprite;
+            }
+        }
         
         // Add King component after Chessman is fully activated
         if (name.Contains("king"))

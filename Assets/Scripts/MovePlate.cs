@@ -93,7 +93,7 @@ public class MovePlate : MonoBehaviour
                 {
                     Bishop bishop = cp.GetComponent<Bishop>();
 
-                    if (bishop != null && !targetCm.isInvulnerable)
+                    if (bishop != null && !targetCm.statusManager.HasStatus(StatusType.Invulnerable, controller.GetComponent<Game>().turns))
                     {
                         controller.GetComponent<Game>().SetPositionEmpty(matrixX, matrixY);
                         Destroy(cp);
@@ -103,7 +103,7 @@ public class MovePlate : MonoBehaviour
                     }
                 }
 
-                if (targetCm != null && targetCm.isInvulnerable)
+                if (targetCm != null && targetCm.statusManager.HasStatus(StatusType.Invulnerable, controller.GetComponent<Game>().turns))
                 {
                     Debug.Log($"{targetCm.name} is invulnerable — attack cancelled.");
                     return;

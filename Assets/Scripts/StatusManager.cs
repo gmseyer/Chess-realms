@@ -3,20 +3,20 @@ using UnityEngine;
 
 public enum StatusType
 {
-    Invulnerable,
-    Summoned,
-    Phase,
-    Locked,
-    Stunned,
-    Ethereal,
-    Soulbrand,
+    Invulnerable, 
+    Summoned, 
+    Phase, // none
+    Locked, //none 
+    Stunned, 
+    Ethereal, //none 
+    Soulbrand, //none 
     Bounty,
     KingMovement,
     PhantomGuard,
-    Frozen,
+    Frozen, //none
     Crippled,
-    PhoenixResurrection,
-    StoneSentinel,
+    PhoenixResurrection, 
+    StoneSentinel, //none
     Guard,
     Solidarity,
 
