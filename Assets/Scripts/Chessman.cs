@@ -7,7 +7,7 @@ using UnityEngine;
  
 public class Chessman : MonoBehaviour 
 {
-    //References 
+    //References  
     public GameObject controller;
     public GameObject movePlate;
     private GameObject panelForThisPiece;
@@ -543,6 +543,16 @@ if (game != null)
         var game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
         string currentPlayer = game.GetCurrentPlayer();
 
+        //**************TEST ADDED**************
+BotModeManager botManager = FindObjectOfType<BotModeManager>();
+    if (botManager != null && botManager.ShouldPlayerBeControlledByBot(player))
+    {
+        Debug.Log($"[BotMode] Cannot click {name} - bot is controlling black pieces!");
+        return; // Block all input for black pieces in bot mode
+    }
+
+
+
         // ✅ Select the correct panel for this piece (show panels regardless of turn)
         if (UIManager.Instance != null)
         {
@@ -619,6 +629,24 @@ if (game != null)
     public virtual void InitiateMovePlates()
     {
         Game game = controller.GetComponent<Game>();
+
+
+        // ✅ BOT MODE CHECK - Block move plate generation for black pieces when bot mode is active
+    // BUT allow bot to generate moves for itself
+    BotModeManager botManager = FindObjectOfType<BotModeManager>();
+    ChessBot chessBot = FindObjectOfType<ChessBot>();
+    
+    if (botManager != null && botManager.ShouldPlayerBeControlledByBot(player))
+    {
+        // Allow bot to generate moves for itself
+        if (chessBot == null || !chessBot.IsGeneratingMoves())
+        {
+            Debug.Log($"[BotMode] Cannot generate move plates for {name} - bot is controlling black pieces!");
+            return; // No move plates for black pieces in bot mode
+        }
+    }
+
+
 
         if (game.IsPlayerRestrictedToPawns(player))
         {

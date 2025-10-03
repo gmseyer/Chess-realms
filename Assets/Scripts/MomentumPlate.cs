@@ -12,11 +12,11 @@ public class MomentumPlate : MonoBehaviour
         game = g;
         x = tileX;
         y = tileY;
-        knight = k;
+        knight = k; 
         isForPromotion = promotion;
     }
 
-    private void OnMouseUp()
+    public void OnMouseUp()
     {
         if (knight == null)
         {

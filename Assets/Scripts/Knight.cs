@@ -43,7 +43,7 @@ public bool IsMomentumReady()
     return CooldownManager.Instance == null || !CooldownManager.Instance.IsOnCooldown(player, "KnightsMomentum");
 }
 
-    private void Awake()
+    private void Awake() 
     { 
         game = GameObject.FindGameObjectWithTag("GameController").GetComponent<Game>();
 
@@ -294,6 +294,14 @@ public void TriggerKnightsMomentum(bool ignoreCooldown = false)
         return;
     }
 
+    // ✅ BOT MODE CHECK: Skip UI spawning if we're in bot mode
+    BotModeManager botModeManager = FindObjectOfType<BotModeManager>();
+    if (botModeManager != null && botModeManager.IsBotModeActive() && player == "black")
+    {
+        Debug.Log("[Momentum] Bot mode detected - skipping UI spawning, bot will handle momentum");
+        return; // Let the bot handle momentum through its own system
+    }
+
     // Remove existing moveplates
     foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
         Destroy(plate);
@@ -336,7 +344,7 @@ private void SpawnMomentumPlate(int x, int y, bool isForPromotion = false)
 
 
 // Called by MomentumPlate when player clicks a destination tile
-public void ExecuteMomentumTeleport(int targetX, int targetY, bool startCooldown = true)
+public void ExecuteMomentumTeleport(int targetX, int targetY, bool startCooldown = true, bool skipNextTurn = false)
 {
     // safety checks
     if (game == null)
@@ -387,8 +395,15 @@ public void ExecuteMomentumTeleport(int targetX, int targetY, bool startCooldown
     foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate"))
         Destroy(plate);
 
-    // End turn
-    game.NextTurn();
+    // End turn (unless bot is handling it)
+    if (!skipNextTurn)
+    {
+        game.NextTurn();
+    }
+    else
+    {
+        Debug.Log("[Momentum] Bot mode - skipping NextTurn(), bot will handle turn flow");
+    }
 }
 
 // Trial of Valor - Knight promotion system

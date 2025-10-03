@@ -9,7 +9,7 @@ public class MovePlate : MonoBehaviour
     //The Chesspiece that was tapped to create this MovePlate
     GameObject reference = null;
 
-    //Location on the board
+    //Location on the board 
     int matrixX;
     int matrixY; 
 
@@ -492,12 +492,46 @@ public class MovePlate : MonoBehaviour
                     }
                     
                     // Only check momentum if knight is still alive (promotion takes priority)
-                    if (attackerKnight.IsMomentumReady())
+                    bool momentumReady = attackerKnight.IsMomentumReady();
+                    Debug.Log($"[MovePlate] Knight momentum check: IsMomentumReady() = {momentumReady}");
+                    
+                    if (momentumReady)
                     {
-                        // prevent the usual NextTurn flow: spawn momentum teleport tiles and let player choose
-                        Knight.ActiveKnight = attackerKnight; // keep it selected (useful)
-                        attackerKnight.TriggerKnightsMomentum();
-                        return; // IMPORTANT: stop further processing so the player can click momentum tile
+                        // Check if we're in bot mode AND this is a black piece (bot's pieces)
+                        BotModeManager botModeManager = FindObjectOfType<BotModeManager>();
+                        Chessman attackerChessman = attackerKnight.GetComponent<Chessman>();
+                        bool isBlackPiece = attackerChessman != null && attackerChessman.GetPlayer() == "black";
+                        
+                        if (botModeManager != null && botModeManager.IsBotModeActive() && isBlackPiece)
+                        {
+                            // Bot mode: directly handle momentum here
+                            Debug.Log("[MovePlate] Bot mode - handling momentum directly for black piece");
+                            Knight.ActiveKnight = attackerKnight; // keep it selected for bot
+                            
+                            // Get the ChessBot and call its momentum system
+                            ChessBot chessBot = FindObjectOfType<ChessBot>();
+                            if (chessBot != null)
+                            {
+                                Debug.Log("[MovePlate] Found ChessBot, calling HandleBotMomentumDirectly");
+                                chessBot.HandleBotMomentumDirectly(attackerKnight.gameObject);
+                                return; // Stop processing to let momentum complete
+                            }
+                            else
+                            {
+                                Debug.LogError("[MovePlate] ChessBot not found!");
+                            }
+                        }
+                        else
+                        {
+                            // Player mode: spawn momentum plates and wait for player input
+                            Knight.ActiveKnight = attackerKnight; // keep it selected (useful)
+                            attackerKnight.TriggerKnightsMomentum();
+                            return; // IMPORTANT: stop further processing so the player can click momentum tile
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("[MovePlate] Knight momentum not ready - likely on cooldown");
                     }
                 }
 

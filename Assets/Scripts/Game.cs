@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
-public class Game : MonoBehaviour
+public class Game : MonoBehaviour 
 {
 
     public static Game Instance; //added for easy access to Game instance, mostly for SkillManager
@@ -422,6 +422,20 @@ private void UpdateLatestMoveUI(string latestMove)
     currentPlayer = (currentPlayer == "white") ? "black" : "white";
     turns++;
 
+
+      // ✅ BOT TURN HANDLING
+    BotModeManager botManager = FindObjectOfType<BotModeManager>();
+    if (botManager != null && botManager.ShouldPlayerBeControlledByBot(currentPlayer))
+    {
+        Debug.Log("[BotMode] It's black's turn, bot is making a move");
+        
+        // Handle bot turn
+        botManager.HandleBotTurn();
+        
+        // Skip normal turn processing for bot
+        return;
+    }
+
     ClearExpiredRestrictions();
     ResetAllPieceTurnFlags();
     ClearExpiredStatuses();
@@ -589,7 +603,27 @@ foreach (WraithPawn wraithPawn in wraithPawns)
     
     
 }
+private System.Collections.IEnumerator PassBotTurn()
+{
+    // Add a small delay to simulate bot thinking
+    yield return new WaitForSeconds(1f);
+    
+    // For now, just pass the turn
+    Debug.Log("[BotMode] Bot passed turn");
+    
+    // Continue with normal turn processing
+    ClearExpiredRestrictions();
+    ResetAllPieceTurnFlags();
+    ClearExpiredStatuses();
+    
+    // ... rest of normal turn processing ...
+    
+    // Update the Turn UI with player
+    if(TurnUI.Instance != null)
+        TurnUI.Instance.UpdateTurn(turns, currentPlayer);
 
+    // ... rest of existing NextTurn logic ...
+}
 
 
 

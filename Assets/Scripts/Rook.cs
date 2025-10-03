@@ -40,6 +40,7 @@ public class Rook : Pieces // ✅ now inherits from Pieces instead of MonoBehavi
         string currentPlayer = game.GetCurrentPlayer();
         string rookPlayer = cm.GetPlayer();
 
+        
         Debug.Log($"[RoyalCastling] Attempt by '{cm.name}' (player='{rookPlayer}'), turn owner='{currentPlayer}'");
 
         // turn check
