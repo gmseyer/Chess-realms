@@ -24,10 +24,17 @@ public class EndTurnPlate : MonoBehaviour
         foreach (GameObject plate in GameObject.FindGameObjectsWithTag("MovePlate") )
             Destroy(plate);
 
+        // Reset summon flag if this was a bot summon
+        BotSkillHandler.ResetSummonFlag();
+        Debug.Log("[EndTurnPlate] Summon completed - flag reset");
+
         // In Rook.cs, in AttemptFortify() method:
 if (SkillTracker.Instance != null)
 {
     SkillTracker.Instance.LogSkillUsage(game.GetCurrentPlayer(), pieceName, "DIVINE OFFERING", 0);
 }
+
+        // End turn
+        game.NextTurn();
     }
 }

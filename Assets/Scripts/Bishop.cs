@@ -52,6 +52,17 @@ public class Bishop : Pieces
         
         // ✅ NEW: Use CooldownManager for twice-per-battle cooldown
         string player = chessman.GetPlayer();
+        
+        // Check if this is actually a bot move (black piece in bot mode) and route to pseudo system
+        BotModeManager botModeManager = FindObjectOfType<BotModeManager>();
+        if (botModeManager != null && botModeManager.ShouldPlayerBeControlledByBot(player))
+        {
+            Debug.Log("[Bishop] Bot bishop Divine Offering detected - routing to PseudoMovePlate system");
+            // Pass the prefabs to BotSkillHandler since the piece will be destroyed
+            BotSkillHandler.HandleDivineOfferingWithPrefabs(player, elementalSummonPlatePrefab, archbishopSummonPlatePrefab);
+            return; // Stop processing and let bot system handle it
+        }
+        
         if (CooldownManager.Instance != null && CooldownManager.Instance.IsOnCooldown(player, "DivineOffering"))
         {
             Debug.Log("[DivineOffering] Skill is on cooldown - cannot use this battle.");
