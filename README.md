@@ -1,7 +1,8 @@
-Chess Realms
+CHESS REALMS
 
 My 2nd Game development project using the knowledge i learned from "Etredal" From youtube and his tutorials. 
 
+<img width="1440" height="900" alt="image" src="https://github.com/user-attachments/assets/6078e2b0-c5d1-41f2-abc9-9040bfc83327" />
 
 ************UNDER DEVELOPMENT***********
 
